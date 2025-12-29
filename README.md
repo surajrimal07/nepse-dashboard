@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="apps/extension/public/icon/128.png" alt="Nepse Dashboard Logo" width="120" height="120">
+  <img src="apps/extension/public/icon.png" alt="Nepse Dashboard Logo" width="120" height="120">
 
   # Nepse Dashboard
 
