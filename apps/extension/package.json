@@ -13,7 +13,7 @@
 		"zip": "wxt zip",
 		"zip:firefox": "wxt zip -b firefox",
 		"compile": "tsgo --noEmit",
-		"postinstall": "wxt prepare",
+		"prepare:wxt": "wxt prepare",
 		"lint": "eslint",
 		"lint:fix": "eslint --fix",
 		"upgrade:all": "pnpm up -L"
