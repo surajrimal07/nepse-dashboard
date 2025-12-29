@@ -1,0 +1,8 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Sentry
+.sentryclirc

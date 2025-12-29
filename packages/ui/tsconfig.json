@@ -1,0 +1,14 @@
+{
+	"extends": "@nepse-dashboard/tsconfig/react.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"rootDir": "src",
+		"paths": {
+			"@nepse-dashboard/ui/*": ["./src/*"]
+		},
+		"types": ["node"],
+		"target": "ESNext"
+	},
+	"include": [".", "../../apps/extension/src/components/auth-tab/otp-form.tsx"],
+	"exclude": ["node_modules", "dist"]
+}

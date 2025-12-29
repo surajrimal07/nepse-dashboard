@@ -1,0 +1,47 @@
+{
+	"name": "@nepse-dashboard",
+	"private": true,
+	"scripts": {
+		"check": "biome check --write .",
+		"dev": "turbo dev --parallel",
+		"build": "turbo build",
+		"build:server": "turbo build --filter=@nepse-dashboard/backend",
+		"check-types": "turbo check-types",
+		"dev:web": "turbo -F web dev",
+		"dev:server": "turbo -F @nepse-dashboard/backend dev",
+		"dev:frontend": "turbo -F @nepse-dashboard/frontend dev",
+		"dev:setup": "turbo -F @nepse-dashboard/backend dev:setup",
+		"dev:extension": "turbo -F @nepse-dashboard/extension -F @nepse-dashboard/convex dev --parallel",
+		"format": "biome format --write .",
+		"lint": "turbo lint",
+		"type-check": "turbo type-check",
+		"clean:workspaces": "turbo clean",
+		"zip": "turbo zip",
+		"docker:build": "docker build -f apps/server/Dockerfile -t nepse-dashboard .",
+		"docker:dev": "cd apps/server && docker compose -f docker-compose-dev.yml up --build",
+		"docker:dev:detached": "cd apps/server && docker compose -f docker-compose-dev.yml up --build -d",
+		"docker:stop": "cd apps/server && docker compose -f docker-compose-dev.yml stop",
+		"docker:down": "cd apps/server && docker compose -f docker-compose-dev.yml down",
+		"docker:logs": "cd apps/server && docker compose -f docker-compose-dev.yml logs",
+		"docker:logs:follow": "cd apps/server && docker compose -f docker-compose-dev.yml logs -f"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "latest",
+		"turbo": "latest",
+		"typescript": "latest"
+	},
+	"packageManager": "pnpm@10.14.0",
+	"pnpm": {
+		"overrides": {
+			"typescript": "latest",
+			"@biomejs/biome": "latest"
+		}
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": "^22.21.1",
+			"onFail": "download"
+		}
+	}
+}

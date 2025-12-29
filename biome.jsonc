@@ -1,0 +1,29 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true
+	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"files": {
+		"ignoreUnknown": true,
+		"maxSize": 524288, // 512 KB
+		"includes": [
+			"**/*",
+			"!dist",
+			"!node_modules",
+			"!**/*.d.ts",
+			"!**/*.wxt",
+			"!.turbo",
+			"!.next",
+			"!.wxt"
+		]
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	}
+}

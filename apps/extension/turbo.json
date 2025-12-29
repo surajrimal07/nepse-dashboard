@@ -1,0 +1,12 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"inputs": ["$TURBO_DEFAULT$", "!coverage/**"],
+			"outputs": [".output/**", ".wxt/**"]
+		},
+		"zip": {
+			"outputs": [".output/**"]
+		}
+	}
+}

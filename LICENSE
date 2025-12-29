@@ -1,0 +1,121 @@
+NEPSE Dashboard Source Available License
+Version 1.0, December 2024
+
+Copyright (c) 2024 Suraj Rimal
+
+TERMS AND CONDITIONS
+
+1. DEFINITIONS
+
+   "License" refers to this Source Available License.
+
+   "Software" refers to the Nepse Dashboard source code, documentation, and
+   all associated files distributed under this License.
+
+   "Licensor" refers to Suraj Rimal and any authorized contributors.
+
+   "Commercial Use" means any use of the Software that is primarily intended
+   for or directed toward commercial advantage or monetary compensation. This
+   includes, but is not limited to:
+   - Selling the Software or any derivative works
+   - Using the Software to provide paid services
+   - Incorporating the Software into a product that is sold or licensed
+   - Using the Software in a business environment for profit generation
+   - Offering the Software as a SaaS (Software as a Service) product
+
+   "Non-Commercial Use" means any use of the Software that is NOT Commercial
+   Use, including personal projects, academic research, education, and use by
+   non-profit organizations.
+
+2. GRANT OF NON-COMMERCIAL LICENSE
+
+   Subject to the terms of this License, the Licensor hereby grants you a
+   worldwide, royalty-free, non-exclusive, non-transferable license to:
+
+   a) View, study, and learn from the source code
+   b) Fork and modify the Software for personal, educational, or research purposes
+   c) Run and use the Software for Non-Commercial purposes
+   d) Distribute copies of the Software for Non-Commercial purposes, provided
+      that all copies include this License and appropriate attribution
+
+3. COMMERCIAL USE RESTRICTION
+
+   ANY COMMERCIAL USE OF THIS SOFTWARE IS STRICTLY PROHIBITED WITHOUT PRIOR
+   WRITTEN PERMISSION FROM THE LICENSOR.
+
+   If you wish to use this Software for Commercial purposes, you must:
+   a) Contact the Licensor at: davidparkedme@gmail.com
+   b) Obtain explicit written permission
+   c) Agree to any additional terms and conditions specified by the Licensor
+   d) Pay any applicable licensing fees as determined by the Licensor
+
+4. ATTRIBUTION REQUIREMENTS
+
+   Any use of the Software must include:
+   a) This License file in its entirety
+   b) Prominent attribution to the Licensor in any derivative works
+   c) A clear notice that the original Software was created by the Licensor
+   d) A link to the original repository when distributing or deploying
+
+5. RESTRICTIONS
+
+   You may NOT:
+   a) Remove or modify any license notices, copyright notices, or attribution
+   b) Use the Software for any Commercial purpose without written permission
+   c) Sublicense or transfer your rights under this License
+   d) Use the Licensor's name, logo, or trademarks without written permission
+   e) Claim ownership of the original Software or misrepresent its origin
+   f) Use the Software for any illegal purpose or in violation of applicable laws
+
+6. CONTRIBUTIONS
+
+   Any contributions submitted to this project shall be licensed under the
+   same terms as this License. By submitting a contribution, you agree to:
+   a) Grant the Licensor a perpetual, worldwide, royalty-free license to use
+      your contribution
+   b) Represent that you have the right to submit the contribution
+   c) Accept that the Licensor may relicense your contribution under different
+      terms at their sole discretion
+
+7. DISCLAIMER OF WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
+   IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+8. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+   TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+9. TERMINATION
+
+   This License and the rights granted hereunder will terminate automatically
+   upon any breach by you of the terms of this License. Upon termination, you
+   must immediately cease all use of the Software and destroy all copies in
+   your possession.
+
+10. MISCELLANEOUS
+
+    a) This License constitutes the entire agreement between you and the
+       Licensor regarding the Software.
+    b) If any provision of this License is held to be unenforceable, such
+       provision shall be reformed only to the extent necessary to make it
+       enforceable.
+    c) This License shall be governed by and construed in accordance with
+       applicable laws.
+    d) The Licensor reserves the right to modify this License for future
+       versions of the Software.
+
+---
+
+For Commercial licensing inquiries, please contact:
+Email: davidparkedme@gmail.com

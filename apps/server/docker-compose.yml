@@ -1,0 +1,8 @@
+services:
+  nepsehonoapi:
+    image: surajrimal/nepsehonobackend:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production

@@ -1,0 +1,15 @@
+// export const SUPABASE_ID = 'SUPABASE_ID'
+// export const EMAIL = 'EMAIL'
+// export const NOTIFICATION = 'NOTIFICATION'
+// export const SUPABASE_ACCESS_TOKEN = 'SUPABASE_ACCESS_TOKEN'
+// export const SUPABASE_REFRESH_TOKEN = 'SUPABASE_REFRESH_TOKEN'
+// export const LOGIN_TAB_ID = 'LOGIN_TAB_ID'
+// export const ANON_PENDING = 'ANON_PENDING'
+// export const LOGIN_PENDING = 'LOGIN_PENDING'
+// export const CHAT_ENABLED = 'CHAT_ENABLED'
+// export const STOCK_SCROLLING_POPUP = 'STOCK_SCROLLING_POPUP'
+// export const STOCK_SCROLLING_IN_SIDEPANEL = 'STOCK_SCROLLING_IN_SIDEPANEL'
+// export const LOGIN_TOKEN = 'LOGIN_TOKEN'
+// export const PIN = 'PIN'
+
+// // news

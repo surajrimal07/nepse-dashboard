@@ -1,0 +1,4 @@
+preload = ["./src/redis-client.ts", "./src/convex-client.ts"]
+
+
+telemetry = false

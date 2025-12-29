@@ -1,0 +1,15 @@
+{
+	"name": "@nepse-dashboard/tsconfig",
+	"exports": {
+		"./base.json": "./base.json",
+		"./nextjs.json": "./nextjs.json",
+		"./react.json": "./react.json",
+		"./bun.json": "./bun.json"
+	},
+	"files": [
+		"base.json",
+		"nextjs.json",
+		"react.json",
+		"bun.json"
+	]
+}

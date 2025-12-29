@@ -1,0 +1,24 @@
+{
+	"editor.defaultFormatter": "biomejs.biome",
+	"[javascript][typescript][javascriptreact][typescriptreact][json][jsonc][css]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.biome": "explicit",
+		"source.organizeImports.biome": "explicit"
+	},
+	"files.readonlyInclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"files.watcherExclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"search.exclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"biome.configurationPath": "biome.jsonc"
+	// "biome.lsp.bin": "node_modules/@biomejs/biome/bin/biome"
+}

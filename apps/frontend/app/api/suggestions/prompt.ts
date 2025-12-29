@@ -1,0 +1,2 @@
+export const suggestionPrompt =
+	"Based on the following content from a webpage or a Image screenshoot of the webpage, generate a list of concise and relevant suggestions or action items that a user might find useful. Ensure the suggestions are clear, actionable, and directly related to the content provided. If the content is insufficient to generate meaningful suggestions, respond with empty array[]. No more then 4 suggestions, short and concise.";

@@ -1,0 +1,12 @@
+{
+	"name": "@nepse-dashboard/logger",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"devDependencies": {
+		"@nepse-dashboard/tsconfig": "workspace:*"
+	},
+	"exports": {
+		".": "./src/index.ts"
+	}
+}

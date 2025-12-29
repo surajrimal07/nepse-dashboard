@@ -1,0 +1,52 @@
+{
+  "name": "@nepse-dashboard/backend",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch run src/index.ts",
+    "db:generate:migration": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "build": "bun build src/index.ts --minify --outdir dist --target=bun && bun build src/lib/nepse/worker/worker.ts --minify --outfile dist/worker.js --target=bun",
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+    "serve": "bun dist/index.js",
+    "type-check": "biome check",
+    "clean": "rimraf node_modules",
+    "upgrade:all": "pnpm up $(pnpm outdated --parseable | cut -f1 | grep -v '^redis$') -L"
+  },
+  "dependencies": {
+    "@extractus/feed-extractor": "^7.1.7",
+    "@google/generative-ai": "^0.24.1",
+    "@grammyjs/auto-retry": "^2.0.2",
+    "@grammyjs/menu": "^1.3.1",
+    "@grammyjs/ratelimiter": "^1.2.1",
+    "@grammyjs/runner": "^2.0.3",
+    "@hono/prometheus": "^1.0.2",
+    "@nepse-dashboard/convex": "workspace:*",
+    "@nepse-dashboard/logger": "workspace:*",
+    "@nepse-dashboard/zod": "workspace:*",
+    "@openpanel/sdk": "^1.0.0",
+    "@openpanel/web": "^1.0.2",
+    "@orpc/client": "^1.11.2",
+    "@orpc/server": "^1.11.2",
+    "@railpath/finance-toolkit": "^0.5.4",
+    "@sentry/bun": "^10.25.0",
+    "cheerio": "^1.1.0",
+    "convex": "^1.29.1",
+    "croner": "^9.1.0",
+    "csv-parse": "^6.1.0",
+    "firebase-admin": "^13.6.0",
+    "grammy": "^1.38.3",
+    "hono": "^4.10.6",
+    "maxmind": "^5.0.1",
+    "open-google-translator": "^1.0.5",
+    "prom-client": "^15.1.3",
+    "redis": "^4.7.1",
+    "web-push-browser": "^1.4.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "@types/bun": "^1.3.2",
+    "rimraf": "^6.1.0",
+    "tsx": "^4.20.6"
+  }
+}

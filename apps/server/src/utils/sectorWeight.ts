@@ -1,0 +1,16 @@
+export const weights = {
+  Others: 10.97,
+  'Commercial Banks': 23.96,
+  Investment: 7.62,
+  'Life Insurance': 8.6,
+  'Hotels And Tourism': 2.7,
+  'Manufacturing And Processing': 5.58,
+  'Hydro Power': 15.14,
+  'Non Life Insurance': 5.14,
+  Microfinance: 8.54,
+  'Development Banks': 4.55,
+  'Promoter Share': 0.83,
+  Tradings: 0.42,
+  Finance: 1.68,
+  lastUpdated: '2025-08-14T14:03:02.611Z',
+} as const;

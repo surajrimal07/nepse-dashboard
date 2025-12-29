@@ -1,0 +1,17 @@
+export enum EventType {
+	UNKNOWN_ERROR = "backend:unknown_error",
+	INVALID_INPUT = "backend:invalid_input",
+	NOT_FOUND = "backend:not_found",
+	AUTHENTICATION_FAILED = "backend:authentication_failed",
+	PERMISSION_DENIED = "backend:permission_denied",
+	SERVER_ERROR = "backend:server_error",
+	TIMEOUT = "backend:timeout",
+	DATA_CONFLICT = "backend:data_conflict",
+	RATE_LIMIT_EXCEEDED = "backend:rate_limit_exceeded",
+	SCHEMA_VALIDATION_FAILED = "backend:schema_validation_failed",
+	NEPSE_API_ERROR = "backend:nepse_api_error",
+	CONVEX_API_ERROR = "backend:convex_api_error",
+	CONVEX_SCHEMA_ERROR = "backend:convex_schema_error",
+	EXCEPTION = "backend:exception",
+	OHLC_FETCH_ERROR = "backend:ohlc_fetch_error",
+}

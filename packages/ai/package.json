@@ -1,0 +1,30 @@
+{
+	"name": "@nepse-dashboard/ai",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"devDependencies": {
+		"@nepse-dashboard/logger": "workspace:*",
+		"@nepse-dashboard/tsconfig": "workspace:*",
+		"@nepse-dashboard/zod": "workspace:*"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./types": "./src/types/index.ts"
+	},
+	"dependencies": {
+		"@ai-sdk/anthropic": "^2.0.53",
+		"@ai-sdk/deepinfra": "^1.0.29",
+		"@ai-sdk/deepseek": "^1.0.31",
+		"@ai-sdk/fireworks": "^1.0.29",
+		"@ai-sdk/google": "^2.0.44",
+		"@ai-sdk/mistral": "^2.0.25",
+		"@ai-sdk/openai": "^2.0.67",
+		"@ai-sdk/perplexity": "^2.0.21",
+		"@ai-sdk/xai": "^2.0.39",
+		"@google/genai": "^1.29.1",
+		"@openrouter/ai-sdk-provider": "^1.2.3",
+		"ai": "catalog:",
+		"zod": "^4.2.1"
+	}
+}

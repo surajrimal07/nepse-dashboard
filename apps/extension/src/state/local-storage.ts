@@ -1,0 +1,34 @@
+import type { StateStorage } from "zustand/middleware/persist";
+
+export const LocalStorage: StateStorage = {
+	getItem: (name) => {
+		return new Promise<string | null>((resolve, reject) => {
+			browser.storage.local.get(name, (result) => {
+				if (browser.runtime.lastError) {
+					return reject(browser.runtime.lastError);
+				}
+				resolve(result[name] ?? null);
+			});
+		});
+	},
+	setItem: (name, value) => {
+		return new Promise<void>((resolve, reject) => {
+			browser.storage.local.set({ [name]: value }, () => {
+				if (browser.runtime.lastError) {
+					return reject(browser.runtime.lastError);
+				}
+				resolve();
+			});
+		});
+	},
+	removeItem: (name) => {
+		return new Promise<void>((resolve, reject) => {
+			browser.storage.local.remove(name, () => {
+				if (browser.runtime.lastError) {
+					return reject(browser.runtime.lastError);
+				}
+				resolve();
+			});
+		});
+	},
+};

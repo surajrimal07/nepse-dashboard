@@ -1,0 +1,20 @@
+{
+	"name": "@nepse-dashboard/zod",
+	"private": true,
+	"main": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc --outDir dist --project tsconfig.build.json"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./type": "./src/type.ts",
+		"./client": "./src/client.ts"
+	},
+	"dependencies": {
+		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"@nepse-dashboard/tsconfig": "workspace:*"
+	}
+}

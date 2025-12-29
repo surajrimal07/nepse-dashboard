@@ -1,0 +1,8 @@
+{
+  "node": {
+    "externalPackages": [
+      "sharp",
+      "@google/genai"
+    ]
+  }
+}

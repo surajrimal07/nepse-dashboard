@@ -1,0 +1,14 @@
+reviews:
+  path_filters:
+    - "!app/config/specs/**"
+    - "!docs/examples/**"
+    - "!docs/references/**"
+    - "!docs/sdks/**"
+  auto_review:
+    base_branches:
+      - main
+  high_level_summary: true
+  poem: false
+  sequence_diagrams: false
+  collapse_walkthrough: true
+  changed_files_summary: false
