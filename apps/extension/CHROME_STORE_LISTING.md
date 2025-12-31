@@ -114,9 +114,9 @@ This extension is **NOT** affiliated with, endorsed by, or connected to NEPSE, T
 
 ## 📚 Resources
 
-- **Documentation**: [nepsedashboard.pages.dev](https://nepsedashboard.pages.dev)
-- **Privacy Policy**: [nepsedashboard.pages.dev/privacy](https://nepsedashboard.pages.dev/privacy)
-- **Terms of Service**: [nepsedashboard.pages.dev/terms](https://nepsedashboard.pages.dev/terms)
+- **Documentation**: [nepsechatbot.com/nepsedashboard](https://www.nepsechatbot.com/nepsedashboard)
+- **Privacy Policy**: [nepsechatbot.com/nepsedashboard/privacy](https://www.nepsechatbot.com/nepsedashboard/privacy)
+- **Terms of Service**: [nepsechatbot.com/nepsedashboard/terms](https://www.nepsechatbot.com/nepsedashboard/terms)
 
 ---
 

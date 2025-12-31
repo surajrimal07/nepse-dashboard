@@ -343,9 +343,9 @@ pnpm docker:dev:detached  # Background
 
 ## 📚 Documentation
 
-- **Website**: [nepsedashboard.pages.dev](https://nepsedashboard.pages.dev)
-- **Privacy Policy**: [nepsedashboard.pages.dev/privacy](https://nepsedashboard.pages.dev/privacy)
-- **Terms of Service**: [nepsedashboard.pages.dev/terms](https://nepsedashboard.pages.dev/terms)
+- **Website**: [nepsechatbot.com/nepsedashboard](https://www.nepsechatbot.com/nepsedashboard)
+- **Privacy Policy**: [nepsechatbot.com/nepsedashboard/privacy](https://www.nepsechatbot.com/nepsedashboard/privacy)
+- **Terms of Service**: [nepsechatbot.com/nepsedashboard/terms](https://www.nepsechatbot.com/nepsedashboard/terms)
 
 ---
 
@@ -419,6 +419,7 @@ This project is licensed under a **Source Available License** — see the [LICEN
 
 ## 🙏 Acknowledgments
 
+- [Read Frog](https://github.com/mengxi-ream/read-frog) — Special thanks for the open-source inspiration; learned so many concepts and ideas from this amazing project
 - [WXT](https://wxt.dev/) for the amazing browser extension framework
 - [Convex](https://convex.dev/) for the serverless backend platform
 - [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
