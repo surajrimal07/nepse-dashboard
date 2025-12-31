@@ -3,7 +3,28 @@ packages:
   - apps/*
 
 catalog:
+  '@antfu/eslint-config': ^6.7.3
+  '@convex-dev/react-query': 0.1.0
+  '@eslint-react/eslint-plugin': ^2.4.0
+  '@eslint/js': ^9.39.2
+  '@mozilla/readability': ^0.6.0
+  '@openpanel/sdk': ^1.0.3
+  '@radix-ui/react-visually-hidden': ^1.2.4
   '@tailwindcss/postcss': ^4.1.18
+  '@tanstack/query-async-storage-persister': ^5.90.14
+  '@tanstack/query-sync-storage-persister': ^5.90.14
+  '@tanstack/react-form': ^1.27.6
+  '@tanstack/react-query': ^5.90.12
+  '@tanstack/react-query-persist-client': ^5.90.14
+  '@tanstack/react-router': ^1.143.6
+  '@tanstack/router-plugin': ^1.143.6
+  '@types/chrome': ^0.1.32
+  '@types/mozilla-readability': ^0.2.1
+  '@typescript-eslint/eslint-plugin': ^8.50.1
+  '@typescript-eslint/parser': ^8.50.1
+  '@webext-core/messaging': ^2.3.0
+  '@wxt-dev/auto-icons': ^1.1.0
+  '@wxt-dev/module-react': ^1.1.5
   "ai": '^5.0.93'
   '@tailwindcss/vite': ^4.1.17
   '@tanstack/react-table': ^8.21.3
@@ -18,15 +39,39 @@ catalog:
   cmdk: 1.1.1
   convex: ^1.30.0
   convex-helpers: ^0.1.108
+  crann-fork: ^1.0.52
+  eslint: ^9.39.2
+  eslint-config-prettier: ^10.1.8
+  eslint-plugin-format: ^1.1.0
+  eslint-plugin-jsx-a11y: ^6.10.2
+  eslint-plugin-prettier: ^5.5.4
+  eslint-plugin-react: ^7.37.5
+  eslint-plugin-react-compiler: 19.1.0-rc.2
+  eslint-plugin-react-hooks: ^7.0.1
+  eslint-plugin-react-refresh: ^0.4.26
+  eslint-plugin-react-you-might-not-need-an-effect: ^0.8.1
+  eslint-plugin-unused-imports: ^4.3.0
   framer-motion: ^12.23.25
+  franc-min: ^6.2.0
+  html-to-image: ^1.11.13
+  image-js: ^1.3.0
   input-otp: ^1.4.2
   lucide-react: 0.562.0
+  mutative: ^1.3.0
   next-themes: ^0.4.6
+  porter-source-fork: ^1.1.37
   postcss: ^8.5.6
   postcss-rem-to-responsive-pixel: ^7.0.0
+  postcss-value-parser: ^4.2.0
   react: ^19.2.3
   react-dom: ^19.2.3
+  react-error-boundary: ^6.0.0
+  react-gauge-component: ^1.2.64
+  react-hotkeys-hook: ^5.2.1
   react-resizable-panels: ^3.0.4
+  react-spinners: ^0.17.0
+  react-timeago: ^8.3.0
+  react-window: 1.8.11
   recharts: 3.4.1
   sonner: ^2.0.7
   tailwind-merge: ^3.4.0
@@ -35,6 +80,11 @@ catalog:
   tw-animate-css: ^1.4.0
   typescript: latest
   vaul: ^1.1.2
+  vite-plugin-remove-console: ^2.2.0
+  wxt: ^0.20.13
+  zustand: ^5.0.9
+  zustand-debounce: ^2.3.0
+  zustand-mutative: ^1.3.1
 
 peerDependencyRules:
   allowedVersions:
@@ -48,3 +98,8 @@ peerDependencyRules:
     convex-helpers>zod: '*'
     react-side-effect>react: '*'
     zod-to-json-schema>zod: '*'
+catalogs:
+  conflicts_convex_h1_31_2:
+    convex: ^1.31.2
+  conflicts_recharts_h3_6_0:
+    recharts: ^3.6.0

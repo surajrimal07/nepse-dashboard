@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { DEFAULT_CHART_SITES } from "@/constants/app-config";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 import {
 	CUSTOM_URL_HELP_TEXT,

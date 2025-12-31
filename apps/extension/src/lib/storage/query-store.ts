@@ -1,4 +1,4 @@
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 // import type {
 // 	PersistedClient,
 // 	Persister,
@@ -46,5 +46,5 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 // };
 
 export const queryStoragePersister = createAsyncStoragePersister({
-	storage: window.localStorage,
-});
+  storage: window.localStorage,
+})

@@ -1,5 +1,9 @@
 import { connect } from "crann-fork";
-import { MatchPattern } from "#imports";
+import {
+	type ContentScriptContext,
+	defineContentScript,
+	MatchPattern,
+} from "#imports";
 import {
 	chrome_naasax_url,
 	naasa_dashboard_url,
@@ -8,6 +12,7 @@ import { onMessage } from "@/lib/messaging/window-messaging";
 import { appState } from "@/lib/service/app-service";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
+import { logger } from "@/utils/logger";
 
 // Patterns
 const naasaAuth = new MatchPattern(chrome_naasax_url);
@@ -203,7 +208,10 @@ class NaasaXAutomation {
 			const item = localStorage.getItem(LOCAL_STORAGE_KEY);
 			return item ? JSON.parse(item) : {};
 		} catch (e) {
-			console.error("NaasaX: Error parsing local storage, clearing corrupted data", e);
+			console.error(
+				"NaasaX: Error parsing local storage, clearing corrupted data",
+				e,
+			);
 			// Clear corrupted data to prevent future errors
 			localStorage.removeItem(LOCAL_STORAGE_KEY);
 			return {};
@@ -229,8 +237,9 @@ class NaasaXAutomation {
 	private getAttempts(): number {
 		try {
 			const item = localStorage.getItem(LOCAL_STORAGE_ATTEMPTS_KEY);
-			return item ? parseInt(item, 10) : 0;
+			return item ? Number.parseInt(item, 10) : 0;
 		} catch (e) {
+			logger.error("NaasaX: Error getting attempts", e);
 			return 0;
 		}
 	}
@@ -640,7 +649,7 @@ class NaasaXAutomation {
 export default defineContentScript({
 	matches: [chrome_naasax_url, naasa_dashboard_url],
 	runAt: "document_idle",
-	async main(ctx) {
+	async main(ctx: ContentScriptContext) {
 		const automation = new NaasaXAutomation();
 
 		const url = window.location.href;

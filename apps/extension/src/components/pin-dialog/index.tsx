@@ -25,7 +25,7 @@ const PinUI = memo(({ onDismiss }: PinExtensionDialogProps) => {
 						<h3 className="text-sm font-medium">Extension Not Pinned</h3>
 					</div>
 					<Button
-						variant={"ghost"}
+						variant="ghost"
 						onClick={handleDismiss}
 						className="text-gray-400 hover:text-gray-200 transition-colors duration-200 focus:outline-none"
 						aria-label="Dismiss"

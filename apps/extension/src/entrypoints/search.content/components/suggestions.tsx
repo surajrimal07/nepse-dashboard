@@ -1,8 +1,9 @@
 import { CornerDownLeft, HelpCircle } from "lucide-react";
-import { lazy } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useShallow } from "zustand/react/shallow";
 import LoadingDots from "@/components/loading-dots";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 import { selectContent, selectLocation } from "../selectors";
 import { useSearchState } from "../store";
@@ -69,7 +70,7 @@ export default function Suggestions({
 			});
 
 			if (!Array.isArray(result)) {
-				throw new Error(result.toString());
+				throw new TypeError(result.toString());
 			}
 
 			setSuggestions(result as string[]);

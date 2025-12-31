@@ -1,5 +1,6 @@
 import z from "@nepse-dashboard/zod";
-import { AccountType, type accountType } from "@/types/account-types";
+import type { accountType } from "@/types/account-types";
+import { AccountType } from "@/types/account-types";
 
 // Base form schema for all account types
 const baseFormSchema = z.object({

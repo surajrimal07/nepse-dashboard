@@ -1,7 +1,7 @@
 import { Button } from "@nepse-dashboard/ui/components/button";
 import { useRouter } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { canGoBack } from "@/hooks/canGoBack";
 
 const MarketClosed = memo(() => {

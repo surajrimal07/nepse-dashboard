@@ -1,4 +1,5 @@
-import { type ConvexQueryClient, convexQuery } from "@convex-dev/react-query";
+import type { ConvexQueryClient } from "@convex-dev/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@nepse-dashboard/convex/convex/_generated/api";
 import { TooltipProvider } from "@nepse-dashboard/ui/components/tooltip";
 import type { QueryClient } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ import {
 } from "@tanstack/react-router";
 import { ConvexProvider } from "convex/react";
 import { ThemeProvider } from "next-themes";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Toaster } from "sonner";
 import { AuthGate } from "@/components/auth-tab/auth-hook";
 import { profileParamsSchema } from "@/components/auth-tab/schema";
@@ -27,6 +28,7 @@ import RouteNotFound from "@/components/route-not-found";
 import RoutePending from "@/components/route-pending";
 import { Title } from "@/components/scrolling-title";
 import { companyDetailsSearchSchema } from "@/components/stock-info/schema";
+import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
 import GeneralSettings from "@/entrypoints/options/general";
 import { OptionsLayoutRoute } from "@/entrypoints/options/layout";
 import NepseSettings from "@/entrypoints/options/market";
@@ -34,6 +36,7 @@ import Header from "@/entrypoints/popup/header";
 import SidepanelHome from "@/entrypoints/sidepanel/component/home/index";
 import { NavigationBar } from "@/entrypoints/sidepanel/component/navigation-bar";
 import { MAX_AGE } from "@/hooks/convex/constants";
+import { useAppState } from "@/hooks/use-app";
 import { page } from "@/lib/analytics";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { convex, queryClient } from "@/lib/query";
@@ -162,7 +165,7 @@ export const indexRoute = createRoute({
 	},
 });
 
-//Popup Routes
+// Popup Routes
 // export const popupRoute = createRoute({
 // 	getParentRoute: () => rootRoute,
 // 	onEnter: () => {
@@ -531,7 +534,7 @@ export const communityChatRoute = createRoute({
 	},
 }).lazy(() => import("@/components/community/index.lazy").then((d) => d.Route));
 
-//sidepanel Routes
+// sidepanel Routes
 export const sidepanelRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	onEnter: () => {
@@ -575,7 +578,7 @@ export const sidepanelRoute = createRoute({
 // 	notFoundComponent: () => <TabNotFound />,
 // });
 
-//options Routes
+// options Routes
 export const optionsRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	onEnter: () => {

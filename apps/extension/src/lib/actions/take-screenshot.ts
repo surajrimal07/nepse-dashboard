@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import { Env, EventName } from "@/types/analytics-types";
 import { Track } from "../analytics/analytics";
 
@@ -62,7 +63,7 @@ export async function takeScreenshot(): Promise<{
 
 		return {
 			success: false,
-			message,
+			message: "Screenshots cannot be taken on browser-specific tabs.",
 			data: null,
 		};
 	}

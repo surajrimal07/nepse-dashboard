@@ -1,6 +1,7 @@
 import { Button } from "@nepse-dashboard/ui/components/button";
 import { FileQuestion, X } from "lucide-react";
 import { useState } from "react";
+import { useAppState } from "@/hooks/use-app";
 
 export function RequestNews() {
 	const { callAction } = useAppState();

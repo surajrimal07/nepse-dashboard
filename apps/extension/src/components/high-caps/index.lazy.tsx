@@ -50,7 +50,7 @@ const EmptyState = memo(() => (
 
 EmptyState.displayName = "EmptyState";
 
-type CompanyRowProps = {
+interface CompanyRowProps {
 	company: {
 		symbol: string;
 		name?: string;
@@ -59,7 +59,7 @@ type CompanyRowProps = {
 		pointchange: number | null;
 		percentchange: number | null;
 	};
-};
+}
 
 const CompanyRow = memo(({ company }: CompanyRowProps) => {
 	const pointChangeColor = useMemo(

@@ -1,5 +1,5 @@
 import { connect } from "crann-fork";
-import type { ContentScriptContext } from "#imports";
+import { type ContentScriptContext, defineContentScript } from "#imports";
 import { TMS_LOGIN_URL, tms_watch_url } from "@/constants/content-url";
 import { track } from "@/lib/analytics";
 import { onMessage } from "@/lib/messaging/window-messaging";
@@ -9,7 +9,7 @@ import { AccountType } from "@/types/account-types";
 import { Env, EventName } from "@/types/analytics-types";
 import type { SolveResult } from "@/types/content-types";
 import { ResultTypes, TMS_DASHBOARD_PATTERN } from "@/types/content-types";
-
+import { logger } from "@/utils/logger";
 import { solve_captcha } from "./capcha";
 
 /**
@@ -61,6 +61,7 @@ class TMSAutomation {
 		password: "",
 		isUserInput: false,
 	};
+
 	private isProgrammaticInput = false;
 
 	// Connection
@@ -651,10 +652,9 @@ export default defineContentScript({
 
 		const url = window.location.href;
 		if (TMS_DASHBOARD_PATTERN.test(url)) {
-
 			await automation.handleChangeToDashboardPage();
 		} else if (TMS_LOGIN_URL.test(url)) {
-					await automation.init();
+			await automation.init();
 
 			await automation.start();
 		}

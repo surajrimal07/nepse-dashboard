@@ -57,7 +57,11 @@ export function useExtensionInitialization() {
 		}
 
 		const handleMessage = (event: MessageEvent) => {
+			console.log("Received message from extension:", event);
+
 			if (!isValidExtensionOrigin(event.origin)) {
+				console.log("Invalid origin:", event.origin);
+
 				console.warn(
 					"[Security] Message from unauthorized origin:",
 					event.origin,

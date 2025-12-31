@@ -1,44 +1,17 @@
-import { Settings } from "lucide-react";
-import { useHotkeys } from "react-hotkeys-hook";
-import { cn } from "@/lib/utils";
-import {
-	ERROR_LOAD_CHART,
-	ERROR_SYMBOL_INVALID,
-	getInputClass,
-	getPlaceholderText,
-} from "./utils";
-import "./searchOverlay.css";
 import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
-import { memo, Suspense } from "react";
+import { Settings } from "lucide-react";
+import React, { memo, Suspense, useCallback, useEffect, useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 import { track } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
 import { Env, EventName } from "@/types/analytics-types";
 import type { searchAIResponse } from "@/types/search-type";
-
+import LoadingDots from "../../components/loading-dots";
 import { ErrorMessage } from "./components/error";
 
 import { ModeSelector } from "./components/mode-selector";
 
-const ResultsList = React.lazy(
-	() => import("@/entrypoints/search.content/components/result-list"),
-);
-
-const Chat = React.lazy(
-	() => import("@/entrypoints/search.content/components/chat"),
-);
-
-const SettingsDropdown = React.lazy(
-	() => import("@/entrypoints/search.content/components/settings"),
-);
-const TmsDisabled = React.lazy(
-	() => import("@/entrypoints/search.content/components/tms-disabled"),
-);
-const AiModeDisabled = React.lazy(
-	() => import("@/entrypoints/search.content/components/aimode-disabled"),
-);
-
-import React from "react";
-import LoadingDots from "../../components/loading-dots";
 import {
 	selectAddAI,
 	selectAddUser,
@@ -57,7 +30,34 @@ import {
 	selectToggleNextMode,
 	selectToggleShowSettings,
 } from "./selectors";
+
 import { useSearchState } from "./store";
+import {
+	ERROR_LOAD_CHART,
+	ERROR_SYMBOL_INVALID,
+	getInputClass,
+	getPlaceholderText,
+} from "./utils";
+import "./searchOverlay.css";
+import { useAppState } from "@/hooks/use-app";
+
+const ResultsList = React.lazy(
+	() => import("@/entrypoints/search.content/components/result-list"),
+);
+
+const Chat = React.lazy(
+	() => import("@/entrypoints/search.content/components/chat"),
+);
+
+const SettingsDropdown = React.lazy(
+	() => import("@/entrypoints/search.content/components/settings"),
+);
+const TmsDisabled = React.lazy(
+	() => import("@/entrypoints/search.content/components/tms-disabled"),
+);
+const AiModeDisabled = React.lazy(
+	() => import("@/entrypoints/search.content/components/aimode-disabled"),
+);
 
 const MainContent = memo(
 	({

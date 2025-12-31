@@ -1,6 +1,7 @@
 import type { ChartDataPoint } from "@/components/nepse-tab/tooltip";
 import type { AdvanceDecline } from "@/types/indexes-type";
-import { PLAYBACK_SPEEDS, type PlaybackSpeed } from "@/types/replay-types";
+import type { PlaybackSpeed } from "@/types/replay-types";
+import { PLAYBACK_SPEEDS } from "@/types/replay-types";
 
 interface AdvanceDeclineWidths {
 	advanceWidth: number;
@@ -71,22 +72,24 @@ export function calculateChartBounds(
 }
 
 // Stable reference for chart configuration outside React
-export const createChartConfig = (color: string) => ({
-	value: {
-		label: "Index Chart",
-		color,
-	},
-});
+export function createChartConfig(color: string) {
+	return {
+		value: {
+			label: "Index Chart",
+			color,
+		},
+	};
+}
 
 // Generate stable chart ID outside React
 export const generateChartId = Math.random().toString(36).substring(2, 5);
 
 // Transform raw chart data to chart format
-export const transformChartData = (
+export function transformChartData(
 	currentIndexChart?: number[][],
 	previousClose?: number,
 	isDaily?: boolean,
-): ChartDatas[] => {
+): ChartDatas[] {
 	if (!currentIndexChart || previousClose === undefined) {
 		return [];
 	}
@@ -95,7 +98,7 @@ export const transformChartData = (
 		value,
 		change: value - previousClose,
 	}));
-};
+}
 
 export function getNextPlaybackSpeed(current: PlaybackSpeed): PlaybackSpeed {
 	const i = PLAYBACK_SPEEDS.indexOf(current);

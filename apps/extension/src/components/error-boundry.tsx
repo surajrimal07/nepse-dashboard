@@ -3,9 +3,12 @@ import { AlertTriangle, Copy, Mail, RotateCw } from "lucide-react";
 import type { ReactNode } from "react";
 import type { FallbackProps } from "react-error-boundary";
 import { ErrorBoundary } from "react-error-boundary";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
+import { getVersion } from "@/utils/version";
 
 function ErrorDetails({ error }: { error: Error }) {
 	const clipboard = useClipboard({ timeout: 500, objectName: "Error" });

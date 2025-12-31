@@ -14,7 +14,7 @@ import { track } from "@/lib/analytics";
 import { useGeneralState } from "@/state/general-state";
 import { Env, EventName } from "@/types/analytics-types";
 
-const bannerIconByType = (type?: string) => {
+function bannerIconByType(type?: string) {
 	switch (type) {
 		case "warning":
 			return TriangleAlert;
@@ -23,9 +23,9 @@ const bannerIconByType = (type?: string) => {
 		default:
 			return Info;
 	}
-};
+}
 
-const InfoUI = () => {
+function InfoUI() {
 	useScreenView("/banners");
 
 	const routeContext = useRouteContext({ strict: false });
@@ -46,7 +46,7 @@ const InfoUI = () => {
 			context: Env.UNIVERSAL,
 			eventName: EventName.BANNER_LEARN_MORE_CLICKED,
 			params: {
-				bannerId: bannerId,
+				bannerId,
 			},
 		});
 	};
@@ -58,7 +58,7 @@ const InfoUI = () => {
 			context: Env.UNIVERSAL,
 			eventName: EventName.BANNER_DISMISSED,
 			params: {
-				bannerId: bannerId,
+				bannerId,
 			},
 		});
 	};
@@ -114,6 +114,6 @@ const InfoUI = () => {
 			))}
 		</div>
 	);
-};
+}
 
 export default InfoUI;

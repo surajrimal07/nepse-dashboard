@@ -15,19 +15,23 @@ interface IndexSelectionDialogProps {
 	onIndexSelect?: (index: IndexKeys) => void;
 }
 
-const NotFound = () => (
-	<div className="flex items-center justify-center h-full">
-		<p className="text-sm text-gray-500 text-center">
-			No indexes found or all added.
-		</p>
-	</div>
-);
+function NotFound() {
+	return (
+		<div className="flex items-center justify-center h-full">
+			<p className="text-sm text-gray-500 text-center">
+				No indexes found or all added.
+			</p>
+		</div>
+	);
+}
 
-const IndexSkeleton = () => (
-	<div className="px-4 py-2 text-sm cursor-pointer rounded">
-		<Skeleton className="h-6 w-full" />
-	</div>
-);
+function IndexSkeleton() {
+	return (
+		<div className="px-4 py-2 text-sm cursor-pointer rounded">
+			<Skeleton className="h-6 w-full" />
+		</div>
+	);
+}
 
 const IndexSelectionDialog: FC<IndexSelectionDialogProps> = ({
 	isOpen,

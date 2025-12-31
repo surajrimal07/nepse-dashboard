@@ -1,6 +1,7 @@
 import { Readability } from "@mozilla/readability";
 import { franc } from "franc-min";
 import type { DocumentLanguageType, ParsedDocument } from "@/types/news-types";
+import { logger } from "../logger";
 import {
 	cleanText,
 	extractStructuredText,
@@ -9,12 +10,14 @@ import {
 	truncateAtParagraph,
 } from "./utils";
 
-const emptyResult = (): ParsedDocument => ({
-	success: false,
-	content: "",
-	title: "",
-	lang: "und",
-});
+function emptyResult(): ParsedDocument {
+	return {
+		success: false,
+		content: "",
+		title: "",
+		lang: "und",
+	};
+}
 export function analyzeDocument(): ParsedDocument {
 	try {
 		const documentClone = document.cloneNode(true) as Document;

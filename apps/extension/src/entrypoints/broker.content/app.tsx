@@ -10,6 +10,7 @@ import { createCrannStateHook } from "crann-fork";
 import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { Toaster } from "sonner";
+import { browser } from "#imports";
 import { DraggableCard } from "@/components/content-ui/draggable-card";
 import { useDragCardState } from "@/components/content-ui/store";
 import { appState } from "@/lib/service/app-service";

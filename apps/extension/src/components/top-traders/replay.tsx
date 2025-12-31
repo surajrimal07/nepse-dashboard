@@ -27,11 +27,12 @@ import {
 	selectChangePlaybackSpeed,
 	selectReplayPlaybackSpeed,
 } from "@/selectors/general-selector";
-
-import { type GeneralState, useGeneralState } from "@/state/general-state";
+import type { GeneralState } from "@/state/general-state";
+import { useGeneralState } from "@/state/general-state";
 import type { TopTabType } from "@/types/top-types";
 import { TopTab } from "@/types/top-types";
 import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";
+import Loading from "../loading";
 import { createTabConfig } from "./tab-config";
 import TabContent from "./tab-content";
 

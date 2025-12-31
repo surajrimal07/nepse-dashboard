@@ -11,6 +11,7 @@ import type { BackupData } from "@/types/backup-type";
 import { BackupDataSchema } from "@/types/backup-type";
 import type { IndexKeys } from "@/types/indexes-type";
 import type { modeType } from "@/types/search-type";
+import { useAppState } from "../use-app";
 import { hashData } from "./hash";
 
 export function useBackupRestore() {
@@ -63,8 +64,8 @@ export function useBackupRestore() {
 				syncPortfolio,
 				accounts,
 				theme: theme || "system",
-				dashboardState: dashboardState,
-				sidepanelRoute: sidepanelRoute,
+				dashboardState,
+				sidepanelRoute,
 				generalState: generalStateValue,
 			};
 

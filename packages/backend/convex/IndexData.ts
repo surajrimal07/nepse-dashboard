@@ -114,6 +114,8 @@ export const patchNepseIndexData = mutation({
 			});
 			return existing;
 		}
+
+		return null;
 	},
 });
 
@@ -184,7 +186,6 @@ export const consumeNepseIndexData = mutation({
 		randomId: v.string(),
 	},
 	handler: async (ctx, args) => {
-
 		console.log("incoming data", args);
 
 		const isSender = await isDataSender(ctx, { randomId: args.randomId });

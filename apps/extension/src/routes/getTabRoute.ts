@@ -28,7 +28,7 @@ export function getPopupTabRoute(value: string) {
 				};
 			}
 			// Fallback to dynamic widget route
-			return { to: "/" }; //means somethign is wrong
+			return { to: "/" }; // means somethign is wrong
 		}
 	}
 }
@@ -49,7 +49,7 @@ export function getSidepanelTabRoute(value: string) {
 				};
 			}
 			// Fallback to dynamic widget route
-			return { to: "/" }; //means something is wrong
+			return { to: "/" }; // means something is wrong
 		}
 	}
 }

@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import type { ChangeEvent } from "react";
 import {
 	lazy,
+	Suspense,
 	useCallback,
 	useEffect,
 	useId,

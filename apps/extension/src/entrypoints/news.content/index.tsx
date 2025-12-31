@@ -1,16 +1,23 @@
-import { createRoot, type Root } from "react-dom/client";
-import type { ContentScriptContext } from "#imports";
-import "../../../../../packages/ui/src/styles/globals.css";
-
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import {
+	type ContentScriptContext,
+	createShadowRootUi,
+	defineContentScript,
+} from "#imports";
 import {
 	ARTHASANSAR_NEWS,
 	ARTHASAROKAR_NEWS,
 	MEROLAGANI_NEWS,
 	SHARESANSAR_NEWS,
 } from "@/constants/content-url";
+
 import { analyzeDocument } from "@/utils/content/analyze";
 import App from "./app";
 import { newsState } from "./store";
+import "../../../../../packages/ui/src/styles/globals.css";
+import { ContentErrorBoundary } from "@/components/content-error-boundary";
+import { ContentSuspense } from "@/components/content-suspense";
 
 const ANIMATION_DURATION = 100;
 const MAX_Z_INDEX = "2147483647";
@@ -76,7 +83,6 @@ export default defineContentScript({
 					top: "0",
 					right: "0",
 					left: "0",
-					// Adjust bottom or width as needed
 				});
 				container.appendChild(wrapper);
 

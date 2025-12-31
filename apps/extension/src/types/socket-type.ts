@@ -1,4 +1,5 @@
 import z from "@nepse-dashboard/zod";
+import { getVersion } from "@/utils/version";
 
 // export const SOCKET_ROOMS = {
 // 	IS_OPEN: "isOpen",

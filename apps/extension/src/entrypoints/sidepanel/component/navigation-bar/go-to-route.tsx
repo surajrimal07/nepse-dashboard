@@ -1,4 +1,5 @@
 import { useRouter } from "@tanstack/react-router";
+import { useEffect } from "#imports";
 import { onMessage } from "@/lib/messaging/extension-messaging";
 import { selectSetCurrentTab } from "@/selectors/sidepanel-selectors";
 import { useSidebarDashboardState } from "@/state/sidepanel-state";

@@ -1,4 +1,5 @@
 import type { StateStorage } from "zustand/middleware/persist";
+import { browser } from "#imports";
 
 export const LocalStorage: StateStorage = {
 	getItem: (name) => {
@@ -7,7 +8,8 @@ export const LocalStorage: StateStorage = {
 				if (browser.runtime.lastError) {
 					return reject(browser.runtime.lastError);
 				}
-				resolve(result[name] ?? null);
+				const val = result[name];
+				resolve(typeof val === "string" ? val : null);
 			});
 		});
 	},

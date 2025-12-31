@@ -1,4 +1,5 @@
-import { type getUser, watchUser } from "@/lib/storage/user-storage";
+import type { getUser } from "@/lib/storage/user-storage";
+import { watchUser } from "@/lib/storage/user-storage";
 
 type UserHandler = (user: Awaited<ReturnType<typeof getUser>>) => void;
 

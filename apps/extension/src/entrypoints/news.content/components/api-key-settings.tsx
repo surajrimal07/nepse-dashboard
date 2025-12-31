@@ -1,5 +1,6 @@
 import { Button } from "@nepse-dashboard/ui/components/button";
 import { Key, KeyRound } from "lucide-react";
+import { useAppState } from "@/hooks/use-app";
 import { useNewsState } from "../store";
 
 export function ApiKeySettings({ showIcon = true }: { showIcon?: boolean }) {

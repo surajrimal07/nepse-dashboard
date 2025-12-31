@@ -1,9 +1,7 @@
+import { browser } from "#imports";
+
 export function getVersion() {
-	if (
-		typeof browser !== "undefined" &&
-		browser.runtime &&
-		browser.runtime.getManifest
-	) {
+	if (browser?.runtime?.getManifest) {
 		try {
 			const { version } = browser.runtime.getManifest();
 			return version;

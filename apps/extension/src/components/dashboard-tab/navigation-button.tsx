@@ -30,7 +30,8 @@ export const NavigationButtons = memo(
 			</Button>
 
 			<p className="text-sm text-muted-foreground min-w-[50px] text-center px-2">
-				{currentPage} of {totalPages}
+				{currentPage} of
+				{totalPages}
 			</p>
 
 			<Button

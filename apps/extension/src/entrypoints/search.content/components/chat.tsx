@@ -1,7 +1,8 @@
 import { ExternalLink, Plus } from "lucide-react";
-import { lazy, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import LoadingDots from "@/components/loading-dots";
+import { useAppState } from "@/hooks/use-app";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { Env, EventName } from "@/types/analytics-types";

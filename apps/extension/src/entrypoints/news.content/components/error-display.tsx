@@ -1,4 +1,5 @@
-import { AI_CODES, type aiErrors } from "@nepse-dashboard/ai/types";
+import type { aiErrors } from "@nepse-dashboard/ai/types";
+import { AI_CODES } from "@nepse-dashboard/ai/types";
 import { Button } from "@nepse-dashboard/ui/components/button";
 import {
 	AlertCircle,
@@ -8,15 +9,16 @@ import {
 	Languages,
 	Lock,
 } from "lucide-react";
+import { useAppState } from "@/hooks/use-app";
 import useScreenView from "@/hooks/usePageView";
 import { useNewsState } from "../store";
 import { ApiKeySettings } from "./api-key-settings";
 
-type ErrorDisplayProps = {
+interface ErrorDisplayProps {
 	error: aiErrors | null;
 	onRetry?: () => void;
 	onClose?: () => void;
-};
+}
 
 const ERROR_CONFIG: Record<
 	aiErrors,

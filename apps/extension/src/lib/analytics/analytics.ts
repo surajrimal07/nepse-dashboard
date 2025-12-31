@@ -1,20 +1,17 @@
-const originalConsoleError = console.error;
-
-console.error = (...args: any[]) => {
-  if (
-    typeof args[0] === "string" &&
-    args[0].includes("Max retries reached")
-  ) {
-    return;
-  }
-  originalConsoleError(...args);
-};
-
-
 import { OP } from "@/lib/analytics/op";
 import { getUser } from "@/lib/storage/user-storage";
 import type { AnalyticsMessage, Env } from "@/types/analytics-types";
 import type { CountType, EventCountType } from "@/types/count-type";
+import { logger } from "@/utils/logger";
+
+const originalConsoleError = console.error;
+
+console.error = (...args: any[]) => {
+	if (typeof args[0] === "string" && args[0].includes("Max retries reached")) {
+		return;
+	}
+	originalConsoleError(...args);
+};
 
 export async function IdentifyUser() {
 	try {
@@ -24,7 +21,7 @@ export async function IdentifyUser() {
 			email: user.email || "Anonymous",
 			avatar: user.image || undefined,
 		});
-	} catch(e) {
+	} catch (e) {
 		logger.warn("Analytics error", e);
 	}
 }
@@ -40,7 +37,7 @@ export async function TrackPage(data: {
 			path: data.path,
 			title: data.title,
 		});
-	} catch(e) {
+	} catch (e) {
 		logger.warn("Analytics error", e);
 	}
 }
@@ -55,7 +52,7 @@ export async function Track(data: {
 			environment: data.context,
 			...data.params,
 		});
-	} catch(e) {
+	} catch (e) {
 		logger.warn("Analytics error", e);
 	}
 }
@@ -71,7 +68,7 @@ export async function Increment(data: {
 			property: data.property,
 			value: data.value,
 		});
-	} catch(e) {
+	} catch (e) {
 		logger.warn("Analytics error", e);
 	}
 }

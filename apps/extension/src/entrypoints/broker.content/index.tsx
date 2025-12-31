@@ -1,17 +1,24 @@
-import { createRoot, type Root } from "react-dom/client";
-import type { ContentScriptContext } from "#imports";
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import {
+	type ContentScriptContext,
+	createShadowRootUi,
+	defineContentScript,
+} from "#imports";
 
 import {
 	chrome_meroshare_url,
 	chrome_naasax_url,
 	tms_watch_url,
 } from "@/constants/content-url.ts";
-import "../../../../../packages/ui/src/styles/globals.css";
-import "sonner/dist/styles.css";
-
 import App from "@/entrypoints/broker.content/app";
 import { registerGlobalErrorListeners } from "@/lib/listners/rejection-listner";
+
 import { meroPattern, naasaPattern, tmsPattern } from "@/utils/match-pattern";
+import "../../../../../packages/ui/src/styles/globals.css";
+import "sonner/dist/styles.css";
+import { ContentErrorBoundary } from "@/components/content-error-boundary";
+import { ContentSuspense } from "@/components/content-suspense";
 
 let mountedUi: Awaited<ReturnType<typeof createShadowRootUi>> | null = null;
 let mountedElements: { root: Root; wrapper: HTMLElement } | null = null;

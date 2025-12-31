@@ -2,11 +2,7 @@ import { defineConfig } from "wxt";
 
 export default defineConfig({
 	srcDir: "src",
-	imports: {
-		eslintrc: {
-			enabled: 9,
-		},
-	},
+	imports: false,
 	webExt: {
 		binaries: {
 			chrome: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -22,7 +18,7 @@ export default defineConfig({
 			},
 		},
 	},
-	manifest: () => ({
+	manifest: ({ mode, browser }) => ({
 		name: "Nepse Dashboard",
 		description:
 			"Browser extension enhancing NEPSE TMS and Meroshare with live updates, login management, and auto-fill for better UX.",
@@ -42,29 +38,29 @@ export default defineConfig({
 			"contextMenus",
 			"tabs",
 		],
-		host_permissions: ["<all_urls>"],
+		host_permissions: ["*://*/*"],
 		commands: {
-			open_popup: {
+			openpopup: {
 				suggested_key: {
-					default: "Ctrl+Shift+P",
-					mac: "Command+Shift+P",
-					linux: "Ctrl+Shift+P",
+					default: "Alt+P",
+					mac: "Command+P",
+					linux: "Alt+P",
 				},
 				description: "Open the Nepse Dashboard popup",
 			},
-			"open-sidebar": {
+			opensidebar: {
 				suggested_key: {
-					default: "Ctrl+Shift+S",
-					mac: "Command+Shift+S",
-					linux: "Ctrl+Shift+S",
+					default: "Alt+S",
+					mac: "Command+S",
+					linux: "Alt+S",
 				},
 				description: "Open the Nepse Dashboard sidebar",
 			},
-			"open-options": {
+			openoptions: {
 				suggested_key: {
-					default: "Ctrl+Shift+O",
-					mac: "Command+Shift+O",
-					linux: "Ctrl+Shift+O",
+					default: "Alt+O",
+					mac: "Command+O",
+					linux: "Alt+O",
 				},
 				description: "Open the Nepse Dashboard options page",
 			},
@@ -86,22 +82,27 @@ export default defineConfig({
 		],
 
 		externally_connectable: {
-			matches: [
-				"http://localhost:3005/*", //add nextjs frontend too here
-				"https://*.nepsetms.com.np/*",
-				"https://www.nepsechatbot.com/*",
-			],
+			matches:
+				mode === "development"
+					? [
+							"http://localhost:3005/*",
+							"https://*.nepsetms.com.np/*",
+							"https://www.nepsechatbot.com/*",
+						]
+					: ["https://*.nepsetms.com.np/*", "https://www.nepsechatbot.com/*"],
 		},
 
-		browser_specific_settings: {
-			gecko: {
-				id: "nepse-account-manager@surajrimal.dev",
-				strict_min_version: "109.0",
-				data_collection_permissions: {
-					required: ["none"],
+		...(browser === "firefox" && {
+			browser_specific_settings: {
+				gecko: {
+					id: "nepse-account-manager@surajrimal.dev",
+					strict_min_version: "109.0",
+					data_collection_permissions: {
+						required: ["none"],
+					},
 				},
 			},
-		},
+		}),
 	}),
 	dev: {
 		server: {

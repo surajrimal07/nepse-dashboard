@@ -1,5 +1,5 @@
 import { Button } from "@nepse-dashboard/ui/components/button";
-import { AlertCircle, RotateCw, X } from "lucide-react";
+import { AlertCircle, RotateCw } from "lucide-react";
 import type { ReactNode } from "react";
 import type { FallbackProps } from "react-error-boundary";
 import { ErrorBoundary } from "react-error-boundary";

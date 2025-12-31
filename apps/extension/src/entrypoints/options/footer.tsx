@@ -1,6 +1,9 @@
 import { Github, Send } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { URLS } from "@/constants/app-urls";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
+import { getVersion } from "@/utils/version";
 
 const Footer = memo(() => {
 	const { callAction } = useAppState();
@@ -28,7 +31,7 @@ const Footer = memo(() => {
 				onClick={handleReview}
 				className="cursor-pointer hover:text-foreground transition-colors"
 			>
-				NEPSE Dashboard v{getVersion()} &#8212; Click to leave a review!
+				NEPSE Dashboard v {getVersion()} &#8212; Click to leave a review!
 			</p>
 
 			<div className="flex items-center justify-center gap-4">

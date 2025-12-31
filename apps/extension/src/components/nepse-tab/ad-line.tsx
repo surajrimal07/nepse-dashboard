@@ -74,9 +74,18 @@ const AdLine: FC<AdLineProps> = memo(({ data, isIndexDataLoading }) => {
 				</TooltipTrigger>
 				<TooltipContent>
 					<div className="text-xs">
-						<p>Advance: {data.advance}</p>
-						<p>Neutral: {data.neutral}</p>
-						<p>Decline: {data.decline}</p>
+						<p>
+							Advance:
+							{data.advance}
+						</p>
+						<p>
+							Neutral:
+							{data.neutral}
+						</p>
+						<p>
+							Decline:
+							{data.decline}
+						</p>
 					</div>
 				</TooltipContent>
 			</Tooltip>

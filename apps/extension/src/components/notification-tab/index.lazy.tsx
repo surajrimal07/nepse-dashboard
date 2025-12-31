@@ -81,9 +81,7 @@ const NotificationItem = memo<{
 		notification.body && notification.body.length > TRUNCATE_LENGTH;
 
 	return (
-		<div
-			className={`mb-2 border border-border/30 rounded-md p-2 flex items-start gap-3 bg-card transition-colors hover:bg-accent/60`}
-		>
+		<div className="mb-2 border border-border/30 rounded-md p-2 flex items-start gap-3 bg-card transition-colors hover:bg-accent/60">
 			<div className={`rounded-full ${config.color}`}>
 				{notification.icon ? (
 					<span className="text-xl">{notification.icon}</span>

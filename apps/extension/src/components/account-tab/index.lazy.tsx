@@ -9,11 +9,12 @@ import {
 } from "@nepse-dashboard/ui/components/tabs";
 import { createLazyRoute } from "@tanstack/react-router";
 import { Edit2, Star, Trash2 } from "lucide-react";
-import { lazy, useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { EmptyAccounts } from "@/components/account-tab/empty-account";
 import OptionsDialog from "@/components/account-tab/options";
 import BackButton from "@/components/back-button/back-button";
 import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import type { accountType } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
 import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";

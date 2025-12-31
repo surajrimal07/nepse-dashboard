@@ -1,21 +1,22 @@
-import { useCallback, useState } from "react";
-import { sendMessage } from "@/lib/messaging/extension-messaging";
+import { useCallback, useState } from 'react'
+import { sendMessage } from '@/lib/messaging/extension-messaging'
 
 export function useSidepanel() {
-	const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-	const openSidepanel = useCallback(async () => {
-		try {
-			await sendMessage("openSidePanel");
-			setOpen(true);
-		} catch {
-			setOpen(false);
-		}
-	}, []);
+  const openSidepanel = useCallback(async () => {
+    try {
+      await sendMessage('openSidePanel')
+      setOpen(true)
+    }
+    catch (_error) {
+      setOpen(false)
+    }
+  }, [])
 
-	return {
-		open,
-		setOpen,
-		openSidepanel,
-	};
+  return {
+    open,
+    setOpen,
+    openSidepanel,
+  }
 }

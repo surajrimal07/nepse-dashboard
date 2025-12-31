@@ -1,7 +1,8 @@
 import { useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 
-export const AuthGate = () => {
+export function AuthGate() {
 	const router = useRouter();
 	const { isAuthenticated, isLoading } = useAuth();
 
@@ -15,4 +16,4 @@ export const AuthGate = () => {
 	}, [isLoading, isAuthenticated, router]);
 
 	return null;
-};
+}

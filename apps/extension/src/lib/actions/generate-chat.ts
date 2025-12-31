@@ -32,7 +32,7 @@ export async function generateChat(
 			linkedArticleUrl: url,
 		});
 
-		//add user to chat and generate title
+		// add user to chat and generate title
 		const response = await fetch(`${URLS.inference_url}/api/title`, {
 			method: "PATCH",
 			headers: {

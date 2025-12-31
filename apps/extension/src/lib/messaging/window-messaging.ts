@@ -3,7 +3,10 @@ import { defineWindowMessaging } from "@webext-core/messaging/page";
 import type { Account } from "@/types/account-types";
 import type { AnalyticsMessage } from "@/types/analytics-types";
 
-export type MessageReturn = { success: boolean; message: string };
+export interface MessageReturn {
+	success: boolean;
+	message: string;
+}
 
 interface WebsiteMessengerSchema {
 	analytics: (data: AnalyticsMessage) => void;

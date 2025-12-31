@@ -72,7 +72,10 @@ const ResultItem = memo(
 					</div>
 
 					<div className="text-right shrink-0">
-						<div className={getPriceClass(isDark)}>Rs {price}</div>
+						<div className={getPriceClass(isDark)}>
+							Rs
+							{price}
+						</div>
 						<div className="mt-1 flex items-center justify-end gap-2.5 text-[11px] font-medium">
 							<span className={getChangeClass(pos)}>{change}</span>
 							<span className={getChangeClass(pos)}>{percent}%</span>

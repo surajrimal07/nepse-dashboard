@@ -27,7 +27,7 @@ export const SHARESANSAR_NEWS_BASE = "/newsdetail/";
 export const ARTHASAROKAR_NEWS_BASE = "/";
 export const ARTHASANSAR_NEWS_BASE = "/news/";
 
-//normal urls to be used in like opening user meroshare portfolio or fill ipo form
+// normal urls to be used in like opening user meroshare portfolio or fill ipo form
 export const MEROSHARE_PORTFOLIO_URL =
 	"https://meroshare.cdsc.com.np/#/portfolio";
 export const MEROSHARE_IPO_URL = "https://meroshare.cdsc.com.np/#/asba";

@@ -6,15 +6,20 @@ import { selectIsDark, selectMode, selectSetMode } from "../selectors";
 import { useSearchState } from "../store";
 import { options } from "../utils";
 
-const getLabelTextClass = (isDark: boolean) =>
-	clsx("text-sm select-none", isDark ? "text-zinc-200" : "text-slate-800");
+function getLabelTextClass(isDark: boolean) {
+	return clsx(
+		"text-sm select-none",
+		isDark ? "text-zinc-200" : "text-slate-800",
+	);
+}
 
 const getContainerClass = () => "flex w-full justify-center gap-10 pb-1";
 
 const getLabelWrapperClass = () => "flex items-center gap-1.5 cursor-pointer";
 
-const iconClass = (isDark: boolean) =>
-	cn("w-3 h-3", isDark ? "text-zinc-200" : "text-slate-800");
+function iconClass(isDark: boolean) {
+	return cn("w-3 h-3", isDark ? "text-zinc-200" : "text-slate-800");
+}
 
 const getIconTextWrapperClass = () => "flex items-center gap-0.5";
 

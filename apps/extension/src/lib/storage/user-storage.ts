@@ -1,3 +1,4 @@
+import { storage } from "#imports";
 import type { User, UserFields } from "@/types/user-types";
 import { generateId } from "@/utils/utils";
 
@@ -25,8 +26,8 @@ export async function setUser(patch: UserFields) {
 	});
 }
 
-export const watchUser = (
+export function watchUser(
 	callback: (newUser: User, oldUser: User | null) => void,
-) => {
+) {
 	return userItem.watch(callback);
-};
+}

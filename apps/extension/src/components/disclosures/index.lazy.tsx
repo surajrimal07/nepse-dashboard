@@ -15,6 +15,7 @@ import {
 	getCompanyNews,
 	gtExchangeMessages,
 } from "@/hooks/convex/use-exchange";
+import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";
 import BackButton from "../back-button/back-button";
 
 type NewsDoc = Doc<"companyNews">;
@@ -26,9 +27,9 @@ const FILE_BASE_URL =
 	"https://www.nepalstock.com/api/nots/security/fetchFiles?fileLocation=";
 
 // Utility function
-const openFileInNewTab = (filePath: string) => {
+function openFileInNewTab(filePath: string) {
 	window.open(`${FILE_BASE_URL}${filePath}`, "_blank", "noopener,noreferrer");
-};
+}
 
 // Reusable Components
 const SkeletonRow = memo(() => (

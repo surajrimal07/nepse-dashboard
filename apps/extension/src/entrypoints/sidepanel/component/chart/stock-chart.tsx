@@ -9,19 +9,19 @@ import {
 } from "@nepse-dashboard/ui/components/tooltip";
 import { useAction } from "convex/react";
 import { Info } from "lucide-react";
-import { lazy, memo, Suspense, useCallback } from "react";
+import { lazy, memo, Suspense, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import BackButton from "@/components/back-button/back-button";
 import Loading from "@/components/loading";
 import Chart from "@/components/nepse-tab/chart-graph";
-import {
-	type ChartDatas,
-	transformChartData,
-} from "@/components/nepse-tab/utils";
+import type { ChartDatas } from "@/components/nepse-tab/utils";
+import { transformChartData } from "@/components/nepse-tab/utils";
 import { useGetCompany } from "@/hooks/convex/useCompanyList";
 import { useGetCompanyChart } from "@/hooks/convex/useGetCompanyChart";
 import { useIndexStatus } from "@/hooks/convex/useIndexStatus";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import { track } from "@/lib/analytics";
 import {
 	selectChangePlaybackSpeed,
@@ -31,7 +31,8 @@ import {
 	selectSetIsReplayMode,
 	selectToggleDailyChart,
 } from "@/selectors/sidepanel-selectors";
-import { useSidebarDashboardState, type SidebarDashboardState } from "@/state/sidepanel-state";
+import type { SidebarDashboardState } from "@/state/sidepanel-state";
+import { useSidebarDashboardState } from "@/state/sidepanel-state";
 import { Env, EventName } from "@/types/analytics-types";
 import type { PlaybackSpeed } from "@/types/replay-types";
 
@@ -228,7 +229,10 @@ const StockChartComponent = memo(
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Switch to {isDaily ? "intraday" : "daily"} chart</p>
+							<p>
+								Switch to
+								{isDaily ? "intraday" : "daily"} chart
+							</p>
 						</TooltipContent>
 					</Tooltip>
 				</div>

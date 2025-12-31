@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { lazy, memo } from "react";
+import { lazy, memo, Suspense } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import BottomInfo from "@/components/nepse-tab/bottom-info";

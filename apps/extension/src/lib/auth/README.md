@@ -45,15 +45,15 @@ const auth3 = useQuery(api.users.isUserAuthorized, {...}); // Component
 ```typescript
 // Hardcoded test values
 const isAuthenticated = await convex.query(api.users.isUserAuthorized, {
-  randomId: "wdwe32",
-  email: "sdsdsdsds",
-});
+  randomId: 'wdwe32',
+  email: 'sdsdsdsds',
+})
 ```
 
 **After**:
 ```typescript
 // Dynamic user data from app state
-const { isAuthenticated, user } = useAuth();
+const { isAuthenticated, user } = useAuth()
 ```
 
 ### 4. **Optimized Route Guards**
@@ -123,20 +123,20 @@ function Header() {
 ### For Component Authors
 Replace old pattern:
 ```typescript
-import { isAuthorized } from "@/hooks/convex/auth";
+import { isAuthorized } from '@/hooks/convex/auth'
 
 function MyComponent() {
-  const user = isAuthorized(); // Old way
+  const user = isAuthorized() // Old way
   // ...
 }
 ```
 
 With new pattern:
 ```typescript
-import { useAuth } from "@/lib/auth";
+import { useAuth } from '@/lib/auth'
 
 function MyComponent() {
-  const { isAuthenticated, user } = useAuth(); // New way
+  const { isAuthenticated, user } = useAuth() // New way
   // ...
 }
 ```

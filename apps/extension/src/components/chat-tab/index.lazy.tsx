@@ -9,6 +9,7 @@ import {
 	useState,
 } from "react";
 import { toast } from "sonner";
+import { browser } from "#imports";
 import { ServiceUnavailable } from "@/components/chat-tab/unavailable";
 import Loading from "@/components/loading";
 import { URLS } from "@/constants/app-urls";
@@ -18,6 +19,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { onMessage, sendMessage } from "@/lib/messaging/extension-messaging";
 import { aiChatRoute } from "@/routes";
 import { Env, EventName } from "@/types/analytics-types";
+import { logger } from "@/utils/logger";
 
 const RequireBYOK = lazy(() => import("@/components/chat-tab/byok"));
 
@@ -125,7 +127,7 @@ export default function AiChatUI() {
 						return;
 					}
 
-					 sendMessage("getWebsiteContent", undefined, tabId);
+					sendMessage("getWebsiteContent", undefined, tabId);
 					break;
 				}
 

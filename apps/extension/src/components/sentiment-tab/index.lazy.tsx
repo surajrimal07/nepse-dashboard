@@ -1,6 +1,6 @@
 import { Skeleton } from "@nepse-dashboard/ui/components/skeleton";
 import { createLazyRoute } from "@tanstack/react-router";
-import { lazy, useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import GaugeComponent from "react-gauge-component";
 import BackButton from "@/components/back-button/back-button";
 import { strengthToPercentage } from "@/components/sentiment-tab/utils";

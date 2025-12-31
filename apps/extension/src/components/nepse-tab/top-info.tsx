@@ -20,6 +20,7 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { useIndexStatus } from "@/hooks/convex/useIndexStatus";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 import {
 	selectActiveIndexInDashboard,

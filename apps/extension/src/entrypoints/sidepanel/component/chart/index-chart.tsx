@@ -17,10 +17,8 @@ import BackButton from "@/components/back-button/back-button";
 import Loading from "@/components/loading";
 import AdLine from "@/components/nepse-tab/ad-line";
 import Chart from "@/components/nepse-tab/chart-graph";
-import {
-	type ChartDatas,
-	transformChartData,
-} from "@/components/nepse-tab/utils";
+import type { ChartDatas } from "@/components/nepse-tab/utils";
+import { transformChartData } from "@/components/nepse-tab/utils";
 import { useIndexChartSidepanel } from "@/hooks/convex/useIndexChart";
 import { useThisIndexData } from "@/hooks/convex/useIndexData";
 import { track } from "@/lib/analytics";
@@ -32,10 +30,8 @@ import {
 	selectSetIsReplayMode,
 	selectToggleDailyChart,
 } from "@/selectors/sidepanel-selectors";
-import {
-	type SidebarDashboardState,
-	useSidebarDashboardState,
-} from "@/state/sidepanel-state";
+import type { SidebarDashboardState } from "@/state/sidepanel-state";
+import { useSidebarDashboardState } from "@/state/sidepanel-state";
 import { Env, EventName } from "@/types/analytics-types";
 import type { IndexKeys } from "@/types/indexes-type";
 import type { PlaybackSpeed } from "@/types/replay-types";
@@ -224,7 +220,10 @@ const ChartComponent: FC<NepseChartComponentProps> = memo(
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Switch to {isOnDaily ? "intraday" : "daily"} chart</p>
+							<p>
+								Switch to
+								{isOnDaily ? "intraday" : "daily"} chart
+							</p>
 						</TooltipContent>
 					</Tooltip>
 				</div>

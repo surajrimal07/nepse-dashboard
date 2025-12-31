@@ -75,9 +75,9 @@
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+Shift+P` | Open popup |
-| `Ctrl+Shift+S` | Open sidepanel |
-| `Ctrl+Shift+O` | Open settings |
+| `Alt+P` | Open popup |
+| `Alt+S` | Open sidepanel |
+| `Alt+O` | Open settings |
 
 ---
 
@@ -122,7 +122,13 @@ This extension is **NOT** affiliated with, endorsed by, or connected to NEPSE, T
 
 ## 📝 Changelog
 
-### v0.8.0 (Latest)
+### v0.8.1 (Latest)
+- 🐛 Bug fixes and stability improvements
+- 🔧 Refined auto-login reliability
+- ⌨️ Changed keyboard shortcuts from Ctrl+Shift to Alt+ for wider compatibility
+- ✨ Minor UI/UX refinements
+
+### v0.8.0
 - 🆕 NaasaX trading platform support
 - 🤖 AI Chat with BYOK (Bring Your Own Key)
 - 📊 Enhanced market data views

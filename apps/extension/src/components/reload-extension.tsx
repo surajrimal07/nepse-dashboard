@@ -6,6 +6,8 @@ import {
 } from "@nepse-dashboard/ui/components/tooltip";
 import { RotateCw } from "lucide-react";
 import { memo, useCallback } from "react";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 
 const ReloadExtension = memo(() => {
 	const { callAction } = useAppState();

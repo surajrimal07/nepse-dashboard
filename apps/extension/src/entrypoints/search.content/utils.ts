@@ -53,35 +53,54 @@ export const virtualItemBaseStyle = {
 	width: "100%",
 };
 
-export const getButtonClass = (isDark: boolean) =>
-	cn(
+export function getButtonClass(isDark: boolean) {
+	return cn(
 		"w-full rounded-lg border p-2 px-1 py-1 text-left shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
 		isDark
 			? "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
 			: "border-slate-200 bg-white hover:border-slate-300",
 	);
+}
 
-export const getSymbolClass = (isDark: boolean) =>
-	cn("text-sm font-semibold", isDark ? "text-slate-100" : "text-slate-900");
+export function getSymbolClass(isDark: boolean) {
+	return cn(
+		"text-sm font-semibold",
+		isDark ? "text-slate-100" : "text-slate-900",
+	);
+}
 
-export const getNameClass = (isDark: boolean) =>
-	cn("text-xs truncate mt-0.5", isDark ? "text-slate-400" : "text-slate-500");
+export function getNameClass(isDark: boolean) {
+	return cn(
+		"text-xs truncate mt-0.5",
+		isDark ? "text-slate-400" : "text-slate-500",
+	);
+}
 
-export const getPriceClass = (isDark: boolean) =>
-	cn("text-sm font-semibold", isDark ? "text-slate-100" : "text-slate-900");
+export function getPriceClass(isDark: boolean) {
+	return cn(
+		"text-sm font-semibold",
+		isDark ? "text-slate-100" : "text-slate-900",
+	);
+}
 
-export const getChangeClass = (pos: boolean) =>
-	pos ? "text-emerald-500" : "text-rose-500";
+export function getChangeClass(pos: boolean) {
+	return pos ? "text-emerald-500" : "text-rose-500";
+}
 
-export const getModeClass = (isDark: boolean) =>
-	`mt-1.5 text-[10px] uppercase tracking-wide font-medium ${
+export function getModeClass(isDark: boolean) {
+	return `mt-1.5 text-[10px] uppercase tracking-wide font-medium ${
 		isDark ? "text-slate-500" : "text-slate-400"
 	}`;
+}
 
-export const getModeText = (mode: modeType) =>
-	mode === "chart" ? "View chart" : "Trade stock";
+export function getModeText(mode: modeType) {
+	return mode === "chart" ? "View chart" : "Trade stock";
+}
 
-export const getContainerClass = (isDark: boolean) => {
+export function getContainerClass(
+	isDark: boolean,
+	loading: boolean = false,
+): string {
 	const cls = [
 		"h-80",
 		"overflow-hidden",
@@ -102,11 +121,11 @@ export const getContainerClass = (isDark: boolean) => {
 	}
 
 	return cn(cls);
-};
+}
 
 export const errorClassName = "mt-2.5 text-xs text-rose-500 px-1";
 
-export const getInputClass = (isDark: boolean): string => {
+export function getInputClass(isDark: boolean): string {
 	const base =
 		"flex-1 rounded-lg py-2.5 px-4 text-sm border-1 focus:outline-none focus:shadow-sm transition-all";
 
@@ -123,9 +142,9 @@ export const getInputClass = (isDark: boolean): string => {
 		"bg-slate-50 placeholder-slate-600 border-slate-300",
 		"focus:border-slate-400 focus:bg-white",
 	);
-};
+}
 
-export const getPlaceholderText = (mode: modeType): string => {
+export function getPlaceholderText(mode: modeType): string {
 	switch (mode) {
 		case "chart":
 			return PLACEHOLDER_SEARCH;
@@ -134,4 +153,4 @@ export const getPlaceholderText = (mode: modeType): string => {
 		default:
 			return PLACEHOLDER_AI_QUERY;
 	}
-};
+}

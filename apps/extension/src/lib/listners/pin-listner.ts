@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import { getAppState } from "@/entrypoints/background";
 import { Env, EventName } from "@/types/analytics-types";
 import { Track } from "../analytics/analytics";

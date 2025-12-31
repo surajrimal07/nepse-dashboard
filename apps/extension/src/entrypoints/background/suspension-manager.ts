@@ -1,3 +1,6 @@
+import { browser } from "#imports";
+import { logger } from "@/utils/logger";
+
 type CleanupFn = () => void | Promise<void>;
 
 class SuspensionManager {

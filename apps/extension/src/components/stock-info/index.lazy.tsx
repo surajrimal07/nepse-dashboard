@@ -11,12 +11,15 @@ import {
 import { createLazyRoute, useRouteContext } from "@tanstack/react-router";
 import { useAction } from "convex/react";
 import { Globe, Mail, User } from "lucide-react";
-import { lazy, useCallback, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import BackButton from "@/components/back-button/back-button";
 import Loading from "@/components/loading";
 import { useGetCompany } from "@/hooks/convex/useCompanyList";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import { companyDetailsRoute } from "@/routes";
+import { calculatePricePosition } from "@/utils/utils";
 import { toDate, truncate } from "./utils";
 
 const LoadingFailed = lazy(() => import("@/components/loading-failed"));
@@ -60,7 +63,7 @@ export default function CompanyInfo() {
 			<Suspense fallback={<Loading />}>
 				<LoadingFailed
 					onReload={handleFetchCompanyData}
-					reason={"Failed to load company details. Please try again."}
+					reason="Failed to load company details. Please try again."
 				/>
 			</Suspense>
 		);
@@ -88,7 +91,10 @@ export default function CompanyInfo() {
 						{loading ? (
 							<Skeleton className="h-6 w-full" />
 						) : (
-							<p className="text-lg font-semibold">Rs{data.highPrice}</p>
+							<p className="text-lg font-semibold">
+								Rs
+								{data.highPrice}
+							</p>
 						)}
 					</div>
 					<div className="row-span-2 col-span-2 flex flex-col items-center">
@@ -136,7 +142,10 @@ export default function CompanyInfo() {
 						{loading ? (
 							<Skeleton className="h-6 w-full" />
 						) : (
-							<p className="text-lg font-semibold">Rs{data.lowPrice}</p>
+							<p className="text-lg font-semibold">
+								Rs
+								{data.lowPrice}
+							</p>
 						)}
 					</div>
 					<div className="col-span-2">
@@ -159,7 +168,8 @@ export default function CompanyInfo() {
 							<p className="text-lg font-semibold flex items-center gap-2">
 								Rs {dailyRange.toFixed(2)}
 								<span className="text-sm text-muted-foreground">
-									({dailyRangePercent.toFixed(2)}%)
+									({dailyRangePercent.toFixed(2)}
+									%)
 								</span>
 							</p>
 						)}
@@ -330,7 +340,8 @@ export default function CompanyInfo() {
 							<Skeleton className="h-6 w-full" />
 						) : (
 							<div className="font-semibold">
-								{data.publicShares} ({data.publicPercentage}%)
+								{data.publicShares} ({data.publicPercentage}
+								%)
 							</div>
 						)}
 						<div className="h-1 bg-muted rounded-full mt-1">
@@ -350,7 +361,8 @@ export default function CompanyInfo() {
 							<Skeleton className="h-6 w-full" />
 						) : (
 							<div className="font-semibold">
-								{data.promoterShares} ({data.promoterPercentage}%)
+								{data.promoterShares} ({data.promoterPercentage}
+								%)
 							</div>
 						)}
 						<div className="h-1 bg-muted rounded-full mt-1">

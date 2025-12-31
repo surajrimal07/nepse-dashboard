@@ -6,11 +6,12 @@ import type { DashboardDirection } from "@/types/general-types";
 import type { IndexKeys, timeframe } from "@/types/indexes-type";
 import { nepseIndexes } from "@/types/indexes-type";
 import type { stateResult } from "@/types/misc-types";
-import { PLAYBACK_SPEEDS, type PlaybackSpeed } from "@/types/replay-types";
+import type { PlaybackSpeed } from "@/types/replay-types";
+import { PLAYBACK_SPEEDS } from "@/types/replay-types";
 
 type ChartStateByIndex = Record<IndexKeys, timeframe>;
 
-//rename later to popup-state
+// rename later to popup-state
 export interface DashboardState {
 	selectedIndexInDashboards: IndexKeys[];
 	activeIndexInDashboard: IndexKeys;
@@ -38,7 +39,7 @@ export const useDashboardState = create<DashboardState>()(
 	mutative(
 		persist(
 			(set, get) => ({
-				chartTypeByIndex: {} as ChartStateByIndex, //empty object
+				chartTypeByIndex: {} as ChartStateByIndex, // empty object
 				selectedIndexInDashboards: [nepseIndexes[10]],
 				activeIndexInDashboard: nepseIndexes[10],
 				isReplayMode: false,
@@ -98,7 +99,7 @@ export const useDashboardState = create<DashboardState>()(
 					return { success: true, message: `${index} removed ` };
 				},
 
-				//market depth stock
+				// market depth stock
 				marketDepthStock: null,
 
 				setMarketDepthSymbol: (symbol) => {

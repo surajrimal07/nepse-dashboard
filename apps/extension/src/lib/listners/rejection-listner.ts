@@ -1,5 +1,7 @@
 import { track } from "@/lib/analytics/index";
-import { type Env, EventName } from "@/types/analytics-types";
+import type { Env } from "@/types/analytics-types";
+import { EventName } from "@/types/analytics-types";
+import { logger } from "@/utils/logger";
 
 export function registerGlobalErrorListeners(env: Env) {
 	const handler = async (event: PromiseRejectionEvent) => {

@@ -305,9 +305,9 @@ pnpm docker:dev:detached  # Background
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+Shift+P` | Open popup |
-| `Ctrl+Shift+S` | Open sidepanel |
-| `Ctrl+Shift+O` | Open settings |
+| `Alt+P` | Open popup |
+| `Alt+S` | Open sidepanel |
+| `Alt+O` | Open settings |
 
 ---
 

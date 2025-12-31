@@ -12,22 +12,22 @@ export type NewsSiteType = (typeof NewsSites)[keyof typeof NewsSites];
 const lang = z.union([z.literal("eng"), z.literal("npi"), z.literal("und")]);
 export type DocumentLanguageType = z.infer<typeof lang>;
 
-export type newsDatatype = {
+export interface newsDatatype {
 	title: string;
 	content: string;
 	url: string;
 	lang: DocumentLanguageType;
-};
+}
 
-export type ParsedNews = {
+export interface ParsedNews {
 	content: string;
 	title: string;
 	lang: DocumentLanguageType;
-};
+}
 
-export type ParsedDocument = {
+export interface ParsedDocument {
 	success: boolean;
 	content: string;
 	title: string;
 	lang: DocumentLanguageType;
-};
+}

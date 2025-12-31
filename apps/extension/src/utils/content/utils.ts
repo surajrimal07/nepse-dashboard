@@ -14,7 +14,6 @@ export function cleanText(
 	return cleaned.length <= maxLength ? cleaned : cleaned.slice(0, maxLength);
 }
 
-
 export function prepareDocument(doc: Document) {
 	const selectors = [
 		"script",

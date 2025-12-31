@@ -5,20 +5,22 @@ import { createStore } from "zustand/vanilla";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
 import type { ParsedDocument } from "@/types/news-types";
-import { getNextMode, type modeType } from "@/types/search-type";
+import type { modeType } from "@/types/search-type";
+import { getNextMode } from "@/types/search-type";
+import { logger } from "@/utils/logger";
 import { sendMessage } from "../../lib/messaging/extension-messaging";
 
-type ChatMessage = {
+interface ChatMessage {
 	from: "user" | "assistant";
 	text: string;
-};
+}
 
 // Helper to get URL key (pathname + search)
-const getUrlKey = (url: URL) => {
+function getUrlKey(url: URL) {
 	return `${url.pathname}${url.search}`;
-};
+}
 
-export type SearchState = {
+export interface SearchState {
 	location: URL;
 
 	// Records keyed by URL
@@ -64,7 +66,7 @@ export type SearchState = {
 	setContent: (content: ParsedDocument) => void;
 	chatWithAI: () => void;
 	sendParsedContent: () => void;
-};
+}
 
 export const searchState = createStore<SearchState>()(
 	persist(
@@ -99,8 +101,12 @@ export const searchState = createStore<SearchState>()(
 					const urlKey = getCurrentUrlKey();
 
 					try {
-						const response = await sendMessage("companiesList");
-						set({ companies: response, result: response });
+						try {
+							const response = await sendMessage("companiesList");
+							set({ companies: response, result: response });
+						} catch (_error) {
+							logger.info("Error fetching companies list");
+						}
 
 						// Load from persisted records
 						const state = get();
@@ -197,9 +203,13 @@ export const searchState = createStore<SearchState>()(
 					const chatId = get().chatId;
 					const route = chatId ? `/ai-chat/${chatId}` : "/ai-chat";
 
-					await sendMessage("openSidePanel");
-					await new Promise((resolve) => setTimeout(resolve, 1500));
-					await sendMessage("goToRoute", { route });
+					try {
+						await sendMessage("openSidePanel");
+						await new Promise((resolve) => setTimeout(resolve, 1500));
+						await sendMessage("goToRoute", { route });
+					} catch (_error) {
+						logger.info("Likely sidepanel is already open");
+					}
 				},
 
 				sendParsedContent: async () => {
@@ -214,13 +224,17 @@ export const searchState = createStore<SearchState>()(
 					};
 
 					const success = await trySend();
-					if (success) return;
-					await sendMessage("openSidePanel");
-					await new Promise((resolve) => setTimeout(resolve, 1500));
-					await sendMessage("goToRoute", { route: "/ai-chat" });
+					try {
+						if (success) return;
+						await sendMessage("openSidePanel");
+						await new Promise((resolve) => setTimeout(resolve, 1500));
+						await sendMessage("goToRoute", { route: "/ai-chat" });
 
-					await new Promise((resolve) => setTimeout(resolve, 2500));
-					await trySend();
+						await new Promise((resolve) => setTimeout(resolve, 2500));
+						await trySend();
+					} catch (_error) {
+						logger.info("Likely sidepanel is already open");
+					}
 				},
 
 				setContent: (content: ParsedDocument) => {

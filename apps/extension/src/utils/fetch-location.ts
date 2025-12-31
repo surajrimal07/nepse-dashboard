@@ -1,6 +1,8 @@
+import { storage } from "#imports";
 import { Track } from "@/lib/analytics/analytics";
 import { Env, EventName } from "@/types/analytics-types";
-import { geoLocationSchema, type LocationData } from "@/types/location-types";
+import type { LocationData } from "@/types/location-types";
+import { geoLocationSchema } from "@/types/location-types";
 
 export async function getLocation(): Promise<LocationData | null> {
 	try {

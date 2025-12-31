@@ -1,20 +1,20 @@
-import z from "@nepse-dashboard/zod";
+import z from '@nepse-dashboard/zod'
 
 export const CONSUME_TYPES = {
-	CONSUME_GRANTED: "consumeGranted",
-	CONSUME_UNAVAILABLE: "consumeUnavailable",
-	CONSUME_AVAILABLE: "consumeAvailable",
-	CONSUME_TIMEOUT: "consumeTimeout",
-} as const;
+  CONSUME_GRANTED: 'consumeGranted',
+  CONSUME_UNAVAILABLE: 'consumeUnavailable',
+  CONSUME_AVAILABLE: 'consumeAvailable',
+  CONSUME_TIMEOUT: 'consumeTimeout',
+} as const
 
 export const ConsumeTypeSchema = z.enum([
-	CONSUME_TYPES.CONSUME_GRANTED,
-	CONSUME_TYPES.CONSUME_UNAVAILABLE,
-	CONSUME_TYPES.CONSUME_AVAILABLE,
-	CONSUME_TYPES.CONSUME_TIMEOUT,
-]);
+  CONSUME_TYPES.CONSUME_GRANTED,
+  CONSUME_TYPES.CONSUME_UNAVAILABLE,
+  CONSUME_TYPES.CONSUME_AVAILABLE,
+  CONSUME_TYPES.CONSUME_TIMEOUT,
+])
 
-export type ConsumeType = z.infer<typeof ConsumeTypeSchema>;
+export type ConsumeType = z.infer<typeof ConsumeTypeSchema>
 
 /**
  * LiveDataFromTMS - Data extracted from TMS dashboard
@@ -27,11 +27,11 @@ export type ConsumeType = z.infer<typeof ConsumeTypeSchema>;
  * - turnover: string
  */
 export const LiveDataFromTMSSchema = z.object({
-	close: z.number(),
-	change: z.number(),
-	percentageChange: z.number(),
-	totalTradedShared: z.number(),
-	turnover: z.string(),
-});
+  close: z.number(),
+  change: z.number(),
+  percentageChange: z.number(),
+  totalTradedShared: z.number(),
+  turnover: z.string(),
+})
 
-export type LiveDataFromTMS = z.infer<typeof LiveDataFromTMSSchema>;
+export type LiveDataFromTMS = z.infer<typeof LiveDataFromTMSSchema>

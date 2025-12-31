@@ -3,6 +3,7 @@ import { Badge } from "@nepse-dashboard/ui/components/badge";
 import { Sparkles } from "lucide-react";
 import { memo, useMemo } from "react";
 import { BiasAnalysis } from "@/entrypoints/news.content/components/bias-analysis";
+import { useAppState } from "@/hooks/use-app";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
 import { useNewsState } from "../store";

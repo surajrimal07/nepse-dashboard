@@ -1,5 +1,5 @@
 import { Skeleton } from "@nepse-dashboard/ui/components/skeleton";
-import { lazy, memo } from "react";
+import { lazy, memo, Suspense } from "react";
 import { useIndexData } from "@/hooks/convex/useIndexData";
 import Loading from "../loading";
 

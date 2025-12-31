@@ -1,3 +1,5 @@
+const frontend_url = "http://localhost:3005";
+
 export const URLS = {
 	review_url: "https://link.nepsechatbot.com/review",
 	privacy_url: "https://link.nepsechatbot.com/privacy",
@@ -8,8 +10,8 @@ export const URLS = {
 	uninstall_url: "https://link.nepsechatbot.com/uninstall",
 	github_url: "https://link.nepsechatbot.com/github",
 	chart_url: "https://nepsealpha.com/nepse-chart?symbol=",
-	chat_url: "https://www.nepsechatbot.com/chat",
-	community_chat_url: "https://www.nepsechatbot.com/community",
-	inference_url: "https://www.nepsechatbot.com",
+	chat_url: `${frontend_url}/chat`,
+	community_chat_url: `${frontend_url}/community`,
+	inference_url: `${frontend_url}`,
 	cdn_url: "https://cdn.nepsechatbot.com",
 };

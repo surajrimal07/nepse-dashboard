@@ -7,7 +7,10 @@ import type { LiveDataFromTMS } from "@/types/consume-type";
 import type { ParsedDocument, ParsedNews } from "@/types/news-types";
 import type { NotificationVariant } from "@/types/notification-types";
 
-export type MessageReturn = { success: boolean; message: string };
+export interface MessageReturn {
+	success: boolean;
+	message: string;
+}
 
 interface ExtensionMessengerSchema {
 	registerTab: () => void;

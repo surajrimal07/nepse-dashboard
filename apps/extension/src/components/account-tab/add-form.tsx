@@ -12,6 +12,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import BrokerDropdown from "@/components/account-tab/broker-dropdown";
 import type { FormErrors } from "@/components/account-tab/utils";
+import { useAppState } from "@/hooks/use-app";
 import useScreenView from "@/hooks/usePageView";
 import { appState } from "@/lib/service/app-service";
 import { cn } from "@/lib/utils";

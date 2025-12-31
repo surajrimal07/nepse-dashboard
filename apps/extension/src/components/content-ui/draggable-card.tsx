@@ -1,5 +1,5 @@
 import { Card } from "@nepse-dashboard/ui/components/card";
-import type { ReactElement } from "react";
+import { type ReactElement, useRef } from "react";
 import { ContentErrorBoundary } from "@/components/content-error-boundary";
 import { ContentSuspense } from "@/components/content-suspense";
 import { cn } from "@/lib/utils";

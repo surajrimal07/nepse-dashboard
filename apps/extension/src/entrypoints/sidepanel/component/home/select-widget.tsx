@@ -6,11 +6,12 @@ import {
 	DialogTitle,
 } from "@nepse-dashboard/ui/components/dialog";
 import { Input } from "@nepse-dashboard/ui/components/input";
-import { lazy, memo, useCallback, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import type { ListChildComponentProps } from "react-window";
 import { FixedSizeList } from "react-window";
 import Loading from "@/components/loading";
 import { useCompanyList } from "@/hooks/convex/useCompanyList";
+import { useAppState } from "@/hooks/use-app";
 import { track } from "@/lib/analytics";
 import { selectAddWidget } from "@/selectors/sidepanel-selectors";
 import { useSidebarDashboardState } from "@/state/sidepanel-state";

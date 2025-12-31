@@ -4,11 +4,13 @@ import { AlertCircle, Edit, LogIn, Star, Trash2 } from "lucide-react";
 import type { FC } from "react";
 import { memo } from "react";
 import TimeAgo from "react-timeago";
+import { useAppState } from "@/hooks/use-app";
 import { sendMessage as webMessage } from "@/lib/messaging//window-messaging";
 import { sendMessage } from "@/lib/messaging/extension-messaging";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
+import { logger } from "@/utils/logger";
 import type { SiteDetails } from "../utils/content-utils";
 
 interface AccountCardProps {
@@ -43,16 +45,20 @@ const AccountCard: FC<AccountCardProps> = memo(
 
 		// Action handlers
 		const handleEdit = async () => {
-			await callAction(
-				"showNotification",
-				`Opening Sidpenal to edit account ${account.alias}`,
-				"info",
-			);
-			await sendMessage("openSidePanel");
-			// pause for 2 seconds to allow route change to complete
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-			await sendMessage("goToRoute", { route: "/account" });
-			await callAction("setEditingAccount", account.alias);
+			try {
+				await callAction(
+					"showNotification",
+					`Opening Sidpenal to edit account ${account.alias}`,
+					"info",
+				);
+				await sendMessage("openSidePanel");
+				// pause for 2 seconds to allow route change to complete
+				await new Promise((resolve) => setTimeout(resolve, 1500));
+				await sendMessage("goToRoute", { route: "/account" });
+				await callAction("setEditingAccount", account.alias);
+			} catch (_error) {
+				logger.info("Likely sidepanel is already open");
+			}
 		};
 
 		const handleLogin = async () => {

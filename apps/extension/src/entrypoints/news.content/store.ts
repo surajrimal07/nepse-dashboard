@@ -1,4 +1,5 @@
-import { AI_CODES, type aiErrors } from "@nepse-dashboard/ai/types";
+import type { aiErrors } from "@nepse-dashboard/ai/types";
+import { AI_CODES } from "@nepse-dashboard/ai/types";
 import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { connect } from "crann-fork";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -9,11 +10,12 @@ import { appState } from "@/lib/service/app-service";
 import { Env, EventName } from "@/types/analytics-types";
 import type { ParsedNews } from "@/types/news-types";
 import { analyzeDocument } from "@/utils/content/analyze";
+import { logger } from "@/utils/logger";
 import { sendMessage } from "../../lib/messaging/extension-messaging";
 
 const { callAction } = connect(appState);
 
-export type NewsState = {
+export interface NewsState {
 	content: ParsedNews | null;
 	setContent: (content: ParsedNews) => void;
 	isLoading: boolean;
@@ -34,7 +36,7 @@ export type NewsState = {
 	ttsVoice: Record<string, string>; // language -> voice name
 	setTtsVoice: (language: string, voiceName: string) => void;
 	goToKeyPage: () => void;
-};
+}
 
 export const newsState = createStore<NewsState>()(
 	persist(
@@ -52,10 +54,14 @@ export const newsState = createStore<NewsState>()(
 			isSubmittingFeedback: false,
 			keySettingDialogOpen: false,
 			goToKeyPage: async () => {
-				await sendMessage("openSidePanel");
-				// pause for 2 seconds to allow route change to complete
-				await new Promise((resolve) => setTimeout(resolve, 1500));
-				await sendMessage("goToRoute", { route: "/keys" });
+				try {
+					await sendMessage("openSidePanel");
+					// pause for 2 seconds to allow route change to complete
+					await new Promise((resolve) => setTimeout(resolve, 1500));
+					await sendMessage("goToRoute", { route: "/keys" });
+				} catch (_error) {
+					logger.info("Likely sidepanel is already open");
+				}
 			},
 			setKeySettingDialogOpen: (open: boolean) => {
 				set({ keySettingDialogOpen: open });
@@ -72,7 +78,7 @@ export const newsState = createStore<NewsState>()(
 					try {
 						const res = await sendMessage("sendWebsiteContent", parsedContent);
 						return res === true;
-					} catch {
+					} catch (_error) {
 						return false;
 					}
 				};
@@ -80,12 +86,16 @@ export const newsState = createStore<NewsState>()(
 				const success = await trySend();
 				if (success) return;
 
-				await sendMessage("openSidePanel");
-				await new Promise((resolve) => setTimeout(resolve, 1500));
-				await sendMessage("goToRoute", { route: "/ai-chat" });
+				try {
+					await sendMessage("openSidePanel");
+					await new Promise((resolve) => setTimeout(resolve, 1500));
+					await sendMessage("goToRoute", { route: "/ai-chat" });
 
-				await new Promise((resolve) => setTimeout(resolve, 2000));
-				await trySend();
+					await new Promise((resolve) => setTimeout(resolve, 2000));
+					await trySend();
+				} catch (_error) {
+					logger.info("Likely sidepanel is already open");
+				}
 			},
 
 			getFeedback: async () => {

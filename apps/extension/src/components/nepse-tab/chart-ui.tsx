@@ -9,15 +9,21 @@ import {
 import { useAction } from "convex/react";
 import { CirclePlay } from "lucide-react";
 import type { FC } from "react";
-import { Fragment, lazy, memo, useCallback, useEffect, useRef } from "react";
+import {
+	Fragment,
+	lazy,
+	memo,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+} from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import Loading from "@/components/loading";
 import AdLine from "@/components/nepse-tab/ad-line";
-import {
-	type ChartDatas,
-	transformChartData,
-} from "@/components/nepse-tab/utils";
+import type { ChartDatas } from "@/components/nepse-tab/utils";
+import { transformChartData } from "@/components/nepse-tab/utils";
 import { useIndexChart } from "@/hooks/convex/useIndexChart";
 import { useIndexData } from "@/hooks/convex/useIndexData";
 import { cn } from "@/lib/utils";
@@ -31,12 +37,11 @@ import {
 	selectSetIsReplayMode,
 	selectToggleChartType,
 } from "@/selectors/dashboard-selector";
-import {
-	type DashboardState,
-	useDashboardState,
-} from "@/state/dashboard-state";
+import type { DashboardState } from "@/state/dashboard-state";
+import { useDashboardState } from "@/state/dashboard-state";
 import Chart from "./chart-graph";
-import ReplayComponent from "./replay";
+
+const ReplayComponent = lazy(() => import("./replay"));
 
 const LoadingFailed = lazy(() => import("@/components/loading-failed"));
 
@@ -145,12 +150,14 @@ const ChartComponent: FC = memo(() => {
 	if (isReplayMode) {
 		return (
 			<Fragment>
-				<ReplayComponent
-					fullChartData={transformedChartData}
-					playbackSpeed={playbackSpeed}
-					togglePlaybackSpeed={() => setPlaybackSpeed()}
-					onExit={() => setIsReplayMode(false)}
-				/>
+				<Suspense fallback={<Loading />}>
+					<ReplayComponent
+						fullChartData={transformedChartData}
+						playbackSpeed={playbackSpeed}
+						togglePlaybackSpeed={() => setPlaybackSpeed()}
+						onExit={() => setIsReplayMode(false)}
+					/>
+				</Suspense>
 
 				<div className="absolute bottom-0 left-0 right-0 flex flex-col items-center">
 					<AdLine
@@ -182,7 +189,10 @@ const ChartComponent: FC = memo(() => {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Switch to {isDailyChart ? "intraday" : "daily"} chart</p>
+						<p>
+							Switch to
+							{isDailyChart ? "intraday" : "daily"} chart
+						</p>
 					</TooltipContent>
 				</Tooltip>
 			</div>

@@ -7,7 +7,8 @@ import { CONFIG } from "@/constants/app-config";
 import type { OptionTabsType } from "@/entrypoints/options/interface";
 import { OPTION_TABS } from "@/entrypoints/options/interface";
 import { TabStateEnum } from "@/types/general-types";
-import { PLAYBACK_SPEEDS, type PlaybackSpeed } from "@/types/replay-types";
+import type { PlaybackSpeed } from "@/types/replay-types";
+import { PLAYBACK_SPEEDS } from "@/types/replay-types";
 
 // only to be used in ui that has dom and localstorage
 export interface GeneralState {
@@ -18,7 +19,7 @@ export interface GeneralState {
 	tabs: string[];
 	updatePinnedTab: (alias: string | null) => void;
 
-	//global playback sppeed for all top playbacks
+	// global playback sppeed for all top playbacks
 	replayPlaybackSpeed: PlaybackSpeed;
 	changePlaybackSpeed: () => void;
 

@@ -15,9 +15,13 @@ import { Download, RotateCcw, Trash2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { browser } from "#imports";
 import { BackupRestoreUI } from "@/components/backup/backup";
 import Loading from "@/components/loading";
 import { useBackupRestore } from "@/hooks/backup/backup-restore";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
+import { useUser } from "@/hooks/useUser";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
 

@@ -12,10 +12,10 @@ import BackButton from "@/components/back-button/back-button";
 import { useTopData } from "@/hooks/convex/useTopData";
 import type { TopTabType } from "@/types/top-types";
 import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";
+import Loading from "../loading";
 import TopTradersReplay from "./replay";
 import { createTabConfig } from "./tab-config";
 import TabContent from "./tab-content";
-import Loading from "../loading";
 
 const LoadingFailed = lazy(() => import("@/components/loading-failed"));
 

@@ -1,10 +1,8 @@
 import { memo, useId } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { createTooltipRenderer } from "@/components/nepse-tab/tooltip";
-import {
-	type ChartDatas,
-	calculateChartBounds,
-} from "@/components/nepse-tab/utils";
+import type { ChartDatas } from "@/components/nepse-tab/utils";
+import { calculateChartBounds } from "@/components/nepse-tab/utils";
 
 interface ChartProps {
 	currentIndexColor: string | undefined;

@@ -10,6 +10,8 @@ import Loading from "@/components/loading";
 import BottomInfo from "@/components/nepse-tab/bottom-info";
 import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
 import { CONFIG } from "@/constants/app-config";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { track } from "@/lib/analytics";
 import { useAuth } from "@/lib/auth/auth-context";

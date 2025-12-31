@@ -2,6 +2,7 @@ import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { Button } from "@nepse-dashboard/ui/components/button";
 import { AlertCircle, Eye, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useCallback } from "react";
+import { useAppState } from "@/hooks/use-app";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
 import { useNewsState } from "../store";

@@ -1,6 +1,9 @@
 import { createRoot } from "react-dom/client";
-import type { ContentScriptContext } from "#imports";
-import "../../../../../packages/ui/src/styles/globals.css";
+import {
+	type ContentScriptContext,
+	createShadowRootUi,
+	defineContentScript,
+} from "#imports";
 import { ContentErrorBoundary } from "@/components/content-error-boundary";
 import { ContentSuspense } from "@/components/content-suspense";
 import { analyzeDocument } from "@/utils/content/analyze";
@@ -8,9 +11,10 @@ import { onMessage } from "../../lib/messaging/extension-messaging";
 import { injectNotification, showNotification } from "./notification";
 import Search from "./search";
 import { searchState } from "./store";
+import "../../../../../packages/ui/src/styles/globals.css";
 
 export default defineContentScript({
-	matches: ["<all_urls>"],
+	matches: ["*://*/*"],
 	cssInjectionMode: "ui",
 	registration: "manifest",
 
@@ -84,7 +88,18 @@ export default defineContentScript({
 		});
 
 		window.addEventListener("keydown", (e) => {
-			if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "x") {
+			const target = e.target as HTMLElement;
+
+			if (
+				target &&
+				(target.tagName === "INPUT" ||
+					target.tagName === "TEXTAREA" ||
+					target.isContentEditable)
+			) {
+				return;
+			}
+
+			if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === "x") {
 				e.preventDefault();
 				TriggerVisibility();
 			}

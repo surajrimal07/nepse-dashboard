@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import { sendMessage } from "@/lib/messaging/extension-messaging";
 import { Env, EventName } from "@/types/analytics-types";
 import type { stateResult } from "@/types/misc-types";
@@ -27,7 +28,7 @@ export async function handleNotification(
 				// biome-ignore lint/suspicious/noExplicitAny: <iknow>
 				const data: any = {
 					type: "basic",
-					title: title,
+					title,
 					iconUrl: icon ?? (icon || defaultImage),
 					message: body,
 				};
@@ -47,7 +48,7 @@ export async function handleNotification(
 								eventName: EventName.NOTIFICATION_ERROR,
 								params: {
 									error: "Failed to create browser notification",
-									data: data,
+									data,
 								},
 							});
 

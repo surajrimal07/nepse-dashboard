@@ -3,6 +3,7 @@ import { Switch } from "@nepse-dashboard/ui/components/switch";
 import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
 import { useState } from "react";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 import { AccountType } from "@/types/account-types";
 

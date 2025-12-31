@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import type { FC } from "react";
 import { memo, useCallback, useMemo } from "react";
 import { useGetVersion } from "@/hooks/convex/useGetVersion";
+import { useAppState } from "@/hooks/use-app";
 import { getVersion } from "@/utils/version";
 
 export const UpdateAvailable: FC = memo(() => {
@@ -54,6 +55,7 @@ export const UpdateAvailable: FC = memo(() => {
 				</div>
 
 				<div className="flex gap-2 justify-end">
+					{/** biome-ignore lint/a11y/useButtonType: <i know> */}
 					<button
 						onClick={handleUpdate}
 						className="px-4 py-2 rounded bg-blue-600 text-white text-xs hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200"

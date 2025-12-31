@@ -13,7 +13,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { FixedSizeList } from "react-window"; //comeon man
+import { FixedSizeList } from "react-window"; // comeon man
 import { toast } from "sonner";
 import BackButton from "@/components/back-button/back-button";
 import { NoCompaniesFound } from "@/components/stock-tab/no-companies";

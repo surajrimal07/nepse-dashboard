@@ -3,14 +3,19 @@ import { ExternalLink } from "lucide-react";
 import { memo } from "react";
 import { useSidepanel } from "@/hooks/open-sidepanel";
 import { sendMessage } from "@/lib/messaging/extension-messaging";
+import { logger } from "@/utils/logger";
 
 export const EmptyAccountsState = memo(() => {
 	const { open, openSidepanel } = useSidepanel();
 
 	const handleOpenSidepanel = async () => {
-		openSidepanel();
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		sendMessage("goToRoute", { route: "/account" });
+		try {
+			openSidepanel();
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			sendMessage("goToRoute", { route: "/account" });
+		} catch (_error) {
+			logger.info("Error opening sidepanel");
+		}
 	};
 
 	return (

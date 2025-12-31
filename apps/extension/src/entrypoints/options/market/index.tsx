@@ -2,6 +2,7 @@ import { CardContent } from "@nepse-dashboard/ui/components/card";
 import { Label } from "@nepse-dashboard/ui/components/label";
 import { Separator } from "@nepse-dashboard/ui/components/separator";
 import { Switch } from "@nepse-dashboard/ui/components/switch";
+import { useAppState } from "@/hooks/use-app";
 
 export default function NepseSettings() {
 	const { useStateItem } = useAppState();

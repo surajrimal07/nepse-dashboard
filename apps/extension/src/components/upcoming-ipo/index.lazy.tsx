@@ -22,6 +22,7 @@ import TimeAgo from "react-timeago";
 import BackButton from "@/components/back-button/back-button";
 import { LIST_HEIGHT } from "@/constants/app-config";
 import { getAllIpos, getCurrentIssues } from "@/hooks/convex/use-ipo";
+import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";
 
 const STATUS_COLORS = {
 	Open: "bg-green-500/10 text-green-500 border-green-500/20",
@@ -31,16 +32,19 @@ const STATUS_COLORS = {
 } as const;
 
 // Utility functions
-const getStatusColor = (status: string) =>
-	STATUS_COLORS[status as keyof typeof STATUS_COLORS] ?? STATUS_COLORS.default;
+function getStatusColor(status: string) {
+	return (
+		STATUS_COLORS[status as keyof typeof STATUS_COLORS] ?? STATUS_COLORS.default
+	);
+}
 
-const calculateSubscriptionMetrics = (issued: number, applied: number) => {
+function calculateSubscriptionMetrics(issued: number, applied: number) {
 	if (issued <= 0) return { percentApplied: 0, oversub: 0 };
 	return {
 		percentApplied: Math.round((applied / issued) * 100),
 		oversub: applied / issued,
 	};
-};
+}
 
 // Reusable components
 const LoadingState = memo(() => (
@@ -107,7 +111,10 @@ const CurrentIssueCard = memo(({ issue }: { issue: any }) => {
 				</div>
 				<div>
 					<span className="text-muted-foreground">Amount:</span>
-					<span className="font-medium ml-1">Rs. {issue.amount}</span>
+					<span className="font-medium ml-1">
+						Rs.
+						{issue.amount}
+					</span>
 				</div>
 			</div>
 
@@ -160,7 +167,7 @@ const IPOCard = memo(({ ipo }: { ipo: any }) => (
 			<div className="flex-1 min-w-0">
 				<h3 className="font-semibold text-sm truncate">{ipo.companyName}</h3>
 				<p className="text-xs text-muted-foreground">
-					{ipo.stockSymbol} • {ipo.shareType}
+					{ipo.stockSymbol} •{ipo.shareType}
 				</p>
 			</div>
 			<Badge
@@ -213,12 +220,12 @@ const IPOCard = memo(({ ipo }: { ipo: any }) => (
 ));
 IPOCard.displayName = "IPOCard";
 
-const useTabData = (tab: string) => {
+function useTabData(tab: string) {
 	const allIposQuery = getAllIpos();
 	const currentIssuesQuery = getCurrentIssues();
 
 	return tab === "current" ? currentIssuesQuery : allIposQuery;
-};
+}
 
 export const Route = createLazyRoute("/ipo")({
 	component: UpcomingIPO,

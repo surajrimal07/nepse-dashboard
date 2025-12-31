@@ -5,11 +5,10 @@ import {
 } from "@nepse-dashboard/ui/components/tabs";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback } from "react";
-import {
-	OPTION_TABS,
-	type OptionTabsType,
-} from "@/entrypoints/options/interface";
+import type { OptionTabsType } from "@/entrypoints/options/interface";
+import { OPTION_TABS } from "@/entrypoints/options/interface";
 import { useGeneralState } from "@/state/general-state";
+import { TAB_TRIGGER_STYLES } from "@/utils/tab-style";
 
 const OPTIONS_TABS = [
 	{ label: "General", value: OPTION_TABS.GENERAL },

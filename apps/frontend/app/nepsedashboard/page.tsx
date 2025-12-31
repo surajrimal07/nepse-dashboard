@@ -169,7 +169,7 @@ const features = [
 			{
 				icon: Keyboard,
 				title: "Keyboard Shortcuts",
-				description: "Ctrl+Shift+P/S/O for instant access to popup, sidebar, options",
+				description: "Alt+P/S/O for instant access to popup, sidebar, options",
 			},
 			{
 				icon: Download,
@@ -320,7 +320,7 @@ export default function WelcomePage() {
 						<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
 						<span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
 					</span>
-					Version 0.8.0 — Now with NaasaX Support & AI Chat
+					Version 0.8.1 — Bug Fixes & Refined Experience
 				</div>
 
 				<h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-purple-200 to-indigo-200 bg-clip-text text-transparent">

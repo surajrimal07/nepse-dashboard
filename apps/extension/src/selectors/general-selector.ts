@@ -9,8 +9,9 @@ export function selectActiveTabsOptions(state: GeneralState): OptionTabsType {
 
 export const selectSetActiveTab = (state: GeneralState) => state.setActiveTab;
 
-export const selectSetActiveTabsOptions = (state: GeneralState) =>
-	state.setActiveTabsOptions;
+export function selectSetActiveTabsOptions(state: GeneralState) {
+	return state.setActiveTabsOptions;
+}
 
 export const selectTabs = (state: GeneralState): string[] => state.tabs;
 export function selectUpdatePopupPinnedTab(

@@ -1,7 +1,8 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <iknow> */
 
 import { generateSummary } from "@nepse-dashboard/ai";
-import { AI_CODES, type aiProvidersType } from "@nepse-dashboard/ai/types";
+import type { aiProvidersType } from "@nepse-dashboard/ai/types";
+import { AI_CODES } from "@nepse-dashboard/ai/types";
 import { api } from "@nepse-dashboard/convex/convex/_generated/api";
 import type {
 	Doc,
@@ -9,6 +10,7 @@ import type {
 } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { createConfig, Persistence } from "crann-fork";
 import type { BrowserLocation } from "porter-source-fork";
+import { browser } from "#imports";
 import { URLS } from "@/constants/app-urls";
 import { getConvexClient } from "@/entrypoints/background";
 import { getUser } from "@/lib/storage/user-storage";
@@ -22,14 +24,15 @@ import { AccountType } from "@/types/account-types";
 import type { AISettings, LLMConfig } from "@/types/ai-types";
 import { Env, EventName } from "@/types/analytics-types";
 import { ConnectionState } from "@/types/connection-type";
-import type { LiveDataFromTMS } from "@/types/consume-type";
-import { type CountType, EventToCount } from "@/types/count-type";
+import type { CountType } from "@/types/count-type";
+import { EventToCount } from "@/types/count-type";
 import type { IndexKeys } from "@/types/indexes-type";
 import { nepseIndexes } from "@/types/indexes-type";
 import type { StackError } from "@/types/misc-types";
 import type { newsDatatype, ParsedDocument } from "@/types/news-types";
 import type { NotificationVariant } from "@/types/notification-types";
-import { MODES, type modeType } from "@/types/search-type";
+import type { modeType } from "@/types/search-type";
+import { MODES } from "@/types/search-type";
 import type { Config } from "@/types/user-types";
 import { buildChartUrl } from "@/utils/built-chart-url";
 import { generateChat } from "../actions/generate-chat";
@@ -40,7 +43,7 @@ import { Increment, Track, TrackPage } from "../analytics/analytics";
 import { handleNotification } from "../notification/handle-notification";
 import { deleteAccount, makePrimary } from "./helpers";
 
-const lastConsumeCheck = 0;
+// const lastConsumeCheck = 0;
 const SUMMARY_TIMEOUT_MS = 30000;
 
 // Helper function to wait for summary generation with timeout
@@ -122,7 +125,7 @@ export const appState = createConfig({
 	},
 
 	aiSettings: {
-		//make this set of <providers aiSettings>, providers means openai, cohere etc
+		// make this set of <providers aiSettings>, providers means openai, cohere etc
 		default: {
 			model: null,
 			hasKeys: false,
@@ -348,7 +351,7 @@ export const appState = createConfig({
 		},
 	},
 	checkConfig: {
-		//make a llm call to see if the api key, model and provider are valid
+		// make a llm call to see if the api key, model and provider are valid
 		handler: async (
 			_state: any,
 			_setState: (newState: Partial<any>) => Promise<void>,
@@ -399,7 +402,7 @@ export const appState = createConfig({
 				const user = await getUser();
 
 				await client.mutation(api.count.setCount, {
-					countType: countType,
+					countType,
 					randomId: user.randomId,
 				});
 
@@ -1136,53 +1139,53 @@ export const appState = createConfig({
 		},
 	},
 
-	// need massive fix, to be fixed
-	handleNepseIndexUpdate: {
-		handler: async (
-			state: any,
-			_setState: (newState: Partial<any>) => Promise<void>,
-			_target: BrowserLocation,
-			data: LiveDataFromTMS,
-		) => {
-			const now = Date.now();
+	// // need massive fix, to be fixed
+	// handleNepseIndexUpdate: {
+	// 	handler: async (
+	// 		state: any,
+	// 		_setState: (newState: Partial<any>) => Promise<void>,
+	// 		_target: BrowserLocation,
+	// 		data: LiveDataFromTMS,
+	// 	) => {
+	// 		const now = Date.now();
 
-			// Check if we need to verify consumption privileges
-			// if (!socketClient?.consumeGranted) {
-			// 	if (now - lastConsumeCheck >= CONFIG.consume_check_interval) {
-			// 		if (socketClient?.ws && socketClient.isConnected) {
-			// 			socketClient.ws.send(
-			// 				JSON.stringify({
-			// 					requestId: generateRequestId(),
-			// 					type: SocketRequestTypeConst.isConsumeAvailable,
-			// 					userToken: state.supabaseAccessToken,
-			// 				}),
-			// 			);
-			// 		}
-			// 		lastConsumeCheck = now;
-			// 	}
-			// 	return { success: true, message: "Consumption privileges verified." };
-			// }
+	// 		// Check if we need to verify consumption privileges
+	// 		// if (!socketClient?.consumeGranted) {
+	// 		// 	if (now - lastConsumeCheck >= CONFIG.consume_check_interval) {
+	// 		// 		if (socketClient?.ws && socketClient.isConnected) {
+	// 		// 			socketClient.ws.send(
+	// 		// 				JSON.stringify({
+	// 		// 					requestId: generateRequestId(),
+	// 		// 					type: SocketRequestTypeConst.isConsumeAvailable,
+	// 		// 					userToken: state.supabaseAccessToken,
+	// 		// 				}),
+	// 		// 			);
+	// 		// 		}
+	// 		// 		lastConsumeCheck = now;
+	// 		// 	}
+	// 		// 	return { success: true, message: "Consumption privileges verified." };
+	// 		// }
 
-			// Send data if client is ready
-			// if (socketClient?.ws && socketClient.isConnected) {
-			// 	socketClient.ws.send(
-			// 		JSON.stringify({
-			// 			requestId: generateRequestId(),
-			// 			type: SocketRequestTypeConst.sendData,
-			// 			consumeData: data,
-			// 		}),
-			// 	);
-			// 	return {
-			// 		success: true,
-			// 		message: "Nepse index data sent successfully.",
-			// 	};
-			// }
-			return {
-				success: false,
-				message: "WebSocket not connected. Cannot send data.",
-			};
-		},
-	},
+	// 		// Send data if client is ready
+	// 		// if (socketClient?.ws && socketClient.isConnected) {
+	// 		// 	socketClient.ws.send(
+	// 		// 		JSON.stringify({
+	// 		// 			requestId: generateRequestId(),
+	// 		// 			type: SocketRequestTypeConst.sendData,
+	// 		// 			consumeData: data,
+	// 		// 		}),
+	// 		// 	);
+	// 		// 	return {
+	// 		// 		success: true,
+	// 		// 		message: "Nepse index data sent successfully.",
+	// 		// 	};
+	// 		// }
+	// 		return {
+	// 			success: false,
+	// 			message: "WebSocket not connected. Cannot send data.",
+	// 		};
+	// 	},
+	// },
 
 	// ===== SOCKET CONFIG ACTIONS =====
 	addIndexChart: {
@@ -1339,7 +1342,7 @@ export const appState = createConfig({
 				void Track({
 					context: Env.BACKGROUND,
 					eventName: EventName.MARKET_DEPTH_SYMBOL_ADDED,
-					params: { stock: stock },
+					params: { stock },
 				});
 
 				await setState({ subscribeConfig: newSubscribeConfig });
@@ -1413,7 +1416,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.AUTOFILL_UPDATED,
-				params: { accountType: accountType, enabled: enabled },
+				params: { accountType, enabled },
 			});
 
 			return {
@@ -1443,7 +1446,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.AUTOFILL_UPDATED,
-				params: { accountType: AccountType.TMS, enabled: enabled },
+				params: { accountType: AccountType.TMS, enabled },
 			});
 
 			return { success: true, message: "TMS autofill updated successfully" };
@@ -1468,7 +1471,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.AUTOFILL_UPDATED,
-				params: { accountType: AccountType.NAASAX, enabled: enabled },
+				params: { accountType: AccountType.NAASAX, enabled },
 			});
 
 			return { success: true, message: "Naasax autofill updated successfully" };
@@ -1493,7 +1496,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.AUTOFILL_UPDATED,
-				params: { accountType: AccountType.MEROSHARE, enabled: enabled },
+				params: { accountType: AccountType.MEROSHARE, enabled },
 			});
 
 			return { success: true, message: "Mero autofill updated successfully" };
@@ -1516,7 +1519,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.AUTOSAVE_NEW_ACCOUNT_UPDATED,
-				params: { enabled: enabled },
+				params: { enabled },
 			});
 
 			return {
@@ -1542,7 +1545,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.SYNC_PORTFOLIO_UPDATED,
-				params: { enabled: enabled },
+				params: { enabled },
 			});
 
 			return {
@@ -1644,14 +1647,14 @@ export const appState = createConfig({
 				return { success: false, message: "Account not found" };
 			}
 
-			const newAccounts = deleteAccount(accounts, alias, accountIndex);
+			const newAccounts = deleteAccount(accounts, accountIndex);
 
 			await setState({ accounts: newAccounts });
 
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.ACCOUNT_REMOVED,
-				params: { alias: alias },
+				params: { alias },
 			});
 
 			return { success: true, message: "Account deleted successfully" };
@@ -1686,7 +1689,7 @@ export const appState = createConfig({
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.PRIMARY_STATUS_CHANGED,
-				params: { alias: alias },
+				params: { alias },
 			});
 
 			return { success: true, message: "Account set as primary successfully" };
@@ -1832,7 +1835,7 @@ export const appState = createConfig({
 				return { success: false, message: "Account not found" };
 			}
 
-			//show notification early
+			// show notification early
 			await handleNotification(
 				"Nepse Dashboard",
 				`Logged in as ${alias}`,
@@ -1859,8 +1862,8 @@ export const appState = createConfig({
 
 			void Track({
 				context: Env.BACKGROUND,
-				eventName: eventName,
-				params: { alias: alias },
+				eventName,
+				params: { alias },
 			});
 
 			await setState({ accounts: newAccounts });
@@ -1936,7 +1939,7 @@ export const appState = createConfig({
 			);
 
 			if (existingAccount) {
-				//take no action if password is same
+				// take no action if password is same
 
 				if (existingAccount.password === password) {
 					return {
@@ -1984,7 +1987,7 @@ export const appState = createConfig({
 				password,
 				type,
 				alias: username,
-				isPrimary: false, //this is wrong , if first of its type, it should be true
+				isPrimary: false, // this is wrong , if first of its type, it should be true
 				error: null,
 				disabled: false,
 				updatedAt: new Date().toISOString(),

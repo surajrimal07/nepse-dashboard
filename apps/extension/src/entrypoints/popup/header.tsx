@@ -26,11 +26,14 @@ import { useRouter } from "@tanstack/react-router";
 import { ChartLine, LayoutDashboard, UserRound } from "lucide-react";
 import { memo, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { browser } from "#imports";
 import { dashboardItems } from "@/components/dashboard-tab/menu-items";
 import ReloadExtension from "@/components/reload-extension";
 import { Title } from "@/components/scrolling-title";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import { useAuth } from "@/lib/auth/auth-context";
 import { getPopupTabRoute } from "@/routes/getTabRoute";
 import {
@@ -68,7 +71,7 @@ const MenuItemWithSwitch = memo(
 
 MenuItemWithSwitch.displayName = "MenuItemWithSwitch";
 
-const Header = () => {
+function Header() {
 	const { useStateItem, callAction } = useAppState();
 
 	const [isNotificationEnabled] = useStateItem("notification");
@@ -273,7 +276,7 @@ const Header = () => {
 			</Tabs>
 		</div>
 	);
-};
+}
 
 Header.displayName = "Header";
 

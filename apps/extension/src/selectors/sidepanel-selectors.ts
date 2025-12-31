@@ -2,8 +2,9 @@ import type { SidebarDashboardState } from "@/state/sidepanel-state";
 import { PLAYBACK_SPEEDS } from "@/types/replay-types";
 import type { Widget } from "@/types/sidepanel-type";
 
-export const selectWidgets = (state: SidebarDashboardState): Widget[] =>
-	state.widgets;
+export function selectWidgets(state: SidebarDashboardState): Widget[] {
+	return state.widgets;
+}
 export function selectAddWidget(
 	state: SidebarDashboardState,
 ): (widget: Omit<Widget, "id">) => Promise<void> {
@@ -69,8 +70,9 @@ export function selectChangePlaybackSpeed(
 	return state.changePlaybackSpeed;
 }
 
-export const selectCurrentTab = (state: SidebarDashboardState): string =>
-	state.currentTab;
+export function selectCurrentTab(state: SidebarDashboardState): string {
+	return state.currentTab;
+}
 export function selectSetCurrentTab(
 	state: SidebarDashboardState,
 ): (tabKey: string) => void {

@@ -4,6 +4,7 @@ import { Switch } from "@nepse-dashboard/ui/components/switch";
 import { X } from "lucide-react";
 import { memo, useCallback } from "react";
 import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import useScreenView from "@/hooks/usePageView";
 
 interface OptionsDialogProps {

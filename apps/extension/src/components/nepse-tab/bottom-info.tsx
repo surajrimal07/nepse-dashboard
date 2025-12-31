@@ -9,6 +9,7 @@ import { memo, useMemo } from "react";
 import TimeAgo from "react-timeago";
 import { connectionStateConfig } from "@/components/nepse-tab/connection-state-icons";
 import { useIndexData } from "@/hooks/convex/useIndexData";
+import { useAppState } from "@/hooks/use-app";
 
 interface BottomInfoProps {
 	isSidpenal: boolean;

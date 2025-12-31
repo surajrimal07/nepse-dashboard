@@ -6,6 +6,7 @@ import { DashboardContent } from "@/components/dashboard-tab/dashboard-content";
 import { dashboardItems } from "@/components/dashboard-tab/menu-items";
 import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
 import { CONFIG } from "@/constants/app-config";
+import { useAppState } from "@/hooks/use-app";
 import {
 	selectPopupPinnedTab,
 	selectUpdatePopupPinnedTab,

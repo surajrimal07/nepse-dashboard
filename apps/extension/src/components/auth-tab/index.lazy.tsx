@@ -7,6 +7,7 @@ import LoggedInView from "@/components/auth-tab/logged-in";
 import LoginView from "@/components/auth-tab/login";
 import NotLoggedInView from "@/components/auth-tab/not-logged";
 import Loading from "@/components/loading";
+import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@/lib/auth/auth-context";
 import { convex } from "@/lib/query";
 import { cn } from "@/lib/utils";
@@ -104,7 +105,7 @@ export default function UserTab() {
 
 			const isAuthorized = await convex.query(api.users.isUserAuthorized, {
 				randomId: authUser.randomId,
-				email: email,
+				email,
 			});
 
 			const user = isAuthorized.data;

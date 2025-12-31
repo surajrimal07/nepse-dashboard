@@ -1,3 +1,4 @@
+import { browser } from "#imports";
 import { track } from "@/lib/analytics";
 import { Env, EventName } from "@/types/analytics-types";
 

@@ -25,7 +25,7 @@ import {
 import { createLazyRoute, useRouter } from "@tanstack/react-router";
 import { useAction } from "convex/react";
 import { Info } from "lucide-react";
-import { lazy, memo, useCallback, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 import TimeAgo from "react-timeago";
 import { toast } from "sonner";
 import BackButton from "@/components/back-button/back-button";

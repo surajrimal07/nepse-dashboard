@@ -29,6 +29,7 @@
 		"@nepse-dashboard/zod": "workspace:*",
 		"@openpanel/nextjs": "^1.1.1",
 		"@openrouter/ai-sdk-provider": "^1.2.3",
+		"@webext-core/messaging": "catalog:",
 		"ai": "catalog:",
 		"babel-plugin-react-compiler": "catalog:",
 		"bufferutil": "^4.0.9",

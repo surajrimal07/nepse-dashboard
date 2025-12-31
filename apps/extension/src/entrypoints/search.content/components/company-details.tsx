@@ -2,26 +2,27 @@ import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import type React from "react";
 import { cn } from "@/lib/utils";
+import { calculatePricePosition } from "@/utils/utils";
 
 interface CompanyDetailsProps {
 	isDark: boolean;
 	company: Doc<"company">;
 }
 
-const formatNumber = (num: number | undefined) => {
+function formatNumber(num: number | undefined) {
 	if (num === undefined) return "N/A";
 	return num.toLocaleString("en-US", { maximumFractionDigits: 2 });
-};
+}
 
-const formatCurrency = (num: number | undefined) => {
+function formatCurrency(num: number | undefined) {
 	if (num === undefined) return "N/A";
 	return `Rs ${formatNumber(num)}`;
-};
+}
 
-const formatPercentage = (num: number | undefined) => {
+function formatPercentage(num: number | undefined) {
 	if (num === undefined) return "N/A";
 	return `${num > 0 ? "+" : ""}${num.toFixed(2)}%`;
-};
+}
 
 const CompanyDetails: React.FC<CompanyDetailsProps> = ({ isDark, company }) => {
 	const isPositive = company.change >= 0;

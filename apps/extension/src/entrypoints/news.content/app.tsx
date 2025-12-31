@@ -27,10 +27,10 @@ const LoginRequired = lazy(
 	() => import("@/entrypoints/news.content/components/login-required"),
 );
 
-type NewsContentProps = {
+interface NewsContentProps {
 	language: "en" | "np";
 	onClose: () => void;
-};
+}
 
 const NewsContent = memo(({ language, onClose }: NewsContentProps) => {
 	const isLoading = useNewsState((state) => state.isLoading);

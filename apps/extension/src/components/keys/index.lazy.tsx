@@ -1,4 +1,5 @@
-import { aiProviders, type aiProvidersType } from "@nepse-dashboard/ai/types";
+import type { aiProvidersType } from "@nepse-dashboard/ai/types";
+import { aiProviders } from "@nepse-dashboard/ai/types";
 import { Button } from "@nepse-dashboard/ui/components/button";
 import { Input } from "@nepse-dashboard/ui/components/input";
 import { Label } from "@nepse-dashboard/ui/components/label";
@@ -30,6 +31,7 @@ import {
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { LIST_HEIGHT } from "@/constants/app-config";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 
 export const Route = createLazyRoute("/keys")({
@@ -85,7 +87,7 @@ export default function Keys() {
 				provider: hasKeys ? provider : null,
 				model: hasKeys ? model : null,
 				apiKey: hasKeys ? apiKey : null,
-				hasKeys: hasKeys,
+				hasKeys,
 			});
 			toast.success("Saved successfully.");
 
@@ -198,7 +200,7 @@ export default function Keys() {
 								</>
 							) : (
 								<>
-									<Shield className="w-5 h-5 flex-shrink-0" />
+									<Shield className="w-5 h-5 shrink-0" />
 									<span className="text-sm font-medium">
 										{hasKeys
 											? "Complete your configuration below"
@@ -327,7 +329,7 @@ export default function Keys() {
 							<div className="flex gap-3">
 								<Button
 									onClick={handleEdit}
-									variant={"outline"}
+									variant="outline"
 									className="flex-1 h-11 border-0"
 								>
 									<Pencil className="w-4 h-4 mr-2" />
@@ -530,7 +532,7 @@ export default function Keys() {
 							<Button
 								type="submit"
 								disabled={loading || (hasKeys && !testPassed)}
-								className="flex-1 h-11 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="flex-1 h-11 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white border-0 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								{loading ? (
 									<>

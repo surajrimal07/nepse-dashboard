@@ -1,4 +1,5 @@
-import { createContext, type ReactNode, useContext } from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext } from "react";
 
 interface WidgetOverrideContextValue {
 	fullscreen?: boolean | null;
@@ -9,20 +10,22 @@ const WidgetOverrideContext = createContext<WidgetOverrideContextValue | null>(
 	null,
 );
 
-export const useWidgetOverride = (): WidgetOverrideContextValue => {
+export function useWidgetOverride(): WidgetOverrideContextValue {
 	return useContext(WidgetOverrideContext) ?? {};
-};
+}
 
 interface WidgetOverrideProviderProps {
 	value: WidgetOverrideContextValue;
 	children: ReactNode;
 }
 
-export const ProviderOverride = ({
+export function ProviderOverride({
 	value,
 	children,
-}: WidgetOverrideProviderProps) => (
-	<WidgetOverrideContext.Provider value={value}>
-		{children}
-	</WidgetOverrideContext.Provider>
-);
+}: WidgetOverrideProviderProps) {
+	return (
+		<WidgetOverrideContext.Provider value={value}>
+			{children}
+		</WidgetOverrideContext.Provider>
+	);
+}

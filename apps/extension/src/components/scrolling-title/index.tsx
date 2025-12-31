@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { memo, useMemo } from "react";
 import { CONFIG } from "@/constants/app-config";
 import { useCompanyList } from "@/hooks/convex/useCompanyList";
+import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
 
 interface CompanyItemProps {
@@ -11,7 +12,7 @@ interface CompanyItemProps {
 }
 
 // Utility function for stable shuffling with seed
-const shuffleArrayWithSeed = <T,>(array: T[], seed: number): T[] => {
+function shuffleArrayWithSeed<T>(array: T[], seed: number): T[] {
 	const result = [...array];
 	let m = result.length;
 	let temp: T;
@@ -31,7 +32,7 @@ const shuffleArrayWithSeed = <T,>(array: T[], seed: number): T[] => {
 	}
 
 	return result;
-};
+}
 
 // Memoized company item component with aggressive optimization
 const CompanyItem = memo<CompanyItemProps>(
@@ -72,7 +73,7 @@ const AppNameTitle = memo(() => (
 ));
 AppNameTitle.displayName = "AppNameTitle";
 
-const TitleComponent = () => {
+function TitleComponent() {
 	const router = useRouter();
 
 	const isSidebar = router.options.context.environment === "sidepanel";
@@ -165,7 +166,7 @@ const TitleComponent = () => {
 			</div>
 		</div>
 	);
-};
+}
 
 export const Title = memo(TitleComponent);
 

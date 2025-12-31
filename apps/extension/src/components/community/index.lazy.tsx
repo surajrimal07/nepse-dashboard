@@ -7,6 +7,7 @@ import { track } from "@/lib/analytics";
 import { useAuth } from "@/lib/auth/auth-context";
 import { onMessage } from "@/lib/messaging/extension-messaging";
 import { Env, EventName } from "@/types/analytics-types";
+import { logger } from "@/utils/logger";
 import BackButton from "../back-button/back-button";
 
 const IFRAME_SANDBOX =

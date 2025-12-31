@@ -1,17 +1,17 @@
 import { connect } from "crann-fork";
-import type { ContentScriptContext } from "#imports";
+import { type ContentScriptContext, defineContentScript } from "#imports";
 import { chrome_meroshare_url } from "@/constants/content-url";
 import { onMessage } from "@/lib/messaging/window-messaging";
 import { appState } from "@/lib/service/app-service";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
-
+import type { WindowWithLibraries } from "@/types/content-types";
 import {
 	CONFIG,
 	MEROSHARE_LOGIN_URL,
 	MEROSHAREDASHBOARD_PATTERN,
-	type WindowWithLibraries,
 } from "@/types/content-types";
+import { logger } from "@/utils/logger";
 
 /**
  * Constants & Selectors
@@ -81,6 +81,7 @@ class MeroshareAutomation {
 		broker: "",
 		isUserInput: false,
 	};
+
 	private isProgrammaticInput = false;
 
 	constructor() {
@@ -329,7 +330,10 @@ class MeroshareAutomation {
 		// Handle empty/invalid broker value
 		const brokerValue = account.broker?.toString().trim();
 		if (!brokerValue || brokerValue === "0") {
-			console.warn("Meroshare: No valid broker value for account", account.alias);
+			console.warn(
+				"Meroshare: No valid broker value for account",
+				account.alias,
+			);
 			await this.appConnection.callAction(
 				"showNotification",
 				`Cannot auto-login: No broker configured for ${account.alias}`,
@@ -478,8 +482,9 @@ class MeroshareAutomation {
 			!password ||
 			!broker ||
 			!this.currentAccount
-		)
+		) {
 			return;
+		}
 
 		try {
 			logger.log("Meroshare AutoSave: Saving...");
@@ -513,7 +518,7 @@ class MeroshareAutomation {
 					// Some toasts are direct children, others nested
 					if (
 						added.classList?.contains("toast-message") ||
-						(added.querySelector && added.querySelector(".toast-message"))
+						added.querySelector?.(".toast-message")
 					) {
 						const text = added.textContent?.trim() || "";
 						this.handleToastMessage(text);
@@ -541,7 +546,8 @@ class MeroshareAutomation {
 
 		this.lastProcessedMessage = cleanText;
 		setTimeout(() => {
-			if (this.lastProcessedMessage === cleanText) this.lastProcessedMessage = "";
+			if (this.lastProcessedMessage === cleanText)
+				this.lastProcessedMessage = "";
 		}, 5000);
 
 		logger.log("Meroshare Toast:", cleanText);

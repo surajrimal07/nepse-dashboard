@@ -32,9 +32,36 @@ interface ChangelogEntry {
 
 const changelog: ChangelogEntry[] = [
 	{
+		version: "0.8.1",
+		date: "Dec 31, 2025",
+		isLatest: true,
+		sections: [
+			{
+				title: "Bug Fixes",
+				icon: Bug,
+				color: "text-red-400",
+				items: [
+					"Fixed various auto-login edge cases",
+					"Improved stability across all platforms",
+					"Resolved minor UI glitches",
+				],
+			},
+			{
+				title: "Refinements",
+				icon: Sparkles,
+				color: "text-indigo-400",
+				items: [
+					"Changed keyboard shortcuts from Ctrl+Shift to Alt+ for wider compatibility",
+					"Shortcuts no longer interfere with browser shortcuts",
+					"Minor UI/UX improvements",
+					"Enhanced auto-login reliability",
+				],
+			},
+		],
+	},
+	{
 		version: "0.8.0",
 		date: "Dec 28, 2025",
-		isLatest: true,
 		sections: [
 			{
 				title: "New Platform Support",
@@ -158,7 +185,7 @@ const changelog: ChangelogEntry[] = [
 					"Cleaner, more intuitive interface",
 					"Smoother interactions and animations",
 					"More responsive controls and buttons",
-					"Keyboard shortcuts (Ctrl+Shift+P/S/O)",
+					"Keyboard shortcuts (Alt+P/S/O)",
 				],
 			},
 			{

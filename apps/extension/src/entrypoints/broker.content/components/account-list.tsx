@@ -77,7 +77,8 @@ function AccountsList({
 					</Button>
 
 					<span className="text-sm text-gray-600 font-medium min-w-[60px] text-center">
-						{currentPage} of {totalPages}
+						{currentPage} of
+						{totalPages}
 					</span>
 
 					<Button

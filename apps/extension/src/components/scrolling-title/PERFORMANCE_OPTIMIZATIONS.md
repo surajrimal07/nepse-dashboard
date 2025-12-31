@@ -49,16 +49,16 @@
 // Consolidated state processing
 const processedData = useMemo(() => {
   if (!allCompanies?.data?.length) {
-    return { companyData: [], doubledData: [] };
+    return { companyData: [], doubledData: [] }
   }
 
-  const limitedData = allCompanies.data.slice(0, 20);
-  const seed = limitedData.length + (limitedData[0]?.symbol.charCodeAt(0) || 0);
-  const shuffled = shuffleArrayWithSeed(limitedData, seed);
-  const doubled = [...shuffled, ...shuffled];
+  const limitedData = allCompanies.data.slice(0, 20)
+  const seed = limitedData.length + (limitedData[0]?.symbol.charCodeAt(0) || 0)
+  const shuffled = shuffleArrayWithSeed(limitedData, seed)
+  const doubled = [...shuffled, ...shuffled]
 
-  return { companyData: shuffled, doubledData: doubled };
-}, [allCompanies?.data]);
+  return { companyData: shuffled, doubledData: doubled }
+}, [allCompanies?.data])
 ```
 
 ### Custom Memoization
@@ -67,17 +67,17 @@ const processedData = useMemo(() => {
 const CompanyItem = memo<CompanyItemProps>(({ company }) => {
   // Component logic
 }, (prevProps, nextProps) => {
-  const prev = prevProps.company;
-  const next = nextProps.company;
+  const prev = prevProps.company
+  const next = nextProps.company
 
   return (
-    prev.symbol === next.symbol &&
-    prev.closePrice === next.closePrice &&
-    prev.change === next.change &&
-    prev.percentageChange === next.percentageChange &&
-    prevProps.index === nextProps.index
-  );
-});
+    prev.symbol === next.symbol
+    && prev.closePrice === next.closePrice
+    && prev.change === next.change
+    && prev.percentageChange === next.percentageChange
+    && prevProps.index === nextProps.index
+  )
+})
 ```
 
 ### CSS Animation Optimization

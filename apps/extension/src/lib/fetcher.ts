@@ -9,7 +9,7 @@
 // import { identifyUserSW } from "@/utils/identify-user-sw";
 // import { OpenPanelSDK } from "@/utils/open-panel-sdk";
 
-//switch to convex to fetch latest version
+// switch to convex to fetch latest version
 // export async function getUpdate(): Promise<Version | null> {
 // 	try {
 // 		const response = await fetch(`${URLS.edge_url}/app-version`, {
@@ -111,7 +111,7 @@
 // }
 
 // // @@ modify it to include configs too
-//switch to convex to fetch brokers list
+// switch to convex to fetch brokers list
 // export async function getConfigs(): Promise<AllBrokers | null> {
 // 	try {
 // 		if (!import.meta.env.VITE_API_KEY) {

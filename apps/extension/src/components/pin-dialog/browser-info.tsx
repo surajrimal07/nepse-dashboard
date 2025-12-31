@@ -1,11 +1,12 @@
 import type { FC } from "react";
 import { memo, useMemo } from "react";
+import { browser } from "#imports";
 import { URLS } from "@/constants/app-urls";
 
-const defaultImage = browser.runtime.getURL("/icons/48.png");
-
 export const BrowserInfo: FC = memo(() => {
-	const browser = useMemo(() => {
+	const defaultImage = browser.runtime.getURL("/icons/48.png");
+
+	const browserType = useMemo(() => {
 		if (import.meta.env.FIREFOX) return "firefox";
 		if (import.meta.env.EDGE) return "edge";
 		if (import.meta.env.CHROME) return "chrome";
@@ -136,8 +137,8 @@ export const BrowserInfo: FC = memo(() => {
 	);
 
 	const currentInstructions = useMemo(
-		() => instructions[browser as keyof typeof instructions],
-		[instructions, browser],
+		() => instructions[browserType as keyof typeof instructions],
+		[instructions, browserType],
 	);
 
 	return (

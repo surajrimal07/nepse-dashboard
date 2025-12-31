@@ -1,3 +1,5 @@
+import { browser } from "#imports";
+
 // Badge state types and colors
 const BADGE_COLORS = {
 	OFF: "#6366f1", // Purple for OFF state

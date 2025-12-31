@@ -8,7 +8,7 @@ import {
 } from "@nepse-dashboard/ui/components/tooltip";
 import { useAction } from "convex/react";
 import { ArrowDownIcon, ArrowUpIcon, BarChart3Icon, Info } from "lucide-react";
-import { lazy, useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import TimeAgo from "react-timeago";
 import { useShallow } from "zustand/react/shallow";
 import BackButton from "@/components/back-button/back-button";
@@ -16,6 +16,8 @@ import Loading from "@/components/loading";
 import { useCompanyDepth } from "@/hooks/convex/use-depth";
 import { useCompanyList } from "@/hooks/convex/useCompanyList";
 import { useIsMarketOpen } from "@/hooks/convex/useIndexStatus";
+import { handleActionResult } from "@/hooks/handle-action";
+import { useAppState } from "@/hooks/use-app";
 import {
 	selectMarketDepthStock,
 	selectSetMarketDepthSymbol,
@@ -89,7 +91,7 @@ export default function MarketDepthCore(props: MarketDepthCoreProps) {
 		return (sidepanel ? symbol : marketDepthStockinPopup) as string;
 	}, [sidepanel, symbol, marketDepthStockinPopup]);
 
-	//call covex action to say fetch the depth again
+	// call covex action to say fetch the depth again
 	const handleRefresh = useCallback(async () => {
 		if (!currentSymbol) {
 			return;
