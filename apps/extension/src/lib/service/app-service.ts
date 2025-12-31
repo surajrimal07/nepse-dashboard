@@ -42,6 +42,7 @@ import { checkConfig } from "../actions/test-key";
 import { Increment, Track, TrackPage } from "../analytics/analytics";
 import { handleNotification } from "../notification/handle-notification";
 import { deleteAccount, makePrimary } from "./helpers";
+import type { timeType } from "@/types/sidepanel-type";
 
 // const lastConsumeCheck = 0;
 const SUMMARY_TIMEOUT_MS = 30000;
@@ -121,6 +122,14 @@ function waitForSummary(
 export const appState = createConfig({
 	stockScrollingPopup: {
 		default: true as boolean,
+		persist: Persistence.Local,
+	},
+	showTime: {
+		default: {
+			enabled: true,
+			type: "currentTime",
+
+		} as timeType,
 		persist: Persistence.Local,
 	},
 

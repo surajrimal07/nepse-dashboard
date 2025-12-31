@@ -23,7 +23,9 @@
 		"docker:stop": "cd apps/server && docker compose -f docker-compose-dev.yml stop",
 		"docker:down": "cd apps/server && docker compose -f docker-compose-dev.yml down",
 		"docker:logs": "cd apps/server && docker compose -f docker-compose-dev.yml logs",
-		"docker:logs:follow": "cd apps/server && docker compose -f docker-compose-dev.yml logs -f"
+		"docker:logs:follow": "cd apps/server && docker compose -f docker-compose-dev.yml logs -f",
+		"loc": "tokei apps/extension apps/frontend apps/server packages/ai packages/backend packages/emails packages/logger packages/zod -t TypeScript,TSX --exclude node_modules --exclude dist --exclude build --exclude .turbo --exclude .next --exclude .wxt --exclude .wxt-dev --exclude .output --exclude coverage --exclude .cache --exclude .pnpm-store --exclude .tanstack --exclude public --exclude _generated --exclude stockMap.ts --exclude companies.ts --exclude data"
+
 	},
 	"devDependencies": {
 		"@biomejs/biome": "latest",

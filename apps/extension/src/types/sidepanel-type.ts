@@ -73,3 +73,9 @@ export const WIDGET_HEIGHTS = {
   [widgetType.STOCK]: 'h-[250px]',
   [widgetType.SUMMARY]: 'h-[280px]',
 } as const
+
+
+export type timeType = {
+  enabled: boolean,
+  type: "currentTime" | "countdown"
+}

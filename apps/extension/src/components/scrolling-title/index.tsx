@@ -2,6 +2,7 @@ import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { useRouter } from "@tanstack/react-router";
 import { memo, useMemo } from "react";
 import { CONFIG } from "@/constants/app-config";
+import { TimeBadge } from "@/components/time";
 import { useCompanyList } from "@/hooks/convex/useCompanyList";
 import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
@@ -69,7 +70,10 @@ CompanyItem.displayName = "CompanyItem";
 
 // Memoize the static app name element to avoid recreating on every render
 const AppNameTitle = memo(() => (
-	<h1 className="text-base font-medium m-0 ml-2">{CONFIG.app_name}</h1>
+	<div className="flex items-center gap-1 ml-1 shrink-0">
+		<TimeBadge />
+		<h1 className="text-base font-medium m-0 truncate">{CONFIG.app_name}</h1>
+	</div>
 ));
 AppNameTitle.displayName = "AppNameTitle";
 
@@ -140,29 +144,32 @@ function TitleComponent() {
 	const animationDuration = Math.max(30, processedData.length * 3);
 
 	return (
-		<div
-			className={cn(
-				"overflow-hidden whitespace-nowrap",
-				isSidebar ? "w-full" : "w-[280px]",
-			)}
-		>
+		<div className="flex items-center gap-1 ml-1 min-w-0">
+			<TimeBadge />
 			<div
-				className="inline-block animate-ticker will-change-transform text-base font-medium motion-reduce:animate-none"
-				style={{
-					// Hardware acceleration optimizations
-					transform: "translateZ(0)",
-					backfaceVisibility: "hidden",
-					perspective: "1000px",
-					animationDuration: `${animationDuration}s`,
-				}}
+				className={cn(
+					"overflow-hidden whitespace-nowrap min-w-0",
+					isSidebar ? "flex-1" : "w-[260px]",
+				)}
 			>
-				{processedData.map((company, index) => (
-					<CompanyItem
-						key={`${company.symbol}-${index}`}
-						company={company}
-						index={index}
-					/>
-				))}
+				<div
+					className="inline-block animate-ticker will-change-transform text-base font-medium motion-reduce:animate-none"
+					style={{
+						// Hardware acceleration optimizations
+						transform: "translateZ(0)",
+						backfaceVisibility: "hidden",
+						perspective: "1000px",
+						animationDuration: `${animationDuration}s`,
+					}}
+				>
+					{processedData.map((company, index) => (
+						<CompanyItem
+							key={`${company.symbol}-${index}`}
+							company={company}
+							index={index}
+						/>
+					))}
+				</div>
 			</div>
 		</div>
 	);

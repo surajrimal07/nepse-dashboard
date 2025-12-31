@@ -28,7 +28,6 @@ import { memo, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { browser } from "#imports";
 import { dashboardItems } from "@/components/dashboard-tab/menu-items";
-import ReloadExtension from "@/components/reload-extension";
 import { Title } from "@/components/scrolling-title";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
@@ -75,6 +74,7 @@ function Header() {
 	const { useStateItem, callAction } = useAppState();
 
 	const [isNotificationEnabled] = useStateItem("notification");
+	const [showTime, setShowTime] = useStateItem("showTime");
 
 	const router = useRouter();
 	const { user: authUser } = useAuth();
@@ -86,6 +86,17 @@ function Header() {
 			setActiveTab: selectSetActiveTab(state),
 		})),
 	);
+
+	const handleShowTimeToggle = useCallback(
+		(enabled: boolean) => {
+			setShowTime({
+				...showTime,
+				enabled,
+			});
+		},
+		[showTime, setShowTime],
+	);
+
 	// // Action handlers
 	const handleNotificationToggle = useCallback(
 		(enabled: boolean) => {
@@ -110,6 +121,10 @@ function Header() {
 		if (browser.runtime.openOptionsPage) {
 			void browser.runtime.openOptionsPage();
 		}
+	}, []);
+
+	const handleReload = useCallback(async () => {
+		callAction("handleReloadExtension").then(handleActionResult);
 	}, []);
 
 	const handleProfileClick = useCallback(() => {
@@ -142,6 +157,11 @@ function Header() {
 			checked: isNotificationEnabled,
 			onChange: handleNotificationToggle,
 		},
+		{
+			label: "Show Time",
+			checked: showTime?.enabled ?? true,
+			onChange: handleShowTimeToggle,
+		},
 	];
 
 	const helpMenuItems = [
@@ -161,14 +181,6 @@ function Header() {
 				</div>
 
 				<div className="flex items-center gap-0">
-					<Tooltip delayDuration={300}>
-						<TooltipTrigger asChild>
-							<ReloadExtension />
-						</TooltipTrigger>
-						<TooltipContent side="bottom">
-							<p>Reload extension</p>
-						</TooltipContent>
-					</Tooltip>
 					<Tooltip delayDuration={300}>
 						<TooltipTrigger asChild>
 							<ThemeToggle />
@@ -216,6 +228,12 @@ function Header() {
 								onSelect={handleBackupClick}
 							>
 								Backup & Restore
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								className="px-4 py-2"
+								onSelect={handleReload}
+							>
+								Reload Extension
 							</DropdownMenuItem>
 
 							<DropdownMenuSeparator className="bg-gray-800" />
