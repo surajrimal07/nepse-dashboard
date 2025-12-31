@@ -417,58 +417,33 @@ export default function PrivacyPage() {
 						We maintain full transparency through open-source development:
 					</p>
 
-					{/* Coming Soon Banner */}
-					<div className="bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20 border border-purple-500/40 rounded-xl p-5">
-						<div className="flex items-start gap-4">
-							<div className="w-12 h-12 rounded-xl bg-purple-500/30 flex items-center justify-center flex-shrink-0">
-								<span className="text-2xl">🚀</span>
-							</div>
-							<div>
-								<div className="flex items-center gap-2 mb-2">
-									<h4 className="font-bold text-purple-300">New Monorepo Coming Soon</h4>
-									<span className="px-2 py-0.5 bg-purple-500/30 text-purple-300 text-xs font-medium rounded-full">
-										Coming Soon
-									</span>
-								</div>
-								<p className="text-white/70 text-sm mb-3">
-									We are preparing a comprehensive monorepo containing the complete extension,
-									backend services, and all related tooling. The repository will be made public
-									after final cleanup (environment variables, sensitive configurations, etc.).
-								</p>
-								<p className="text-white/50 text-xs">
-									📌 The new repository will replace the legacy repo and include full documentation
-									for self-hosting and community contributions.
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Legacy Repo */}
-					<div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 rounded-xl p-6">
+					{/* Public Repository */}
+					<div className="bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-teal-500/20 border border-emerald-500/40 rounded-xl p-6">
 						<div className="flex items-center justify-between mb-4">
 							<div className="flex items-center gap-4">
 								<Github className="w-8 h-8" />
 								<div>
-									<h4 className="font-semibold">surajrimal07/tms-captcha</h4>
-									<p className="text-white/60 text-sm">Legacy Repository (MIT License)</p>
+									<h4 className="font-semibold">surajrimal07/nepse-dashboard</h4>
+									<p className="text-white/60 text-sm">Source Available License</p>
 								</div>
 							</div>
-							<span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-full">
-								Legacy
+							<span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full">
+								Public
 							</span>
 						</div>
 						<ul className="space-y-2 text-white/70 text-sm">
-							<li>• Publicly available source code</li>
-							<li>• Community code review and contributions</li>
+							<li>• Complete monorepo with extension, backend & all tooling</li>
+							<li>• Publicly available source code for full transparency</li>
+							<li>• Community code review and contributions welcome</li>
 							<li>• Documented data handling practices</li>
 							<li>• Open issue tracking and bug reporting</li>
 						</ul>
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha"
+							href="https://github.com/surajrimal07/nepse-dashboard"
 							target="_blank"
-							className="inline-flex items-center gap-2 mt-4 text-purple-400 hover:text-purple-300"
+							className="inline-flex items-center gap-2 mt-4 text-emerald-400 hover:text-emerald-300"
 						>
-							View Legacy Repository <ArrowRight className="w-4 h-4" />
+							View Repository <ArrowRight className="w-4 h-4" />
 						</Link>
 					</div>
 				</div>
@@ -485,7 +460,7 @@ export default function PrivacyPage() {
 					</p>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha"
+							href="https://github.com/surajrimal07/nepse-dashboard"
 							target="_blank"
 							className="bg-white/5 hover:bg-white/10 rounded-xl p-4 flex items-center gap-3 transition-colors"
 						>
@@ -498,7 +473,7 @@ export default function PrivacyPage() {
 							</div>
 						</Link>
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha/issues"
+							href="https://github.com/surajrimal07/nepse-dashboard/issues"
 							target="_blank"
 							className="bg-white/5 hover:bg-white/10 rounded-xl p-4 flex items-center gap-3 transition-colors"
 						>

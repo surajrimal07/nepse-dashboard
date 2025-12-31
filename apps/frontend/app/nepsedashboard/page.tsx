@@ -567,7 +567,7 @@ export default function WelcomePage() {
 							asChild
 						>
 							<Link
-								href="https://github.com/surajrimal07/tms-captcha"
+								href="https://github.com/surajrimal07/nepse-dashboard"
 								target="_blank"
 							>
 								<Github className="w-5 h-5 mr-2" />
@@ -649,7 +649,7 @@ export default function WelcomePage() {
 							Terms of Service
 						</Link>
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha"
+							href="https://github.com/surajrimal07/nepse-dashboard"
 							target="_blank"
 							className="hover:text-white transition-colors flex items-center gap-2"
 						>

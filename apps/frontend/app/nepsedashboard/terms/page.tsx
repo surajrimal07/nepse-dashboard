@@ -150,14 +150,14 @@ export default function TermsPage() {
 			content: (
 				<div className="space-y-4">
 					<p className="text-white/70">
-						This Extension is open-source software under the MIT License.
+						This Extension is open-source software under the Source Available License.
 					</p>
-					<div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 rounded-xl p-6">
+					<div className="bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-teal-500/20 border border-emerald-500/40 rounded-xl p-6">
 						<div className="flex items-center gap-4 mb-4">
 							<Github className="w-8 h-8" />
 							<div>
-								<h4 className="font-semibold">surajrimal07/tms-captcha</h4>
-								<p className="text-white/60 text-sm">MIT License</p>
+								<h4 className="font-semibold">surajrimal07/nepse-dashboard</h4>
+								<p className="text-white/60 text-sm">Source Available License</p>
 							</div>
 						</div>
 						<div className="grid grid-cols-2 gap-4 text-white/70 text-sm">
@@ -531,7 +531,7 @@ export default function TermsPage() {
 					</p>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha"
+							href="https://github.com/surajrimal07/nepse-dashboard"
 							target="_blank"
 							className="bg-white/5 hover:bg-white/10 rounded-xl p-4 flex items-center gap-3 transition-colors"
 						>
@@ -546,7 +546,7 @@ export default function TermsPage() {
 							</div>
 						</Link>
 						<Link
-							href="https://github.com/surajrimal07/tms-captcha/issues"
+							href="https://github.com/surajrimal07/nepse-dashboard/issues"
 							target="_blank"
 							className="bg-white/5 hover:bg-white/10 rounded-xl p-4 flex items-center gap-3 transition-colors"
 						>
