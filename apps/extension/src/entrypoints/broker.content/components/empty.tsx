@@ -11,7 +11,7 @@ export const EmptyAccountsState = memo(() => {
 	const handleOpenSidepanel = async () => {
 		try {
 			openSidepanel();
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			await new Promise((resolve) => setTimeout(resolve, 2500));
 			sendMessage("goToRoute", { route: "/account" });
 		} catch (_error) {
 			logger.info("Error opening sidepanel");

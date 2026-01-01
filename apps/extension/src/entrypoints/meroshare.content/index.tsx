@@ -1,18 +1,29 @@
 import { connect } from "crann-fork";
-import { type ContentScriptContext, defineContentScript } from "#imports";
-import { chrome_meroshare_url } from "@/constants/content-url";
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import {
+	type ContentScriptContext,
+	createShadowRootUi,
+	defineContentScript,
+} from "#imports";
+import { ContentErrorBoundary } from "@/components/content-error-boundary";
+import { ContentSuspense } from "@/components/content-suspense";
+import {
+	chrome_meroshare_url,
+	MEROSHARE_ORIGIN,
+} from "@/constants/content-url";
 import { onMessage } from "@/lib/messaging/window-messaging";
 import { appState } from "@/lib/service/app-service";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
 import type { WindowWithLibraries } from "@/types/content-types";
-import {
-	CONFIG,
-	MEROSHARE_LOGIN_URL,
-	MEROSHAREDASHBOARD_PATTERN,
-} from "@/types/content-types";
+import { CONFIG } from "@/types/content-types";
 import { logger } from "@/utils/logger";
+import { syncMeroshareData } from "./api";
 
+import "../../../../../packages/ui/src/styles/globals.css";
+import "sonner/dist/styles.css";
+import PortfolioWidgets from "./app";
 /**
  * Constants & Selectors
  */
@@ -40,6 +51,120 @@ const INPUT_EVENTS = ["input", "change", "keyup", "keydown"] as const;
 const SELECT_EVENTS = ["change", "select2:select"] as const;
 const MAX_LOGIN_ATTEMPTS = 5;
 
+// =============== SHADOW DOM UI MANAGEMENT ===============
+
+let mountedUi: Awaited<ReturnType<typeof createShadowRootUi>> | null = null;
+let mountedElements: { root: Root; wrapper: HTMLElement } | null = null;
+
+const ANCHOR_SELECTOR = ".page-title-wrapper";
+const MAX_WAIT_TIME = 5000; // 5 seconds max wait
+
+/**
+ * Wait for an element to appear in the DOM using MutationObserver
+ * Observes subtree since the anchor element is nested within Angular's router-outlet
+ */
+async function waitForElement(selector: string, timeout = MAX_WAIT_TIME): Promise<Element | null> {
+	// First check if already exists
+	const existing = document.querySelector(selector);
+	if (existing) return existing;
+
+	return new Promise((resolve) => {
+		let observer: MutationObserver | null = null;
+		let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+		const cleanup = () => {
+			observer?.disconnect();
+			if (timeoutId) clearTimeout(timeoutId);
+		};
+
+		observer = new MutationObserver(() => {
+			const element = document.querySelector(selector);
+			if (element) {
+				cleanup();
+				resolve(element);
+			}
+		});
+
+		// Observe subtree since .page-title-wrapper is nested within Angular's router-outlet
+		// This is necessary for SPA page transitions
+		observer.observe(document.body, { childList: true, subtree: true });
+
+		// Timeout fallback
+		timeoutId = setTimeout(() => {
+			cleanup();
+			resolve(null);
+		}, timeout);
+	});
+}
+
+async function mountUI(ctx: ContentScriptContext) {
+	if (mountedUi) return;
+
+	// Wait for anchor element to exist before mounting
+	const anchorElement = await waitForElement(ANCHOR_SELECTOR);
+	if (!anchorElement) {
+		logger.log("Meroshare: Anchor element not found, skipping UI mount");
+		return; // Silently fail - element never appeared
+	}
+
+	try {
+		mountedUi = await createShadowRootUi(ctx, {
+			name: "nepse-meroshare-widgets",
+			position: "inline",
+			anchor: ANCHOR_SELECTOR,
+			append: "after",
+			inheritStyles: false,
+			onMount: (container) => {
+				const wrapper = document.createElement("div");
+				wrapper.className = "nepse-meroshare-widgets";
+				wrapper.style.cssText = `
+					padding: 0;
+					margin: 8px 0;
+					font-family: inherit;
+				`;
+				container.appendChild(wrapper);
+
+				const root = createRoot(wrapper);
+				root.render(
+					<ContentErrorBoundary>
+						<ContentSuspense>
+							<PortfolioWidgets />
+						</ContentSuspense>
+					</ContentErrorBoundary>,
+				);
+
+				mountedElements = { root, wrapper };
+				return { root, wrapper };
+			},
+			onRemove: (elements) => {
+				elements?.root.unmount();
+				elements?.wrapper.remove();
+			},
+		});
+
+		mountedUi.mount();
+	} catch (error) {
+		logger.log("Meroshare: Failed to mount UI", error);
+		mountedUi = null;
+		mountedElements = null;
+	}
+}
+
+async function unmountUI() {
+	if (!mountedUi || !mountedElements) return;
+
+	const { wrapper, root } = mountedElements;
+
+	root.unmount();
+	wrapper.remove();
+
+	mountedUi.remove();
+	mountedUi = null;
+	mountedElements = null;
+}
+
+// =============== MEROSHARE AUTOMATION CLASS ===============
+
 /**
  * MeroshareAutomation Class
  * Reactive, class-based automation for Meroshare login.
@@ -65,16 +190,16 @@ class MeroshareAutomation {
 
 	// Observers
 	private toastObserver: MutationObserver | null = null;
-	private formObserver: MutationObserver | null = null; // For autosave monitoring
-	private select2Observer: MutationObserver | null = null; // For Select2 change monitoring
+	private formObserver: MutationObserver | null = null;
+	private select2Observer: MutationObserver | null = null;
 
-	// Active Input Elements (to track attachments for autosave)
+	// Active Input Elements
 	private currentUsernameEl: HTMLInputElement | null = null;
 	private currentPasswordEl: HTMLInputElement | null = null;
 	private currentDpNativeEl: HTMLSelectElement | null = null;
 	private currentDpSelect2El: HTMLElement | null = null;
 
-	// Credential Monitoring (Manual Type)
+	// Credential Monitoring
 	private monitoredCredentials = {
 		username: "",
 		password: "",
@@ -92,10 +217,8 @@ class MeroshareAutomation {
 		if (this.isActive) return;
 		this.isActive = true;
 
-		// 1. Listen for global messages
 		this.setupGlobalMessageListeners();
 
-		// 2. Subscribe
 		this.appConnection.subscribe(
 			async (state) => {
 				this.accounts = state.accounts ?? [];
@@ -104,14 +227,11 @@ class MeroshareAutomation {
 			["accounts", "autofills", "autoSaveNewAccount"],
 		);
 
-		// Initial Check
 		await this.syncState();
 	}
 
 	private async syncState() {
-		const onDashboard = MEROSHAREDASHBOARD_PATTERN.test(window.location.href);
-
-		if (onDashboard) {
+		if (isMeroshareDashboard(window.location.href)) {
 			if (this.isRunning) {
 				logger.log("Meroshare: On Dashboard, stopping automation.");
 				this.stop();
@@ -119,7 +239,6 @@ class MeroshareAutomation {
 			return;
 		}
 
-		// On Login Page
 		if (window.location.href.includes("#/login")) {
 			if (!this.isRunning) {
 				await this.start();
@@ -128,8 +247,6 @@ class MeroshareAutomation {
 			}
 		}
 	}
-
-	// --- Lifecycle ---
 
 	public async start() {
 		logger.log("Meroshare Automation: Starting...");
@@ -140,7 +257,6 @@ class MeroshareAutomation {
 		this.enableAutoSaveModule();
 		this.enableToastObserver();
 
-		// Check if account has error initially to set flag
 		if (
 			this.currentAccount?.error &&
 			this.isPasswordError(this.currentAccount.error)
@@ -148,10 +264,8 @@ class MeroshareAutomation {
 			this.hasPasswordError = true;
 		}
 
-		// Start the loop
 		this.autoLoginAttempts = 0;
 		if (this.currentAccount) {
-			// Trigger first attempt immediately
 			this.attemptAutoLogin();
 		}
 	}
@@ -180,7 +294,6 @@ class MeroshareAutomation {
 			this.retryTimer = null;
 		}
 
-		// Cleanup Refs
 		this.currentUsernameEl = null;
 		this.currentPasswordEl = null;
 		this.currentDpNativeEl = null;
@@ -196,20 +309,17 @@ class MeroshareAutomation {
 			matchingAccounts[0] ||
 			null;
 
-		// Detect change
 		const isSameAccount = newAccount?.alias === this.currentAccount?.alias;
 
 		if (!isSameAccount) {
 			this.currentAccount = newAccount;
 			if (this.isRunning && this.currentAccount) {
-				// Reset all counters and state on account switch
 				this.autoLoginAttempts = 0;
 				this.hasPasswordError = false;
-				this.lastProcessedMessage = ""; // Clear toast deduplication
+				this.lastProcessedMessage = "";
 				this.attemptAutoLogin();
 			}
 		} else {
-			// Same Account - Check if error cleared
 			const hadError = !!this.currentAccount?.error;
 			const hasError = !!newAccount?.error;
 
@@ -219,16 +329,13 @@ class MeroshareAutomation {
 				logger.log("Meroshare: Account error cleared. Retrying login...");
 				this.autoLoginAttempts = 0;
 				this.hasPasswordError = false;
-				this.lastProcessedMessage = ""; // Clear toast deduplication
+				this.lastProcessedMessage = "";
 				this.attemptAutoLogin();
 			}
 		}
 	}
 
-	// --- Core Auto-Login Logic ---
-
 	private async attemptAutoLogin() {
-		// 1. Connectivity / State Checks
 		if (!this.isRunning || !this.currentAccount) return;
 
 		const isAutofillEnabled = this.appConnection.get().autofills.meroshare;
@@ -237,29 +344,21 @@ class MeroshareAutomation {
 			return;
 		}
 
-		// 2. Identify if we are in a "Password Error" state
-		//    Matches user req: "if it is password error we pause autologin... show user we are pausing"
 		const isPassError =
 			this.hasPasswordError ||
 			(this.currentAccount.error &&
 				this.isPasswordError(this.currentAccount.error));
 
-		// 3. Fill Credentials (ALWAYS, even on error)
-		//    "try to fix the error faster rather then again filling everything manually"
 		const filled = await this.retryFillCredentials(this.currentAccount);
 
 		if (!filled) {
 			logger.log("Meroshare: Could not find login form elements.");
-			// If we can't search form, we can't submit.
-			// We will retry finding form based on backoff
 			this.scheduleNextAttempt();
 			return;
 		}
 
-		// 4. Handle Password Error State (Stop)
 		if (isPassError) {
 			logger.log("Meroshare: Pausing due to password error. Form filled.");
-			// We stop, do not submit, do not schedule retry.
 			this.stop();
 
 			await this.appConnection.callAction(
@@ -270,7 +369,6 @@ class MeroshareAutomation {
 			return;
 		}
 
-		// 5. Handle Max Attempts (Stop)
 		if (this.autoLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
 			logger.log("Meroshare: Max login attempts reached.");
 			await this.appConnection.callAction(
@@ -287,21 +385,16 @@ class MeroshareAutomation {
 			return;
 		}
 
-		// 6. Submit (If clean state)
 		logger.log(
 			`Meroshare: Submitting form (Attempt ${this.autoLoginAttempts + 1}/${MAX_LOGIN_ATTEMPTS})`,
 		);
 		this.submitForm();
 
-		// 7. Schedule Next Retry (Backoff)
-		//    "suppose we did not recieve anything... repeat... with backoff timer"
 		this.scheduleNextAttempt();
 	}
 
 	private scheduleNextAttempt() {
 		this.autoLoginAttempts++;
-
-		// Backoff logic
 		const backoff = this.autoLoginAttempts * 2000 + 1000;
 
 		logger.log(
@@ -324,10 +417,7 @@ class MeroshareAutomation {
 		);
 	}
 
-	// --- Modules ---
-
 	private async retryFillCredentials(account: Account): Promise<boolean> {
-		// Handle empty/invalid broker value
 		const brokerValue = account.broker?.toString().trim();
 		if (!brokerValue || brokerValue === "0") {
 			console.warn(
@@ -342,7 +432,6 @@ class MeroshareAutomation {
 			return false;
 		}
 
-		// Try to find and fill form for a short duration
 		for (let i = 0; i < MAX_RETRIES; i++) {
 			const dpSuccess = await this.fillDP(brokerValue);
 			if (dpSuccess) {
@@ -353,12 +442,10 @@ class MeroshareAutomation {
 			await new Promise((r) => setTimeout(r, DELAY));
 		}
 
-		// All retries exhausted - notify user
 		console.warn("Meroshare: Could not set broker dropdown after retries");
 		return false;
 	}
 
-	// Kept for manual usage if needed
 	private async fillCredentials(account: Account) {
 		if (account.broker) {
 			await this.fillDP(account.broker.toString());
@@ -366,8 +453,6 @@ class MeroshareAutomation {
 		this.fillInput(SELECTORS.USERNAME, account.username);
 		this.fillInput(SELECTORS.PASSWORD, account.password);
 	}
-
-	// --- AutoSave Monitor ---
 
 	private enableAutoSaveModule() {
 		this.checkForInputs();
@@ -446,7 +531,6 @@ class MeroshareAutomation {
 					?.textContent?.trim() ?? "";
 			let lastText = rendered();
 
-			// Cleanup previous observer if exists
 			if (this.select2Observer) {
 				this.select2Observer.disconnect();
 			}
@@ -507,15 +591,11 @@ class MeroshareAutomation {
 		}
 	}
 
-	// --- Toast & Error Handling ---
-
 	private enableToastObserver() {
 		this.toastObserver = new MutationObserver((mutations) => {
 			for (const m of mutations) {
 				if (m.type === "childList" && m.addedNodes.length > 0) {
-					// Check added nodes for toast class
 					const added = m.addedNodes[0] as HTMLElement;
-					// Some toasts are direct children, others nested
 					if (
 						added.classList?.contains("toast-message") ||
 						added.querySelector?.(".toast-message")
@@ -539,7 +619,6 @@ class MeroshareAutomation {
 	}
 
 	private handleToastMessage(text: string) {
-		// Clean text: remove the close icon (×) content if captured
 		const cleanText = text.replace(/[×x]/g, "").trim();
 
 		if (!cleanText || cleanText === this.lastProcessedMessage) return;
@@ -559,7 +638,6 @@ class MeroshareAutomation {
 				cleanText.toLowerCase().includes("error"));
 
 		if (isCredError) {
-			// Prevent duplicate handling if we already caught a fatal error in this session
 			if (this.hasPasswordError) return;
 
 			this.hasPasswordError = true;
@@ -571,7 +649,6 @@ class MeroshareAutomation {
 				);
 			}
 
-			// Stop immediately
 			this.stop();
 
 			this.appConnection.callAction(
@@ -580,19 +657,15 @@ class MeroshareAutomation {
 				"error",
 			);
 
-			// Refill form for manual fix
 			if (this.currentAccount) {
 				this.fillCredentials(this.currentAccount);
 			}
 		} else {
-			// Other error - just log. The automatic retry loop (setTimeout) will handle the retry.
 			logger.log(
 				"Non-critical error detected. Will retry automatically based on backoff timer.",
 			);
 		}
 	}
-
-	// --- Dom Helpers ---
 
 	private submitForm() {
 		const btn = document.querySelector<HTMLButtonElement>(SELECTORS.LOGIN_BTN);
@@ -688,7 +761,6 @@ class MeroshareAutomation {
 		return true;
 	}
 
-	// --- Global Msg ---
 	private setupGlobalMessageListeners() {
 		onMessage("manualLoginMero", async ({ data }) => {
 			if (data.error) {
@@ -705,7 +777,7 @@ class MeroshareAutomation {
 
 	private async performManualLogin(account: Account) {
 		this.currentAccount = account;
-		this.hasPasswordError = false; // Reset error on manual trigger
+		this.hasPasswordError = false;
 
 		await this.fillCredentials(account);
 		this.submitForm();
@@ -718,37 +790,115 @@ function fireEvents(element: HTMLElement, events: readonly string[]) {
 	}
 }
 
+// =============== URL HELPERS ===============
+
+export function isMeroshareLogin(url: string): boolean {
+	try {
+		const u = new URL(url);
+		return u.origin === MEROSHARE_ORIGIN && u.hash === "#/login";
+	} catch {
+		return false;
+	}
+}
+
+export function isMeroshareDashboard(url: string): boolean {
+	try {
+		const u = new URL(url);
+		return (
+			u.origin === MEROSHARE_ORIGIN &&
+			u.hash.startsWith("#/") &&
+			u.hash !== "#/login"
+		);
+	} catch {
+		return false;
+	}
+}
+
+export function isMerosharePortfolio(url: string): boolean {
+	try {
+		const u = new URL(url);
+		return u.origin === MEROSHARE_ORIGIN && u.hash === "#/portfolio";
+	} catch {
+		return false;
+	}
+}
+
+// =============== MAIN CONTENT SCRIPT ===============
+
 export default defineContentScript({
 	matches: [chrome_meroshare_url],
+	cssInjectionMode: "ui",
 	runAt: "document_idle",
+
 	async main(ctx: ContentScriptContext) {
 		const automation = new MeroshareAutomation();
+		let initialized = false;
+		let lastUrl = window.location.href;
 
-		const currentUrl = window.location.href;
-		if (currentUrl.includes(MEROSHARE_LOGIN_URL)) {
-			await automation.init();
+		const handleUrl = async (url: string) => {
 
-			await automation.start();
-		} else if (MEROSHAREDASHBOARD_PATTERN.test(currentUrl)) {
-			automation.stop();
-		}
+			// Login page - run automation
+			if (isMeroshareLogin(url)) {
+				await unmountUI();
 
-		// Watch for location changes
-		ctx.addEventListener(window, "wxt:locationchange", async ({ newUrl }) => {
-			const urlStr = newUrl.toString();
-
-			if (urlStr.includes("#/login")) {
+				if (!initialized) {
+					await automation.init();
+					initialized = true;
+				}
 				await automation.start();
-			} else if (MEROSHAREDASHBOARD_PATTERN.test(urlStr)) {
-				logger.log("Meroshare: Dashboard detected via WXT.");
-				// Stop automation explicitly and cleanup
-				await automation.handleChangeToDashboardPage();
-
-				// Handle Autosave
-				await automation.handleAutoSaveCredentials();
+				return;
 			}
+
+			// Dashboard pages
+			if (isMeroshareDashboard(url)) {
+				automation.stop();
+				await Promise.all([
+					automation.handleChangeToDashboardPage(),
+					automation.handleAutoSaveCredentials(),
+				]);
+
+				// Auto-sync client details, WACC, and transactions on dashboard
+				syncMeroshareData();
+				// createShadowRootUi handles waiting for anchor element internally
+				if (isMerosharePortfolio(url)) {
+					await mountUI(ctx);
+				} else {
+					await unmountUI();
+				}
+
+				return;
+			}
+		};
+
+		// Handle initial load
+		await handleUrl(lastUrl);
+
+		// Handle SPA navigation (hash changes)
+		ctx.addEventListener(window, "wxt:locationchange", async ({ newUrl }) => {
+			const newUrlStr = newUrl.toString();
+			const wasOnLogin = isMeroshareLogin(lastUrl);
+			const goingToLogin = isMeroshareLogin(newUrlStr);
+
+			// Always handle portfolio mount/unmount regardless of where we came from
+			if (isMerosharePortfolio(newUrlStr)) {
+				await mountUI(ctx);
+			} else if (isMerosharePortfolio(lastUrl) && !isMerosharePortfolio(newUrlStr)) {
+				// Unmount only when leaving portfolio page
+				await unmountUI();
+			}
+
+			// Run handleUrl when:
+			// 1. Coming FROM login page (successful login → dashboard)
+			// 2. Going TO login page (user logout → need to restart automation)
+			if (wasOnLogin || goingToLogin) {
+				await handleUrl(newUrlStr);
+			}
+
+			// Update lastUrl for next navigation
+			lastUrl = newUrlStr;
 		});
 
+		// Cleanup
 		ctx.addEventListener(window, "beforeunload", () => {
 			automation.stop();
 		});

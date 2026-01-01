@@ -33,6 +33,7 @@ import type { newsDatatype, ParsedDocument } from "@/types/news-types";
 import type { NotificationVariant } from "@/types/notification-types";
 import type { modeType } from "@/types/search-type";
 import { MODES } from "@/types/search-type";
+import type { timeType } from "@/types/sidepanel-type";
 import type { Config } from "@/types/user-types";
 import { buildChartUrl } from "@/utils/built-chart-url";
 import { generateChat } from "../actions/generate-chat";
@@ -42,7 +43,6 @@ import { checkConfig } from "../actions/test-key";
 import { Increment, Track, TrackPage } from "../analytics/analytics";
 import { handleNotification } from "../notification/handle-notification";
 import { deleteAccount, makePrimary } from "./helpers";
-import type { timeType } from "@/types/sidepanel-type";
 
 // const lastConsumeCheck = 0;
 const SUMMARY_TIMEOUT_MS = 30000;
@@ -128,12 +128,12 @@ export const appState = createConfig({
 		default: {
 			enabled: true,
 			type: "currentTime",
-
 		} as timeType,
 		persist: Persistence.Local,
 	},
 
 	aiSettings: {
+		//new
 		// make this set of <providers aiSettings>, providers means openai, cohere etc
 		default: {
 			model: null,
@@ -144,6 +144,7 @@ export const appState = createConfig({
 		persist: Persistence.Local,
 	},
 	aiConfig: {
+		//old
 		default: {} as LLMConfig,
 		persist: Persistence.Local,
 	},
@@ -285,6 +286,18 @@ export const appState = createConfig({
 		validate: (settings: AISettings) => {
 			if (typeof settings !== "object")
 				throw new Error("Settings must be an object");
+		},
+	},
+
+	isMarketOpen: {
+		handler: async (
+			_state: any,
+			_setState: (newState: Partial<any>) => Promise<void>,
+			_target: BrowserLocation,
+		) => {
+			const client = getConvexClient();
+			const marketStatus = await client.query(api.marketStatus.isOpen, {});
+			return marketStatus;
 		},
 	},
 
@@ -601,6 +614,30 @@ export const appState = createConfig({
 				return { success: true, message: "Telegram opened successfully." };
 			} catch {
 				return { success: false, message: "Failed to open Telegram." };
+			}
+		},
+	},
+	handleGithub: {
+		handler: async (
+			_state: any,
+			_setState: (newState: Partial<any>) => Promise<void>,
+			_target: BrowserLocation,
+		) => {
+			try {
+				await browser.tabs.create({ url: URLS.github_url });
+
+				void TrackPage({
+					context: Env.BACKGROUND,
+					path: "/github-repository",
+					title: "GitHub Repository",
+				});
+
+				return {
+					success: true,
+					message: "GitHub repository opened successfully.",
+				};
+			} catch {
+				return { success: false, message: "Failed to open GitHub repository." };
 			}
 		},
 	},

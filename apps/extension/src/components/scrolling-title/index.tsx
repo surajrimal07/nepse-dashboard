@@ -1,8 +1,8 @@
 import type { Doc } from "@nepse-dashboard/convex/convex/_generated/dataModel";
 import { useRouter } from "@tanstack/react-router";
 import { memo, useMemo } from "react";
-import { CONFIG } from "@/constants/app-config";
 import { TimeBadge } from "@/components/time";
+import { CONFIG } from "@/constants/app-config";
 import { useCompanyList } from "@/hooks/convex/useCompanyList";
 import { useAppState } from "@/hooks/use-app";
 import { cn } from "@/lib/utils";
@@ -85,6 +85,7 @@ function TitleComponent() {
 	const { useStateItem } = useAppState();
 	const [stockScrollingPopup] = useStateItem("stockScrollingPopup");
 	const [stockScrollingInSidepanel] = useStateItem("stockScrollingInSidepanel");
+	const [config] = useStateItem("showTime");
 
 	// Determine if scrolling is enabled based on environment
 	const isScrollingEnabled = isSidebar
@@ -149,7 +150,7 @@ function TitleComponent() {
 			<div
 				className={cn(
 					"overflow-hidden whitespace-nowrap min-w-0",
-					isSidebar ? "flex-1" : "w-[260px]",
+					isSidebar ? "flex-1" : config.enabled ? "w-[245px]" : "w-[320px]",
 				)}
 			>
 				<div

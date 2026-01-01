@@ -3,6 +3,7 @@ export const MEROSHARE_LOGIN_URL = "meroshare.cdsc.com.np";
 export const NAASAX_LOGIN_URL = "auth.naasasecurities.com.np/";
 
 // export const chrome_tms_url = 'https://*.nepsetms.com.np/*'
+export const MEROSHARE_ORIGIN = "https://meroshare.cdsc.com.np";
 export const chrome_meroshare_url = "*://meroshare.cdsc.com.np/*";
 export const chrome_naasax_url = "*://auth.naasasecurities.com.np/*";
 export const chrome_naasa_dashboard_url =

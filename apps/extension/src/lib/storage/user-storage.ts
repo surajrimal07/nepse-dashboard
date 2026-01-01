@@ -2,7 +2,7 @@ import { storage } from "#imports";
 import type { User, UserFields } from "@/types/user-types";
 import { generateId } from "@/utils/utils";
 
-export const userItem = storage.defineItem<User>("local:sync", {
+export const userItem = storage.defineItem<User>("sync:user", {
 	init: () => ({
 		randomId: generateId(),
 		email: null,

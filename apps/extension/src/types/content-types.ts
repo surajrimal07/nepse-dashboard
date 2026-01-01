@@ -47,8 +47,8 @@ export const CONFIG: Readonly<Config> = {
   SELECTORS: FormSelectors,
 }
 
-export const MEROSHAREDASHBOARD_PATTERN = /#\/dashboard/
-export const MEROSHARE_LOGIN_URL = 'meroshare.cdsc.com.np/#/login' as const
+// export const MEROSHAREDASHBOARD_PATTERN = /#\/dashboard/
+// export const MEROSHARE_LOGIN_URL = 'meroshare.cdsc.com.np/#/login' as const
 export const TMS_DASHBOARD_PATTERN = /\/tms\//
 
 export interface WindowWithLibraries extends Window {

@@ -29,7 +29,6 @@ import { useShallow } from "zustand/react/shallow";
 import { browser } from "#imports";
 import { dashboardItems } from "@/components/dashboard-tab/menu-items";
 import { Title } from "@/components/scrolling-title";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { UniversalErrorBoundry } from "@/components/universal-error-boundary";
 import { handleActionResult } from "@/hooks/handle-action";
 import { useAppState } from "@/hooks/use-app";
@@ -113,8 +112,12 @@ function Header() {
 	const handleTerms = useCallback(() => {
 		callAction("handleTermsOfService").then(handleActionResult);
 	}, []);
-	const review = useCallback(() => {
+	const handleReview = useCallback(() => {
 		callAction("handleReview").then(handleActionResult);
+	}, []);
+
+	const handleGithub = useCallback(() => {
+		callAction("handleGithub").then(handleActionResult);
 	}, []);
 
 	const handleOpenOptions = useCallback(() => {
@@ -168,7 +171,8 @@ function Header() {
 		{ label: "Join Telegram", handler: handleTelegram },
 		{ label: "Privacy Policy", handler: handlePrivacy },
 		{ label: "Terms of Service", handler: handleTerms },
-		{ label: "Review Us", handler: review },
+		{ label: "Review Us", handler: handleReview },
+		{ label: "GitHub Repository", handler: handleGithub },
 	];
 
 	return (
@@ -179,17 +183,7 @@ function Header() {
 						<Title />
 					</UniversalErrorBoundry>
 				</div>
-
 				<div className="flex items-center gap-0">
-					<Tooltip delayDuration={300}>
-						<TooltipTrigger asChild>
-							<ThemeToggle />
-						</TooltipTrigger>
-						<TooltipContent side="bottom">
-							<p>Toggle theme</p>
-						</TooltipContent>
-					</Tooltip>
-
 					<DropdownMenu>
 						<Tooltip>
 							<TooltipTrigger asChild>
@@ -229,10 +223,7 @@ function Header() {
 							>
 								Backup & Restore
 							</DropdownMenuItem>
-							<DropdownMenuItem
-								className="px-4 py-2"
-								onSelect={handleReload}
-							>
+							<DropdownMenuItem className="px-4 py-2" onSelect={handleReload}>
 								Reload Extension
 							</DropdownMenuItem>
 

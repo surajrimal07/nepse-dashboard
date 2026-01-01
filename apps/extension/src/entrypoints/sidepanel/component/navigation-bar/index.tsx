@@ -67,7 +67,7 @@ export const NavigationBar = memo(() => {
 
 	return (
 		<nav className="w-full border-t bg-card z-20" aria-label="Main navigation">
-			<div className="flex justify-around p-1">
+			<div className="flex justify-around p-1 gap-0.5">
 				{tabs.map((tab) => (
 					<Button
 						key={tab.alias}
