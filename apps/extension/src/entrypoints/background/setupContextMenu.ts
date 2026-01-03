@@ -4,27 +4,30 @@ import { sendMessage } from "@/lib/messaging/extension-messaging";
 import { Env, EventName } from "@/types/analytics-types";
 
 export function setupContextMenu() {
-	browser.contextMenus.create({
-		id: "parent",
-		title: "Nepse Dashboard",
-		type: "normal",
-		contexts: ["all"],
-	});
+	// Remove all existing context menus first to prevent duplicate ID errors
+	browser.contextMenus.removeAll(() => {
+		browser.contextMenus.create({
+			id: "parent",
+			title: "Nepse Dashboard",
+			type: "normal",
+			contexts: ["all"],
+		});
 
-	browser.contextMenus.create({
-		id: "toggleSidebar",
-		parentId: "parent",
-		type: "normal",
-		title: "Open Panel",
-		contexts: ["all"],
-	});
+		browser.contextMenus.create({
+			id: "toggleSidebar",
+			parentId: "parent",
+			type: "normal",
+			title: "Open Panel",
+			contexts: ["all"],
+		});
 
-	browser.contextMenus.create({
-		id: "togglechatwithai",
-		parentId: "parent",
-		type: "normal",
-		title: "Chat with AI",
-		contexts: ["all"],
+		browser.contextMenus.create({
+			id: "togglechatwithai",
+			parentId: "parent",
+			type: "normal",
+			title: "Chat with AI",
+			contexts: ["all"],
+		});
 	});
 
 	// Setup click listener

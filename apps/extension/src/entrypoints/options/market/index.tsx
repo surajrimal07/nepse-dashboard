@@ -2,12 +2,15 @@ import { CardContent } from "@nepse-dashboard/ui/components/card";
 import { Label } from "@nepse-dashboard/ui/components/label";
 import { Separator } from "@nepse-dashboard/ui/components/separator";
 import { Switch } from "@nepse-dashboard/ui/components/switch";
+import { useCallback } from "#imports";
+import { handleActionResult } from "@/hooks/handle-action";
 import { useAppState } from "@/hooks/use-app";
+import type { timeType } from "@/types/sidepanel-type";
 
 export default function NepseSettings() {
-	const { useStateItem } = useAppState();
+	const { useStateItem, callAction } = useAppState();
 
-	const [showTime, setShowTime] = useStateItem("showTime");
+	const [showTime] = useStateItem("showTime");
 
 	const [stockScrolling, setStockScrolling] = useStateItem(
 		"stockScrollingPopup",
@@ -15,6 +18,13 @@ export default function NepseSettings() {
 
 	const [stockScrollingSidepane, setStockScrollingSidepane] = useStateItem(
 		"stockScrollingInSidepanel",
+	);
+
+	const handleTimeUpdate = useCallback(
+		(data: timeType) => {
+			callAction("updateTIme", data).then(handleActionResult);
+		},
+		[callAction],
 	);
 
 	return (
@@ -30,14 +40,14 @@ export default function NepseSettings() {
 					<Switch
 						checked={showTime.enabled}
 						onCheckedChange={(checked) =>
-							setShowTime({ ...showTime, enabled: checked })
+							handleTimeUpdate({ ...showTime, enabled: checked })
 						}
 					/>
 					<select
 						className="border rounded px-2 py-1 text-sm bg-background"
 						value={showTime.type}
 						onChange={(e) =>
-							setShowTime({
+							handleTimeUpdate({
 								...showTime,
 								type: e.target.value as "currentTime" | "countdown",
 							})

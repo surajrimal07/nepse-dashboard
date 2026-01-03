@@ -3,6 +3,7 @@ import { lazy, memo, Suspense } from "react";
 import { DraggableCard } from "@/components/content-ui/draggable-card";
 import { useDragCardState } from "@/components/content-ui/store";
 import LoadingDots from "@/components/loading-dots";
+import { useAppState } from "@/hooks/use-app";
 import useScreenView from "@/hooks/usePageView";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,10 @@ import { Env, EventName } from "@/types/analytics-types";
 import { NewsHeader } from "./components/header";
 import { LoadingUI } from "./components/loading-ui";
 import { useNewsState } from "./store";
+
+const ApiKeyRequired = lazy(
+	() => import("@/entrypoints/news.content/components/api-key-requires"),
+);
 
 const NewsBottomBar = lazy(
 	() => import("@/entrypoints/news.content/components/news-bottom-bar"),
@@ -45,8 +50,10 @@ const NewsContent = memo(({ language, onClose }: NewsContentProps) => {
 	if (isLoading) return <LoadingUI />;
 	if (error === AI_CODES.AUTH_ERROR) return <LoginRequired />;
 
+	if (error === AI_CODES.MISSING_PARAMS) return <ApiKeyRequired />;
+
 	if (error) {
-		track({
+		void track({
 			context: Env.CONTENT,
 			eventName: EventName.NEWS_ERROR,
 			params: { error, location: "news-content-app" },
@@ -83,6 +90,10 @@ NewsContent.displayName = "NewsContent";
 export default function App({ onClose }: { onClose: () => void }) {
 	useScreenView("/news-content", "News Content");
 
+	const { useStateItem } = useAppState();
+
+	const [aiConfig] = useStateItem("aiSettings");
+
 	const isCollapsed = useDragCardState((state) => state.isCollapsed);
 	const language = useDragCardState((state) => state.language);
 	const toggleCollapsed = useDragCardState((state) => state.toggleCollapsed);
@@ -107,7 +118,11 @@ export default function App({ onClose }: { onClose: () => void }) {
 				>
 					<div className="p-1 bg-white flex flex-col max-h-[430px]">
 						<Suspense fallback={<LoadingDots className="scale-110" />}>
-							<NewsContent language={language} onClose={onClose} />
+							{aiConfig == null || aiConfig?.hasKeys === false ? (
+								<ApiKeyRequired />
+							) : (
+								<NewsContent language={language} onClose={onClose} />
+							)}
 						</Suspense>
 					</div>
 				</div>

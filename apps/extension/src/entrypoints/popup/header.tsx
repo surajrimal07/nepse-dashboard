@@ -73,7 +73,7 @@ function Header() {
 	const { useStateItem, callAction } = useAppState();
 
 	const [isNotificationEnabled] = useStateItem("notification");
-	const [showTime, setShowTime] = useStateItem("showTime");
+	const [showTime] = useStateItem("showTime");
 
 	const router = useRouter();
 	const { user: authUser } = useAuth();
@@ -87,13 +87,13 @@ function Header() {
 	);
 
 	const handleShowTimeToggle = useCallback(
-		(enabled: boolean) => {
-			setShowTime({
+		async (enabled: boolean) => {
+			await callAction("updateTIme", {
 				...showTime,
 				enabled,
 			});
 		},
-		[showTime, setShowTime],
+		[showTime],
 	);
 
 	// // Action handlers

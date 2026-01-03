@@ -59,7 +59,13 @@ export const newsState = createStore<NewsState>()(
 					// pause for 2 seconds to allow route change to complete
 					await new Promise((resolve) => setTimeout(resolve, 1500));
 					await sendMessage("goToRoute", { route: "/keys" });
-				} catch (_error) {
+				} catch (error) {
+					void track({
+						context: Env.CONTENT,
+						eventName: EventName.UNABLE_TO_OPEN_SIDE_PANEL,
+						params: { error: error as string, location: "useSidepanel" },
+					});
+
 					logger.info("Likely sidepanel is already open");
 				}
 			},

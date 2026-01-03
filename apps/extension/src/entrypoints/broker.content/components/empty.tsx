@@ -2,18 +2,29 @@ import { Button } from "@nepse-dashboard/ui/components/button";
 import { ExternalLink } from "lucide-react";
 import { memo } from "react";
 import { useSidepanel } from "@/hooks/open-sidepanel";
+import { useAppState } from "@/hooks/use-app";
+import { track } from "@/lib/analytics";
 import { sendMessage } from "@/lib/messaging/extension-messaging";
+import { Env, EventName } from "@/types/analytics-types";
 import { logger } from "@/utils/logger";
 
 export const EmptyAccountsState = memo(() => {
+	const { callAction } = useAppState();
+
 	const { open, openSidepanel } = useSidepanel();
 
 	const handleOpenSidepanel = async () => {
 		try {
-			openSidepanel();
-			await new Promise((resolve) => setTimeout(resolve, 2500));
+			await openSidepanel();
 			sendMessage("goToRoute", { route: "/account" });
-		} catch (_error) {
+			await callAction("setIsAddingAccount", true);
+		} catch (error) {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.UNABLE_TO_OPEN_SIDE_PANEL,
+				params: { error: error as string, location: "broker-content-app" },
+			});
+
 			logger.info("Error opening sidepanel");
 		}
 	};

@@ -1,6 +1,7 @@
 import { suspensionManager } from "@/entrypoints/background/suspension-manager";
 import { userWatcher } from "@/entrypoints/background/user-watcher";
 import { OP } from "@/lib/analytics/op";
+import { IdentifyUser } from "./analytics";
 
 let unsubscribe: (() => void) | null = null;
 let registered = false;
@@ -8,6 +9,9 @@ let registered = false;
 export function autoIdentify() {
 	// Stop previous watcher if any
 	unsubscribe?.();
+
+	//Identify immediately if user is already present
+	IdentifyUser();
 
 	// Start new watcher
 	unsubscribe = userWatcher.subscribe(async (user) => {

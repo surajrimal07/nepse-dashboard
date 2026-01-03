@@ -1,32 +1,23 @@
-import clsx from "clsx";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/lib/utils";
 import type { modeType } from "@/types/search-type";
-import { selectIsDark, selectMode, selectSetMode } from "../selectors";
+import { selectMode, selectSetMode } from "../selectors";
 import { useSearchState } from "../store";
 import { options } from "../utils";
 
-function getLabelTextClass(isDark: boolean) {
-	return clsx(
-		"text-sm select-none",
-		isDark ? "text-zinc-200" : "text-slate-800",
-	);
-}
+const getLabelTextClass = () => "text-sm select-none text-zinc-200";
 
 const getContainerClass = () => "flex w-full justify-center gap-10 pb-1";
 
 const getLabelWrapperClass = () => "flex items-center gap-1.5 cursor-pointer";
 
-function iconClass(isDark: boolean) {
-	return cn("w-3 h-3", isDark ? "text-zinc-200" : "text-slate-800");
-}
+const iconClass = () => cn("w-3 h-3", "text-zinc-200");
 
 const getIconTextWrapperClass = () => "flex items-center gap-0.5";
 
 export function ModeSelector() {
-	const { isDark, mode, setMode } = useSearchState(
+	const { mode, setMode } = useSearchState(
 		useShallow((state) => ({
-			isDark: selectIsDark(state),
 			mode: selectMode(state),
 			setMode: selectSetMode(state),
 		})),
@@ -54,8 +45,8 @@ export function ModeSelector() {
 							style={{ accentColor: "#71717a", cursor: "pointer" }}
 						/>
 						<div className={getIconTextWrapperClass()}>
-							<Icon className={iconClass(isDark)} />
-							<span className={getLabelTextClass(isDark)}>{opt.label}</span>
+							<Icon className={iconClass()} />
+							<span className={getLabelTextClass()}>{opt.label}</span>
 						</div>
 					</label>
 				);

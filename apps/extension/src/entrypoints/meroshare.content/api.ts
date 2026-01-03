@@ -1,3 +1,14 @@
+import { track } from "@/lib/analytics";
+import { Env, EventName } from "@/types/analytics-types";
+import { logger } from "@/utils/logger";
+import {
+	clearWaccPendingError,
+	setClientDetails,
+	setPortfolioApi,
+	setTransactions,
+	setWacc,
+	setWaccPendingError,
+} from "../../lib/storage/meroshare-storage";
 import type {
 	ClientDetails,
 	PortfolioApiItem,
@@ -6,13 +17,14 @@ import type {
 	WaccApiItem,
 	WaccApiResponse,
 } from "../../types/meroshare-type";
-import { setClientDetails, setPortfolioApi, setTransactions, setWacc, setWaccPendingError, clearWaccPendingError } from "../../lib/storage/meroshare-storage";
 
 // =============== API URLs ===============
 
-const OWN_DETAIL_URL = "https://webbackend.cdsc.com.np/api/meroShare/ownDetail/";
+const OWN_DETAIL_URL =
+	"https://webbackend.cdsc.com.np/api/meroShare/ownDetail/";
 const WACC_URL = "https://webbackend.cdsc.com.np/api/myPurchase/waccReport/";
-const PORTFOLIO_URL = "https://webbackend.cdsc.com.np/api/meroShareView/myPortfolio/";
+const PORTFOLIO_URL =
+	"https://webbackend.cdsc.com.np/api/meroShareView/myPortfolio/";
 const TRANSACTION_URL =
 	"https://webbackend.cdsc.com.np/api/meroShareView/report/myTransaction/csv";
 
@@ -29,35 +41,47 @@ function getAuthorization(): string | null {
 // =============== CSV Parsing ===============
 
 function parseTransactionCSV(csvText: string): RawHoldingTransaction[] {
-	const lines = csvText.trim().split("\n");
-	if (lines.length === 0) return [];
+	try {
+		const lines = csvText.trim().split("\n");
+		if (lines.length === 0) return [];
 
-	// Skip header row - look for "S.N" which is the actual column name
-	const startIndex =
-		lines[0]?.includes("S.N") && lines[0]?.includes("Scrip") ? 1 : 0;
-	const transactions: RawHoldingTransaction[] = [];
+		// Skip header row - look for "S.N" which is the actual column name
+		const startIndex =
+			lines[0]?.includes("S.N") && lines[0]?.includes("Scrip") ? 1 : 0;
+		const transactions: RawHoldingTransaction[] = [];
 
-	for (let i = startIndex; i < lines.length; i++) {
-		const line = lines[i].trim();
-		if (!line) continue;
+		for (let i = startIndex; i < lines.length; i++) {
+			const line = lines[i].trim();
+			if (!line) continue;
 
-		const values = parseCSVLine(line);
+			const values = parseCSVLine(line);
 
-		// CSV has 7 columns: S.N, Scrip, Transaction Date, Credit Quantity, Debit Quantity, Balance After Transaction, History Description
-		if (values.length >= 7) {
-			transactions.push({
-				"S.N": values[0],
-				Scrip: values[1],
-				"Transaction Date": values[2],
-				"Credit Quantity": values[3],
-				"Debit Quantity": values[4],
-				"Balance After Transaction": values[5],
-				"History Description": values[6],
-			});
+			// CSV has 7 columns: S.N, Scrip, Transaction Date, Credit Quantity, Debit Quantity, Balance After Transaction, History Description
+			if (values.length >= 7) {
+				transactions.push({
+					"S.N": values[0],
+					Scrip: values[1],
+					"Transaction Date": values[2],
+					"Credit Quantity": values[3],
+					"Debit Quantity": values[4],
+					"Balance After Transaction": values[5],
+					"History Description": values[6],
+				});
+			}
 		}
-	}
 
-	return transactions;
+		return transactions;
+	} catch (e) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.TRANSACTION_PARSE_FAILED,
+			params: { error: e as string, location: "meroshare-content-api" },
+		});
+
+		logger.error("Meroshare: Failed to parse transaction CSV", e);
+
+		throw e; // Rethrow to be handled by caller
+	}
 }
 
 function parseCSVLine(line: string): string[] {
@@ -95,7 +119,9 @@ export interface FetchResult<T> {
 /**
  * 1. Fetch client's own details from Meroshare
  */
-export async function fetchClientDetails(): Promise<FetchResult<ClientDetails>> {
+export async function fetchClientDetails(): Promise<
+	FetchResult<ClientDetails>
+> {
 	const authorization = getAuthorization();
 	if (!authorization) {
 		return { success: false, error: "Not authenticated" };
@@ -108,6 +134,14 @@ export async function fetchClientDetails(): Promise<FetchResult<ClientDetails>> 
 		});
 
 		if (!response.ok) {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.FETCH_CLIENT_DETAILS_FAILED,
+				params: {
+					error: `Failed: ${response.status} ${response.statusText}`,
+					location: "meroshare-content-api",
+				},
+			});
 			return {
 				success: false,
 				error: `Failed: ${response.status} ${response.statusText}`,
@@ -119,6 +153,12 @@ export async function fetchClientDetails(): Promise<FetchResult<ClientDetails>> 
 
 		return { success: true, data };
 	} catch (error) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.FETCH_CLIENT_DETAILS_FAILED,
+			params: { error: error as string, location: "meroshare-content-api" },
+		});
+
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
@@ -170,6 +210,15 @@ export async function fetchWacc(
 		}
 
 		if (data.message !== "SUCCESS.") {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.FETCH_WACC_FAILED,
+				params: {
+					error: `Failed: ${response.status} ${response.statusText}`,
+					location: "meroshare-content-api",
+				},
+			});
+
 			return {
 				success: false,
 				error: data.message || "WACC fetch failed",
@@ -183,6 +232,12 @@ export async function fetchWacc(
 
 		return { success: true, data: waccItems };
 	} catch (error) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.FETCH_WACC_FAILED,
+			params: { error: error as string, location: "meroshare-content-api" },
+		});
+
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
@@ -220,6 +275,15 @@ export async function fetchTransactionHistory(
 		});
 
 		if (!response.ok) {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.FETCH_TRANSACTIONS_FAILED,
+				params: {
+					error: `Failed: ${response.status} ${response.statusText}`,
+					location: "meroshare-content-api",
+				},
+			});
+
 			return {
 				success: false,
 				error: `Failed: ${response.status} ${response.statusText}`,
@@ -238,6 +302,12 @@ export async function fetchTransactionHistory(
 
 		return { success: true, data: transactions };
 	} catch (error) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.FETCH_TRANSACTIONS_FAILED,
+			params: { error: error as string, location: "meroshare-content-api" },
+		});
+
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
@@ -275,6 +345,15 @@ export async function fetchPortfolio(
 		});
 
 		if (!response.ok) {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.FETCH_PORTFOLIO_FAILED,
+				params: {
+					error: `Failed: ${response.status} ${response.statusText}`,
+					location: "meroshare-content-api",
+				},
+			});
+
 			return {
 				success: false,
 				error: `Failed: ${response.status} ${response.statusText}`,
@@ -293,6 +372,12 @@ export async function fetchPortfolio(
 
 		return { success: true, data: portfolioItems };
 	} catch (error) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.FETCH_PORTFOLIO_FAILED,
+			params: { error: error as string, location: "meroshare-content-api" },
+		});
+
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
@@ -320,7 +405,11 @@ export async function syncMeroshareData(): Promise<void> {
 			fetchPortfolio(demat, clientCode),
 			fetchTransactionHistory(demat, clientCode),
 		]);
-	} catch {
-		// Silently fail - individual functions have their own error handling
+	} catch (error) {
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.PORTFOLIO_SYNC_FAILED,
+			params: { error: error as string, location: "meroshare-portfolio-sync" },
+		});
 	}
 }

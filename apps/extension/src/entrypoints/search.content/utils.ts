@@ -53,70 +53,53 @@ export const virtualItemBaseStyle = {
 	width: "100%",
 };
 
-export function getButtonClass(isDark: boolean) {
+export function getButtonClass() {
 	return cn(
 		"w-full rounded-lg border p-2 px-1 py-1 text-left shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
-		isDark
-			? "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
-			: "border-slate-200 bg-white hover:border-slate-300",
+		"border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800",
 	);
 }
 
-export function getSymbolClass(isDark: boolean) {
-	return cn(
-		"text-sm font-semibold",
-		isDark ? "text-slate-100" : "text-slate-900",
-	);
+export function getSymbolClass() {
+	return cn("text-sm font-semibold", "text-slate-100");
 }
 
-export function getNameClass(isDark: boolean) {
-	return cn(
-		"text-xs truncate mt-0.5",
-		isDark ? "text-slate-400" : "text-slate-500",
-	);
+export function getNameClass() {
+	return cn("text-xs truncate mt-0.5", "text-slate-400");
 }
 
-export function getPriceClass(isDark: boolean) {
-	return cn(
-		"text-sm font-semibold",
-		isDark ? "text-slate-100" : "text-slate-900",
-	);
+export function getPriceClass() {
+	return cn("text-sm font-semibold", "text-slate-100");
 }
 
 export function getChangeClass(pos: boolean) {
 	return pos ? "text-emerald-500" : "text-rose-500";
 }
 
-export function getModeClass(isDark: boolean) {
-	return `mt-1.5 text-[10px] uppercase tracking-wide font-medium ${
-		isDark ? "text-slate-500" : "text-slate-400"
-	}`;
+export function getModeClass() {
+	return "mt-1.5 text-[10px] uppercase tracking-wide font-medium text-slate-500";
 }
 
 export function getModeText(mode: modeType) {
 	return mode === "chart" ? "View chart" : "Trade stock";
 }
 
-export function getContainerClass(
-	isDark: boolean,
-	loading: boolean = false,
-): string {
+export function getContainerClass(showCentered: boolean = false): string {
 	const cls = [
 		"h-80",
 		"overflow-hidden",
 		"scrollbar-hide",
 		"overflow-y-auto",
 		"pr-1",
-		"space-y-2",
 	];
 
-	if (!loading) {
+	if (showCentered) {
 		cls.push(
 			"flex",
 			"items-center",
 			"justify-center",
 			"text-sm",
-			isDark ? "text-slate-400" : "text-slate-500",
+			"text-slate-400",
 		);
 	}
 
@@ -125,22 +108,14 @@ export function getContainerClass(
 
 export const errorClassName = "mt-2.5 text-xs text-rose-500 px-1";
 
-export function getInputClass(isDark: boolean): string {
+export function getInputClass(): string {
 	const base =
 		"flex-1 rounded-lg py-2.5 px-4 text-sm border-1 focus:outline-none focus:shadow-sm transition-all";
 
-	if (isDark) {
-		return cn(
-			base,
-			"bg-slate-800 placeholder-slate-300 border-slate-600 text-slate-100",
-			"focus:border-slate-500 focus:bg-slate-800/80",
-		);
-	}
-
 	return cn(
 		base,
-		"bg-slate-50 placeholder-slate-600 border-slate-300",
-		"focus:border-slate-400 focus:bg-white",
+		"bg-slate-800 placeholder-slate-300 border-slate-600 text-slate-100",
+		"focus:border-slate-500 focus:bg-slate-800/80",
 	);
 }
 

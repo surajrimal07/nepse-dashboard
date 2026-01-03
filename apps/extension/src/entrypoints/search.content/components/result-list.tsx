@@ -4,7 +4,7 @@ import type { ListChildComponentProps } from "react-window";
 import { FixedSizeList } from "react-window";
 import { useShallow } from "zustand/react/shallow";
 import type { modeType } from "@/types/search-type";
-import { selectIsDark, selectMode } from "../selectors";
+import { selectMode } from "../selectors";
 import { useSearchState } from "../store";
 
 import {
@@ -32,14 +32,13 @@ interface ResultsListProps {
 
 interface ResultItemProps {
 	company: Doc<"company">;
-	isDark: boolean;
 	mode: modeType;
 	onVisitChart: (symbol: string) => void;
 	style?: React.CSSProperties;
 }
 
 const ResultItem = memo(
-	({ company, isDark, mode, onVisitChart, style }: ResultItemProps) => {
+	({ company, mode, onVisitChart, style }: ResultItemProps) => {
 		const pos = (company.change ?? 0) >= 0;
 
 		const handleClick = useCallback(() => {
@@ -61,18 +60,18 @@ const ResultItem = memo(
 		return (
 			<button
 				type="button"
-				className={getButtonClass(isDark)}
+				className={getButtonClass()}
 				onClick={handleClick}
 				style={rowStyle}
 			>
 				<div className="flex items-center justify-between gap-3">
 					<div className="min-w-0 flex-1">
-						<div className={getSymbolClass(isDark)}>{company.symbol}</div>
-						<div className={getNameClass(isDark)}>{company.securityName}</div>
+						<div className={getSymbolClass()}>{company.symbol}</div>
+						<div className={getNameClass()}>{company.securityName}</div>
 					</div>
 
 					<div className="text-right shrink-0">
-						<div className={getPriceClass(isDark)}>
+						<div className={getPriceClass()}>
 							Rs
 							{price}
 						</div>
@@ -83,7 +82,7 @@ const ResultItem = memo(
 					</div>
 				</div>
 
-				<div className={getModeClass(isDark)}>{getModeText(mode)}</div>
+				<div className={getModeClass()}>{getModeText(mode)}</div>
 			</button>
 		);
 	},
@@ -95,14 +94,11 @@ export default function ResultsList({
 	handleVisitChart,
 	results,
 }: ResultsListProps) {
-	const { isDark, mode } = useSearchState(
+	const { mode } = useSearchState(
 		useShallow((state) => ({
-			isDark: selectIsDark(state),
 			mode: selectMode(state),
 		})),
 	);
-
-	const containerClassName = getContainerClass(isDark);
 
 	const visibleItems = Math.min(results.length, maxVisibleItems);
 	const listHeight = visibleItems * itemHeight;
@@ -115,22 +111,21 @@ export default function ResultsList({
 				<ResultItem
 					key={company._id}
 					company={company}
-					isDark={isDark}
 					mode={mode}
 					onVisitChart={handleVisitChart}
 					style={style}
 				/>
 			);
 		},
-		[results, isDark, mode, handleVisitChart],
+		[results, mode, handleVisitChart],
 	);
 
 	return (
-		<div className={containerClassName}>
+		<div className={getContainerClass(results.length <= 1)}>
 			{results.length === 0 ? (
-				<NotFound isDark={isDark} />
+				<NotFound />
 			) : results.length === 1 ? (
-				<CompanyDetails company={results[0]} isDark={isDark} />
+				<CompanyDetails company={results[0]} />
 			) : (
 				<FixedSizeList
 					height={listHeight}

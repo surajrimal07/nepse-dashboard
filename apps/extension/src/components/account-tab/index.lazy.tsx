@@ -8,7 +8,7 @@ import {
 	TabsTrigger,
 } from "@nepse-dashboard/ui/components/tabs";
 import { createLazyRoute } from "@tanstack/react-router";
-import { Edit2, Star, Trash2 } from "lucide-react";
+import { Edit2, ExternalLink, Star, Trash2 } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { EmptyAccounts } from "@/components/account-tab/empty-account";
 import OptionsDialog from "@/components/account-tab/options";
@@ -36,7 +36,7 @@ export default function Account() {
 	const [accounts] = useStateItem("accounts");
 
 	const [activeTab, setActiveTab] = useState<accountType>(AccountType.TMS);
-	const [isAddingAccount, setIsAddingAccount] = useState(false);
+	const [isAddingAccount, setIsAddingAccount] = useStateItem("isAddingAccount");
 	const [isOptionOpen, setIsOptionOpen] = useState(false);
 
 	const tmsAccounts = useMemo(
@@ -133,6 +133,18 @@ export default function Account() {
 										<div className="flex items-center gap-1">
 											<Button
 												variant="ghost"
+												size="sm"
+												className="h-8 px-2 text-zinc-400 hover:text-white"
+												onClick={() => {}}
+												disabled={account.isCurrentlyLoggingIn === true}
+											>
+												<span className="text-xs mr-1">
+													{account.isCurrentlyLoggingIn ? "Logged In" : "Login"}
+												</span>
+												<ExternalLink className="h-3 w-3" />
+											</Button>
+											<Button
+												variant="ghost"
 												size="icon"
 												className="h-8 w-8 text-zinc-400 hover:text-white"
 												onClick={handleEditAccount(account.alias)}
@@ -209,6 +221,18 @@ export default function Account() {
 										<div className="flex items-center gap-1">
 											<Button
 												variant="ghost"
+												size="sm"
+												className="h-8 px-2 text-zinc-400 hover:text-white"
+												onClick={() => {}}
+												disabled={account.isCurrentlyLoggingIn === true}
+											>
+												<span className="text-xs mr-1">
+													{account.isCurrentlyLoggingIn ? "Logged In" : "Login"}
+												</span>
+												<ExternalLink className="h-3 w-3" />
+											</Button>
+											<Button
+												variant="ghost"
 												size="icon"
 												className="h-8 w-8 text-zinc-400 hover:text-white"
 												onClick={handleEditAccount(account.alias)}
@@ -278,6 +302,18 @@ export default function Account() {
 											</div>
 										</div>
 										<div className="flex items-center gap-1">
+											<Button
+												variant="ghost"
+												size="sm"
+												className="h-8 px-2 text-zinc-400 hover:text-white"
+												onClick={() => {}}
+												disabled={account.isCurrentlyLoggingIn === true}
+											>
+												<span className="text-xs mr-1">
+													{account.isCurrentlyLoggingIn ? "Logged In" : "Login"}
+												</span>
+												<ExternalLink className="h-3 w-3" />
+											</Button>
 											<Button
 												variant="ghost"
 												size="icon"

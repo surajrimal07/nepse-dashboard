@@ -24,6 +24,8 @@ export const AccountSchema = z.object({
 	disabled: z.boolean(),
 	updatedAt: z.iso.datetime().nullable(),
 	lastLoggedIn: z.iso.datetime().nullable(),
+	isCurrentlyLoggingIn: z.boolean().nullable().default(false),
+	temporaryPrimary: z.boolean().nullable().default(false),
 });
 
 export type Account = z.infer<typeof AccountSchema>;

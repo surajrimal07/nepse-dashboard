@@ -20,6 +20,8 @@ export const initialFormData: Account = {
 	disabled: false,
 	updatedAt: new Date().toISOString(),
 	lastLoggedIn: null,
+	isCurrentlyLoggingIn: false,
+	temporaryPrimary: false,
 };
 
 export function validateFormData(data: Account): FormErrors {

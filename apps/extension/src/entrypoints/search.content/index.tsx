@@ -21,11 +21,6 @@ export default defineContentScript({
 	async main(ctx: ContentScriptContext) {
 		let wrapper: HTMLDivElement | null = null;
 
-		const classList = document.documentElement.classList;
-		searchState.setState({
-			isDark: classList.contains("dark") || classList.contains("theme-dark"),
-		});
-
 		const ui = await createShadowRootUi(ctx, {
 			name: "nepse-dashbboard-search-ui",
 			position: "overlay",

@@ -2,16 +2,6 @@ import z from "@nepse-dashboard/zod";
 import { IntradayChartSchema } from "../companies-intraday-chart/types";
 import { timeframes } from "../index-daily-chart/types";
 
-// export const StockDailyPriceResponseSchema = z.object({
-// 	symbol: z.string(),
-// 	data: IntradayChartSchema,
-// 	version: z.string(),
-// });
-
-// export type StockDailyPriceResponseType = z.infer<
-// 	typeof StockDailyPriceResponseSchema
-// >;
-
 export const StockDailyPriceSchema = z.object({
 	businessDate: z.string(),
 	openPrice: z.number(),

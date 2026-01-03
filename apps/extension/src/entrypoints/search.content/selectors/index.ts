@@ -80,10 +80,6 @@ export function selectIsVisible(state: SearchState) {
 	return state.isVisible;
 }
 
-export function selectIsDark(state: SearchState) {
-	return state.isDark;
-}
-
 export function selectToggleShowSettings(state: SearchState) {
 	return state.toggleSettings;
 }

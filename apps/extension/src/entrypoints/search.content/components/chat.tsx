@@ -9,7 +9,6 @@ import { Env, EventName } from "@/types/analytics-types";
 import {
 	selectChatId,
 	selectClear,
-	selectIsDark,
 	selectIsGenerating,
 	selectMessages,
 } from "../selectors";
@@ -28,9 +27,8 @@ export default function Chat({
 
 	const sendChatWithAI = useSearchState((state) => state.chatWithAI);
 
-	const { isDark, messages, isGenerating, clear, chatId } = useSearchState(
+	const { messages, isGenerating, clear, chatId } = useSearchState(
 		useShallow((state) => ({
-			isDark: selectIsDark(state),
 			messages: selectMessages(state),
 			isGenerating: selectIsGenerating(state),
 			clear: selectClear(state),
@@ -47,19 +45,13 @@ export default function Chat({
 	if (messages.length === 0) {
 		return (
 			<div
-				className={cn(
-					"h-full flex flex-col rounded-xl border text-sm relative",
-					isDark
-						? "bg-slate-900 border-slate-800 text-slate-100"
-						: "bg-white border-slate-200 text-slate-900",
-				)}
+				className="h-full flex flex-col rounded-xl border text-sm relative bg-slate-900 border-slate-800 text-slate-100"
 				aria-live="polite"
 			>
 				<Suspense fallback={<LoadingDots className="scale-110" />}>
 					<Suggestions
-						isDark={isDark}
 						onSelectSuggestion={async (text) => {
-							await onSubmit(text); // Await the async function to ensure proper execution
+							await onSubmit(text);
 						}}
 					/>
 				</Suspense>
@@ -69,21 +61,10 @@ export default function Chat({
 
 	return (
 		<div
-			className={cn(
-				"h-full flex flex-col rounded-xl border text-sm relative",
-				isDark
-					? "bg-slate-900 border-slate-800 text-slate-100"
-					: "bg-white border-slate-200 text-slate-900",
-			)}
+			className="h-full flex flex-col rounded-xl border text-sm relative bg-slate-900 border-slate-800 text-slate-100"
 			aria-live="polite"
 		>
-			<div
-				className={cn(
-					"flex-1 px-4 py-3 overflow-y-auto space-y-4",
-					"custom-scrollbar",
-					isDark ? "custom-scrollbar-dark" : "custom-scrollbar-light",
-				)}
-			>
+			<div className="flex-1 px-4 py-3 overflow-y-auto space-y-4 custom-scrollbar custom-scrollbar-dark">
 				{messages.map((msg, index) => (
 					<div
 						key={index}
@@ -93,12 +74,7 @@ export default function Chat({
 						)}
 					>
 						{msg.from === "assistant" && (
-							<div
-								className={cn(
-									"w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1",
-									isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white",
-								)}
-							>
+							<div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1 bg-blue-600 text-white">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
@@ -114,25 +90,14 @@ export default function Chat({
 							className={cn(
 								"max-w-[85%] rounded-2xl px-4 py-2.5 leading-relaxed",
 								msg.from === "user"
-									? isDark
-										? "bg-blue-600 text-white rounded-tr-sm"
-										: "bg-blue-500 text-white rounded-tr-sm"
-									: isDark
-										? "bg-slate-800 text-slate-100 border border-slate-700 rounded-tl-sm"
-										: "bg-slate-50 text-slate-900 border border-slate-200 rounded-tl-sm",
+									? "bg-blue-600 text-white rounded-tr-sm"
+									: "bg-slate-800 text-slate-100 border border-slate-700 rounded-tl-sm",
 							)}
 						>
 							<p className="whitespace-pre-wrap wrap-break-word">{msg.text}</p>
 						</div>
 						{msg.from === "user" && (
-							<div
-								className={cn(
-									"w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1",
-									isDark
-										? "bg-slate-700 text-slate-300"
-										: "bg-slate-200 text-slate-600",
-								)}
-							>
+							<div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1 bg-slate-700 text-slate-300">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 20 20"
@@ -148,12 +113,7 @@ export default function Chat({
 				))}
 				{isGenerating && (
 					<div className="flex gap-2 justify-start">
-						<div
-							className={cn(
-								"w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1",
-								isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white",
-							)}
-						>
+						<div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1 bg-blue-600 text-white">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
@@ -165,18 +125,8 @@ export default function Chat({
 							</svg>
 						</div>
 						<div className="max-w-[90%] space-y-2">
-							<div
-								className={cn(
-									"h-4 w-48 rounded animate-pulse",
-									isDark ? "bg-slate-800" : "bg-slate-200",
-								)}
-							/>
-							<div
-								className={cn(
-									"h-4 w-64 rounded animate-pulse",
-									isDark ? "bg-slate-800" : "bg-slate-200",
-								)}
-							/>
+							<div className="h-4 w-48 rounded animate-pulse bg-slate-800" />
+							<div className="h-4 w-64 rounded animate-pulse bg-slate-800" />
 						</div>
 					</div>
 				)}
@@ -200,12 +150,7 @@ export default function Chat({
 						params: { chatId },
 					});
 				}}
-				className={cn(
-					"absolute z-10 bottom-12 right-4 w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-colors",
-					isDark
-						? "bg-slate-700 hover:bg-slate-600 text-white"
-						: "bg-slate-100 hover:bg-slate-200 text-slate-900",
-				)}
+				className="absolute z-10 bottom-12 right-4 w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-colors bg-slate-700 hover:bg-slate-600 text-white"
 				aria-label="Continue in sidepanel"
 			>
 				<ExternalLink className="w-4 h-4" />
@@ -216,12 +161,7 @@ export default function Chat({
 				onClick={() => {
 					clear();
 				}}
-				className={cn(
-					"absolute z-10 bottom-4 right-4 w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-colors",
-					isDark
-						? "bg-slate-700 hover:bg-slate-600 text-white"
-						: "bg-slate-100 hover:bg-slate-200 text-slate-900",
-				)}
+				className="absolute z-10 bottom-4 right-4 w-6 h-6 rounded-full flex items-center justify-center shadow-lg transition-colors bg-slate-700 hover:bg-slate-600 text-white"
 				aria-label="Add"
 			>
 				<Plus className="w-4 h-4" />

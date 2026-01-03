@@ -85,7 +85,6 @@ export async function setupNotification() {
 			if (enabled && permission === "granted") {
 				// Run your notification setup if enabled
 				await handleWebPushSubscription(false);
-				await notificationListener();
 			} else if ((!enabled || permission === "denied") && pushSubscription) {
 				try {
 					// remove data from convex if disabled
@@ -111,8 +110,15 @@ export async function setupNotification() {
 	});
 }
 
-async function notificationListener() {
-	self.addEventListener("push", async (event) => {
+
+self.addEventListener("push", async (event) => {
+	try {
+		// Check if notifications are enabled before processing
+		const enabled = getAppState().get().notification;
+		if (!enabled) {
+			return;
+		}
+
 		const notificationData = JSON.parse(event?.data?.text());
 
 		const title = notificationData?.title;
@@ -135,5 +141,18 @@ async function notificationListener() {
 		}
 
 		await handleNotification(title, body, variant, icon);
-	});
-}
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+
+		logger.error("Error processing push notification", message);
+
+		void Track({
+			context: Env.BACKGROUND,
+			eventName: EventName.NOTIFICATION_ERROR,
+			params: {
+				error: message,
+				name: "Web Push Handler",
+			},
+		});
+	}
+});

@@ -4,8 +4,6 @@ import { Env, EventName } from "@/types/analytics-types";
 
 export function checkCommandShortcuts() {
 	browser.commands.getAll((commands) => {
-		console.log("Commands:", commands);
-
 		const missingShortcuts = [];
 
 		for (const { name, shortcut } of commands) {

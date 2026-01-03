@@ -4,12 +4,15 @@ import { AlertCircle, Edit, LogIn, Star, Trash2 } from "lucide-react";
 import type { FC } from "react";
 import { memo } from "react";
 import TimeAgo from "react-timeago";
+import { useSidepanel } from "@/hooks/open-sidepanel";
 import { useAppState } from "@/hooks/use-app";
+import { track } from "@/lib/analytics";
 import { sendMessage as webMessage } from "@/lib/messaging//window-messaging";
 import { sendMessage } from "@/lib/messaging/extension-messaging";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
+import { Env, EventName } from "@/types/analytics-types";
 import { logger } from "@/utils/logger";
 import type { SiteDetails } from "../utils/content-utils";
 
@@ -31,6 +34,8 @@ const AccountCard: FC<AccountCardProps> = memo(
 		disableLoginButton = false,
 		canDelete,
 	}) => {
+		const { openSidepanel } = useSidepanel();
+
 		const { callAction } = useAppState();
 
 		// Compute validation states locally
@@ -51,12 +56,16 @@ const AccountCard: FC<AccountCardProps> = memo(
 					`Opening Sidpenal to edit account ${account.alias}`,
 					"info",
 				);
-				await sendMessage("openSidePanel");
-				// pause for 2 seconds to allow route change to complete
-				await new Promise((resolve) => setTimeout(resolve, 1500));
+				await openSidepanel();
 				await sendMessage("goToRoute", { route: "/account" });
 				await callAction("setEditingAccount", account.alias);
-			} catch (_error) {
+			} catch (error) {
+				void track({
+					context: Env.CONTENT,
+					eventName: EventName.UNABLE_TO_OPEN_SIDE_PANEL,
+					params: { error: error as string, location: "broker-content-app" },
+				});
+
 				logger.info("Likely sidepanel is already open");
 			}
 		};

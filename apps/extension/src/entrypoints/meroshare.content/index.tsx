@@ -23,7 +23,10 @@ import { syncMeroshareData } from "./api";
 
 import "../../../../../packages/ui/src/styles/globals.css";
 import "sonner/dist/styles.css";
+import { track } from "@/lib/analytics";
+import { Env, EventName } from "@/types/analytics-types";
 import PortfolioWidgets from "./app";
+
 /**
  * Constants & Selectors
  */
@@ -63,7 +66,10 @@ const MAX_WAIT_TIME = 5000; // 5 seconds max wait
  * Wait for an element to appear in the DOM using MutationObserver
  * Observes subtree since the anchor element is nested within Angular's router-outlet
  */
-async function waitForElement(selector: string, timeout = MAX_WAIT_TIME): Promise<Element | null> {
+async function waitForElement(
+	selector: string,
+	timeout = MAX_WAIT_TIME,
+): Promise<Element | null> {
 	// First check if already exists
 	const existing = document.querySelector(selector);
 	if (existing) return existing;
@@ -144,9 +150,15 @@ async function mountUI(ctx: ContentScriptContext) {
 
 		mountedUi.mount();
 	} catch (error) {
-		logger.log("Meroshare: Failed to mount UI", error);
+		logger.warn("Meroshare: Failed to mount UI", error);
 		mountedUi = null;
 		mountedElements = null;
+
+		void track({
+			context: Env.CONTENT,
+			eventName: EventName.UNABLE_TO_MOUNT_UI,
+			params: { error: error as string, location: "meroshare-content-app" },
+		});
 	}
 }
 
@@ -385,9 +397,6 @@ class MeroshareAutomation {
 			return;
 		}
 
-		logger.log(
-			`Meroshare: Submitting form (Attempt ${this.autoLoginAttempts + 1}/${MAX_LOGIN_ATTEMPTS})`,
-		);
 		this.submitForm();
 
 		this.scheduleNextAttempt();
@@ -396,10 +405,6 @@ class MeroshareAutomation {
 	private scheduleNextAttempt() {
 		this.autoLoginAttempts++;
 		const backoff = this.autoLoginAttempts * 2000 + 1000;
-
-		logger.log(
-			`Meroshare: Waiting for dashboard... (Retry scheduled in ${backoff}ms)`,
-		);
 
 		if (this.retryTimer) clearTimeout(this.retryTimer);
 		this.retryTimer = setTimeout(() => {
@@ -420,7 +425,7 @@ class MeroshareAutomation {
 	private async retryFillCredentials(account: Account): Promise<boolean> {
 		const brokerValue = account.broker?.toString().trim();
 		if (!brokerValue || brokerValue === "0") {
-			console.warn(
+			logger.warn(
 				"Meroshare: No valid broker value for account",
 				account.alias,
 			);
@@ -442,7 +447,7 @@ class MeroshareAutomation {
 			await new Promise((r) => setTimeout(r, DELAY));
 		}
 
-		console.warn("Meroshare: Could not set broker dropdown after retries");
+		logger.warn("Meroshare: Could not set broker dropdown after retries");
 		return false;
 	}
 
@@ -580,7 +585,13 @@ class MeroshareAutomation {
 				password,
 			);
 		} catch (e) {
-			console.error("Auto save error", e);
+			logger.error("Auto save error", e);
+
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.AUTOSAVE_ERROR,
+				params: { error: e as string, location: "meroshare-content-app" },
+			});
 		} finally {
 			this.monitoredCredentials = {
 				username: "",
@@ -628,8 +639,6 @@ class MeroshareAutomation {
 			if (this.lastProcessedMessage === cleanText)
 				this.lastProcessedMessage = "";
 		}, 5000);
-
-		logger.log("Meroshare Toast:", cleanText);
 
 		const isCredError =
 			cleanText.includes(ERRORS.CREDENTIAL_ERROR) ||
@@ -836,7 +845,6 @@ export default defineContentScript({
 		let lastUrl = window.location.href;
 
 		const handleUrl = async (url: string) => {
-
 			// Login page - run automation
 			if (isMeroshareLogin(url)) {
 				await unmountUI();
@@ -882,7 +890,10 @@ export default defineContentScript({
 			// Always handle portfolio mount/unmount regardless of where we came from
 			if (isMerosharePortfolio(newUrlStr)) {
 				await mountUI(ctx);
-			} else if (isMerosharePortfolio(lastUrl) && !isMerosharePortfolio(newUrlStr)) {
+			} else if (
+				isMerosharePortfolio(lastUrl) &&
+				!isMerosharePortfolio(newUrlStr)
+			) {
 				// Unmount only when leaving portfolio page
 				await unmountUI();
 			}

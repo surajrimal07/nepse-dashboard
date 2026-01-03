@@ -13,9 +13,11 @@ import { Toaster } from "sonner";
 import { browser } from "#imports";
 import { DraggableCard } from "@/components/content-ui/draggable-card";
 import { useDragCardState } from "@/components/content-ui/store";
+import { track } from "@/lib/analytics";
 import { appState } from "@/lib/service/app-service";
 import { cn } from "@/lib/utils";
 import { AccountType } from "@/types/account-types";
+import { Env, EventName } from "@/types/analytics-types";
 // import iconUrl from "/icon.png";
 import AccountsList from "./components/account-list";
 import { ErrorDisplay } from "./components/error-display";
@@ -125,6 +127,12 @@ function App() {
 
 	const renderContent = () => {
 		if (!currentSiteDetails) {
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.UNSUPPORTED_BROKER_SITE,
+				params: { error: "unsupported_site", location: "broker-content-app" },
+			});
+
 			return (
 				<ErrorDisplay
 					title="Unsupported Site"

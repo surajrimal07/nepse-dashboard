@@ -24,7 +24,7 @@ export async function generateSuggestions(
 	const aiConfig = getAppState().get().aiSettings;
 	const aiMode = getAppState().get().aiMode;
 
-	if (!aiMode) {
+	if (!aiMode || !aiConfig.hasKeys || !aiConfig.apiKey) {
 		return Promise.resolve(defaultSuggestions);
 	}
 

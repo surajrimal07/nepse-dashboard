@@ -1,7 +1,7 @@
 {
 	"name": "@nepse-dashboard/extension",
 	"type": "module",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"private": true,
 	"author": "Suraj Rimal <davidparkedme@gmail.com>",
 	"license": "SEE LICENSE IN LICENSE",

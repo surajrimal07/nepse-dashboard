@@ -11,7 +11,10 @@ export function onInstall() {
 				url: `${URLS.welcome_url}`,
 			});
 
-			IdentifyUser();
+			void Track({
+				context: Env.BACKGROUND,
+				eventName: EventName.INSTALLED,
+			});
 		}
 
 		if (details.reason === "update") {
@@ -24,6 +27,8 @@ export function onInstall() {
 				},
 			});
 		}
+
+		IdentifyUser();
 
 		browser.runtime.setUninstallURL(URLS.uninstall_url);
 	});

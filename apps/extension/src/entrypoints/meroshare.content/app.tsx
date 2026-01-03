@@ -1,14 +1,6 @@
 import { createCrannStateHook } from "crann-fork";
 import { useEffect, useState } from "react";
 import { appState } from "@/lib/service/app-service";
-import type {
-	RawHoldingTransaction,
-	StoredPortfolioApiData,
-	WaccApiItem,
-} from "../../types/meroshare-type";
-import PortfolioWidgets from "./components/widget";
-import WaccAlert from "./components/wacc-alert";
-import EmptyPortfolioWidget from "./components/empty-portfolio";
 import {
 	getCachedInsights,
 	getCurrentTransactions,
@@ -18,14 +10,25 @@ import {
 	insightsStorage,
 	portfolioApiStorage,
 	transactionStorage,
-	waccStorage,
-	waccPendingErrorStorage,
 	type WaccPendingError,
+	waccPendingErrorStorage,
+	waccStorage,
 } from "../../lib/storage/meroshare-storage";
+import type {
+	RawHoldingTransaction,
+	StoredPortfolioApiData,
+	WaccApiItem,
+} from "../../types/meroshare-type";
+import {
+	type AdvancedUserInsights,
+	generateAdvancedInsights,
+} from "./calculation";
+import EmptyPortfolioWidget from "./components/empty-portfolio";
+import WaccAlert from "./components/wacc-alert";
+import PortfolioWidgets from "./components/widget";
+import WidgetsSkeleton from "./components/widgets-skeleton";
 import type { ProcessedStats } from "./type";
 import { processPortfolioData } from "./utils";
-import WidgetsSkeleton from "./components/widgets-skeleton";
-import { generateAdvancedInsights, type AdvancedUserInsights } from "./calculation";
 
 export default function App() {
 	const useAppState = createCrannStateHook(appState);
@@ -40,7 +43,8 @@ export default function App() {
 		RawHoldingTransaction[] | null
 	>(null);
 	const [insights, setInsights] = useState<AdvancedUserInsights | null>(null);
-	const [waccPendingError, setWaccPendingError] = useState<WaccPendingError | null>(null);
+	const [waccPendingError, setWaccPendingError] =
+		useState<WaccPendingError | null>(null);
 
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -49,13 +53,14 @@ export default function App() {
 
 		async function loadData() {
 			setIsLoading(true);
-			const [waccD, txnD, portD, cachedInsights, pendingError] = await Promise.all([
-				getCurrentWacc(),
-				getCurrentTransactions(),
-				getRawPortfolioApi(),
-				getCachedInsights(),
-				getCurrentWaccPendingError(),
-			]);
+			const [waccD, txnD, portD, cachedInsights, pendingError] =
+				await Promise.all([
+					getCurrentWacc(),
+					getCurrentTransactions(),
+					getRawPortfolioApi(),
+					getCachedInsights(),
+					getCurrentWaccPendingError(),
+				]);
 			if (!mounted) return;
 
 			setWaccData(waccD || null);

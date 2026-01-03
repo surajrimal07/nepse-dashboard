@@ -12,7 +12,6 @@ import { Label } from "@nepse-dashboard/ui/components/label";
 import { Separator } from "@nepse-dashboard/ui/components/separator";
 import { Switch } from "@nepse-dashboard/ui/components/switch";
 import { Download, RotateCcw, Trash2 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { browser } from "#imports";
@@ -27,7 +26,6 @@ import { Env, EventName } from "@/types/analytics-types";
 
 export default function GeneralSettings() {
 	const { useStateItem, callAction } = useAppState();
-	const { theme, setTheme } = useTheme();
 	const { logout, isLoading } = useUser();
 
 	const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
@@ -39,16 +37,10 @@ export default function GeneralSettings() {
 
 	const { createBackup } = useBackupRestore();
 
-	const toggleTheme = useCallback(() => {
-		const newTheme = theme === "dark" ? "light" : "dark";
-
-		setTheme(newTheme);
-	}, [theme, setTheme]);
-
 	const handleNotificationToggle = useCallback(
-		(async (enabled: boolean) => {
-			await callAction("setNotification", enabled).then(handleActionResult);
-		}) as (enabled: boolean) => Promise<void>,
+		(enabled: boolean) => {
+			callAction("setNotification", enabled).then(handleActionResult);
+		},
 		[callAction],
 	);
 
@@ -159,17 +151,6 @@ export default function GeneralSettings() {
 	return (
 		<CardContent className="space-y-6 mt-2">
 			<div className="space-y-3">
-				<div className="flex items-center justify-between">
-					<div className="space-y-0.5">
-						<Label className="text-base">Dark Theme</Label>
-						<p className="text-sm text-muted-foreground">
-							Enable dark mode for the extension
-						</p>
-					</div>
-					<Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
-				</div>
-				<Separator />
-
 				<div className="flex items-center justify-between">
 					<div className="space-y-0.5">
 						<Label className="text-base">Notifications</Label>

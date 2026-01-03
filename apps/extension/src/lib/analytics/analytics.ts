@@ -1,11 +1,15 @@
 import { OP } from "@/lib/analytics/op";
 import { getUser } from "@/lib/storage/user-storage";
 import type { AnalyticsMessage, Env } from "@/types/analytics-types";
-import type { CountType, EventCountType } from "@/types/count-type";
+import type { EventCountType } from "@/types/increment-type";
 import { logger } from "@/utils/logger";
+import { getExtensionOrigin } from "@/utils/origin";
+
+const origin = getExtensionOrigin();
 
 const originalConsoleError = console.error;
 
+// biome-ignore lint/suspicious/noExplicitAny: <expected>
 console.error = (...args: any[]) => {
 	if (typeof args[0] === "string" && args[0].includes("Max retries reached")) {
 		return;
@@ -32,10 +36,12 @@ export async function TrackPage(data: {
 	title?: string;
 }) {
 	try {
-		await OP.track("page_view", {
+		await OP.track("screen_view", {
+			//dang they seem to use screen_view for page tracking not page_view
 			environment: data.context,
 			path: data.path,
 			title: data.title,
+			origin,
 		});
 	} catch (e) {
 		logger.warn("Analytics error", e);
@@ -58,7 +64,7 @@ export async function Track(data: {
 }
 
 export async function Increment(data: {
-	property: CountType | EventCountType;
+	property: EventCountType;
 	value: number;
 }) {
 	try {

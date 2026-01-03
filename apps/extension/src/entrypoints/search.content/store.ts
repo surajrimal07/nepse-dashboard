@@ -50,7 +50,6 @@ export interface SearchState {
 	tempCustomUrl: string | null;
 	result: Doc<"company">[];
 	mode: modeType;
-	isDark: boolean;
 	setCompanies: (companies: Doc<"company">[]) => void;
 
 	setMode: (mode: modeType) => void;
@@ -196,7 +195,6 @@ export const searchState = createStore<SearchState>()(
 				showSettings: false,
 				tempCustomUrl: null,
 				result: [] as Doc<"company">[],
-				isDark: false,
 				content: null,
 
 				chatWithAI: async () => {

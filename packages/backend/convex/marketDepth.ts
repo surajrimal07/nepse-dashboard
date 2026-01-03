@@ -6,7 +6,7 @@ const authToken = process.env.BACKEND_TOKEN;
 
 export const get = query({
 	args: {
-		symbol: v.nullable(v.string()),
+		symbol: v.optional(v.string()),
 	},
 	handler: async (ctx, { symbol }) => {
 		if (!symbol) return null;

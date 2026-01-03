@@ -24,8 +24,7 @@ import { AccountType } from "@/types/account-types";
 import type { AISettings, LLMConfig } from "@/types/ai-types";
 import { Env, EventName } from "@/types/analytics-types";
 import { ConnectionState } from "@/types/connection-type";
-import type { CountType } from "@/types/count-type";
-import { EventToCount } from "@/types/count-type";
+import { EventToCount } from "@/types/increment-type";
 import type { IndexKeys } from "@/types/indexes-type";
 import { nepseIndexes } from "@/types/indexes-type";
 import type { StackError } from "@/types/misc-types";
@@ -36,88 +35,22 @@ import { MODES } from "@/types/search-type";
 import type { timeType } from "@/types/sidepanel-type";
 import type { Config } from "@/types/user-types";
 import { buildChartUrl } from "@/utils/built-chart-url";
+import { logger } from "@/utils/logger";
 import { generateChat } from "../actions/generate-chat";
 import { generateSuggestions } from "../actions/generate-suggestions";
 import { takeScreenshot } from "../actions/take-screenshot";
 import { checkConfig } from "../actions/test-key";
 import { Increment, Track, TrackPage } from "../analytics/analytics";
+import { sendMessage } from "../messaging/extension-messaging";
 import { handleNotification } from "../notification/handle-notification";
-import { deleteAccount, makePrimary } from "./helpers";
-
-// const lastConsumeCheck = 0;
-const SUMMARY_TIMEOUT_MS = 30000;
-
-// Helper function to wait for summary generation with timeout
-function waitForSummary(
-	client: ReturnType<typeof getConvexClient>,
-	url: string,
-	timeoutMs = SUMMARY_TIMEOUT_MS,
-) {
-	return new Promise<{
-		success: boolean;
-		message?: string;
-		data?: any;
-	}>((resolve) => {
-		let timeoutId: NodeJS.Timeout;
-		let unsubscribe: (() => void) | undefined;
-		let errorUnsubscribe: (() => void) | undefined;
-
-		const cleanup = () => {
-			clearTimeout(timeoutId);
-			unsubscribe?.();
-			errorUnsubscribe?.();
-		};
-
-		timeoutId = setTimeout(() => {
-			cleanup();
-			resolve({
-				success: false,
-				message: AI_CODES.SUMMARY_TIMEOUT,
-			});
-
-			void Track({
-				context: Env.BACKGROUND,
-				eventName: EventName.SUMMARY_GENERATION_FAILED_SERVER,
-				params: {
-					url,
-					error: AI_CODES.SUMMARY_TIMEOUT,
-				},
-			});
-		}, timeoutMs);
-
-		unsubscribe = client.onUpdate(api.news.get, { url }, (updatedData) => {
-			if (updatedData) {
-				cleanup();
-				resolve({
-					success: true,
-					data: updatedData,
-				});
-
-				void Track({
-					context: Env.BACKGROUND,
-					eventName: EventName.SUMMARY_GENERATION_SUCCESS,
-					params: {
-						url,
-					},
-				});
-			}
-		});
-
-		errorUnsubscribe = client.onUpdate(
-			api.news.getNewsSummaryErrors,
-			{ url },
-			(errorData) => {
-				if (errorData) {
-					cleanup();
-					resolve({
-						success: false,
-						message: errorData,
-					});
-				}
-			},
-		);
-	});
-}
+import { activateTab } from "./activate-tab";
+import { findTMSTab } from "./find-tab";
+import { addAccount, deleteAccount, makePrimary } from "./helpers";
+import {
+	findConflictingAccount,
+	LOGIN_CONFIG,
+	tryLogout,
+} from "./login-this-account";
 
 export const appState = createConfig({
 	stockScrollingPopup: {
@@ -148,6 +81,7 @@ export const appState = createConfig({
 		default: {} as LLMConfig,
 		persist: Persistence.Local,
 	},
+
 	notification: {
 		default: true as boolean,
 		persist: Persistence.Local,
@@ -186,6 +120,11 @@ export const appState = createConfig({
 	},
 
 	aiMode: {
+		default: false,
+		persist: Persistence.Local,
+	},
+
+	marketOpen: {
 		default: false,
 		persist: Persistence.Local,
 	},
@@ -230,14 +169,9 @@ export const appState = createConfig({
 		persist: Persistence.Local,
 	},
 
-	tempNaasaxData: {
-		default: {
-			username: null as string | null,
-			password: null as string | null,
-			alias: null as string | null,
-			autoLoginAttempts: null as number | null,
-		},
-		persist: Persistence.Local,
+	isAddingAccount: {
+		default: false as boolean,
+		persist: Persistence.None,
 	},
 	editingAccount: {
 		default: null as string | null,
@@ -273,6 +207,28 @@ export const appState = createConfig({
 		},
 	},
 
+	updateTIme: {
+		handler: async (
+			_state: any,
+			setState: (newState: Partial<any>) => Promise<void>,
+			_target: BrowserLocation,
+			timeSetting: timeType,
+		) => {
+			await setState({ showTime: timeSetting });
+
+			void Track({
+				context: Env.BACKGROUND,
+				eventName: EventName.TIME_SETTING_UPDATED,
+				params: {
+					enabled: timeSetting.enabled,
+					type: timeSetting.type,
+				},
+			});
+
+			return { success: true, message: "Time setting updated successfully" };
+		},
+	},
+
 	setAISettings: {
 		handler: async (
 			_state: any,
@@ -286,18 +242,6 @@ export const appState = createConfig({
 		validate: (settings: AISettings) => {
 			if (typeof settings !== "object")
 				throw new Error("Settings must be an object");
-		},
-	},
-
-	isMarketOpen: {
-		handler: async (
-			_state: any,
-			_setState: (newState: Partial<any>) => Promise<void>,
-			_target: BrowserLocation,
-		) => {
-			const client = getConvexClient();
-			const marketStatus = await client.query(api.marketStatus.isOpen, {});
-			return marketStatus;
 		},
 	},
 
@@ -402,57 +346,6 @@ export const appState = createConfig({
 			}
 		},
 	},
-
-	handleCount: {
-		handler: async (
-			_state: any,
-			_setState: (newState: Partial<any>) => Promise<void>,
-			_target: BrowserLocation,
-			countType: CountType,
-			loggedInAs?: string | null,
-		) => {
-			try {
-				if (loggedInAs) {
-					handleNotification(
-						"Nepse Dashboard",
-						`You are now logged in as ${loggedInAs}`,
-						"info",
-					);
-				}
-
-				const client = getConvexClient();
-				const user = await getUser();
-
-				await client.mutation(api.count.setCount, {
-					countType,
-					randomId: user.randomId,
-				});
-
-				Increment({
-					property: countType,
-					value: 1,
-				});
-
-				return { success: true, message: "Count handled successfully." };
-			} catch (e) {
-				void Track({
-					context: Env.BACKGROUND,
-					eventName: EventName.COUNT_FAILED,
-					params: {
-						error: e instanceof Error ? e.message : String(e),
-					},
-				});
-
-				return { success: false, message: "Failed to handle count." };
-			}
-		},
-		validate: (countType: string, _loggedInAs?: string | null) => {
-			if (!["activation", "tms", "meroshare"].includes(countType)) {
-				throw new Error("Count type must be activation, tms, or meroshare");
-			}
-		},
-	},
-
 	// ===== UI SETTINGS ACTIONS =====
 
 	setNotification: {
@@ -965,49 +858,15 @@ export const appState = createConfig({
 
 			const { hasKeys, apiKey, provider, model } = state.aiSettings;
 
-			// Route 1: Use default service (no user keys)
 			if (!hasKeys || !apiKey || !provider) {
-				if (data.content.length > 10000) {
-					void Track({
-						context: Env.BACKGROUND,
-						eventName: EventName.SUMMARY_TOO_LARGE,
-						params: {
-							url: data.url,
-							contentLength: data.content.length,
-						},
-					});
-
-					return { success: false, message: AI_CODES.TOO_MUCH_CONTENT };
-				}
-
-				const response = await client.mutation(api.news.generateSummary, {
-					...data,
-					emailId: user.email,
-					randomId: user.randomId,
-					lang: data.lang as "eng" | "npi",
-				});
-
-				if (!response.success) {
-					void Track({
-						context: Env.BACKGROUND,
-						eventName: EventName.SUMMARY_GENERATION_FAILED_SERVER,
-						params: {
-							url: data.url,
-							error: response.message,
-						},
-					});
-
-					return {
-						success: false,
-						message: response.message || AI_CODES.UNKNOWN_ERROR,
-					};
-				}
-
-				// Wait for reactive update with timeout
-				return waitForSummary(client, data.url);
+				// disabled the server-side summary generation,
+				// its not worth it, given that i constantly run our of rate limits
+				return {
+					success: false,
+					message: AI_CODES.MISSING_PARAMS,
+				};
 			}
 
-			// Route 2: Use user's own API keys
 			try {
 				const { summary } = await generateSummary({
 					modelId: model,
@@ -1622,49 +1481,7 @@ export const appState = createConfig({
 			});
 
 			const accounts = state.accounts ?? [];
-			const existingIndex = state.accounts?.findIndex(
-				(acc: Account) =>
-					acc.alias === newAccountData.alias ||
-					acc.username === newAccountData.username,
-			);
-
-			let newAccount: Account;
-
-			if (existingIndex === -1) {
-				// New account
-				newAccount = {
-					...newAccountData,
-					isPrimary: false,
-					error: null,
-					disabled: false,
-					updatedAt: new Date().toISOString(),
-					lastLoggedIn: new Date().toISOString(),
-				};
-			} else {
-				// Update existing account
-				newAccount = {
-					...state.accounts[existingIndex],
-					...newAccountData,
-					updatedAt: new Date().toISOString(),
-					error: null, // Reset error on update
-				};
-			}
-
-			const existingAccountsSameType = state.accounts?.filter(
-				(acc: Account) => acc.type === newAccount.type,
-			);
-
-			// Set as primary if it's the first account of its type
-			if (!existingAccountsSameType || existingAccountsSameType.length === 0) {
-				newAccount.isPrimary = true;
-			}
-
-			const newAccounts =
-				existingIndex === -1
-					? [...accounts, newAccount]
-					: accounts.map((acc: Account, i: number) =>
-							i === existingIndex ? newAccount : acc,
-						);
+			const newAccounts = addAccount(accounts, newAccountData);
 
 			await setState({ accounts: newAccounts });
 			return { success: true, message: "Account added successfully" };
@@ -1758,6 +1575,18 @@ export const appState = createConfig({
 		},
 	},
 
+	setIsAddingAccount: {
+		handler: async (
+			_state: any,
+			setState: (newState: Partial<any>) => Promise<void>,
+			_target: BrowserLocation,
+			isAddingAccount: boolean,
+		) => {
+			await setState({ isAddingAccount });
+			return { success: true, message: "Is adding account set successfully" };
+		},
+	},
+
 	setError: {
 		handler: async (
 			state: any,
@@ -1779,11 +1608,12 @@ export const appState = createConfig({
 				i === accountIndex ? { ...acc, error } : acc,
 			);
 
-			await handleNotification(
-				"Nepse Dashboard",
-				`Account "${alias}" encountered an error: ${error}`,
-				"error",
-			);
+			const errorMessage =
+				error === "credentialError"
+					? "Invalid credentials. Please check your username and password."
+					: "An unknown error occurred. Please try again.";
+
+			await handleNotification("Nepse Dashboard", errorMessage, "error");
 
 			await setState({ accounts: newAccounts });
 			return { success: true, message: "Account error set successfully" };
@@ -1829,6 +1659,58 @@ export const appState = createConfig({
 		},
 	},
 
+	handleThisAccountLogin: {
+		handler: async (
+			state: any,
+			_setState: (newState: Partial<any>) => Promise<void>,
+			_target: BrowserLocation,
+			alias: string,
+		) => {
+			const account = state.accounts?.find(
+				(acc: Account) => acc.alias === alias,
+			);
+
+			if (!account) {
+				return { success: false, message: "Account not found" };
+			}
+
+			const config = LOGIN_CONFIG[account.type as accountType];
+
+			// 1️⃣ Best-effort logout of conflicting account
+			const conflicting = findConflictingAccount(state.accounts, account);
+
+			if (conflicting) {
+				await tryLogout(
+					config.tabUrlPattern(account.broker),
+					config.logoutMessage,
+				);
+			}
+
+			// 2️⃣ Always continue to login
+			await browser.tabs.create({
+				url: config.loginUrl(account.broker),
+				active: true,
+			});
+
+			// 3️⃣ Track
+			void Track({
+				context: Env.BACKGROUND,
+				eventName: EventName.MANUAL_ACCOUNT_LOGIN_INITIATED,
+				params: { alias, accountType: account.type },
+			});
+
+			return {
+				success: true,
+				message: `Opening login page for ${alias}`,
+			};
+		},
+
+		validate: (alias: string) => {
+			if (!alias || typeof alias !== "string") {
+				throw new Error("Valid alias is required");
+			}
+		},
+	},
 	setUpdatedAt: {
 		handler: async (
 			state: any,
@@ -1888,6 +1770,7 @@ export const appState = createConfig({
 				"success",
 			);
 
+			//
 			const eventName =
 				type === AccountType.TMS
 					? EventName.AUTO_LOGIN_SUCCESS_TMS
@@ -1895,16 +1778,51 @@ export const appState = createConfig({
 						? EventName.AUTO_LOGIN_SUCCESS_NAASAX
 						: EventName.AUTO_LOGIN_SUCCESS_MEROSHARE;
 
-			const newAccounts = accounts.map((acc: Account, i: number) =>
-				i === accountIndex
-					? { ...acc, lastLoggedIn: new Date().toISOString() }
-					: acc,
-			);
+			const countType =
+				type === AccountType.TMS
+					? EventToCount.LOGIN_COUNT_TMS
+					: type === AccountType.NAASAX
+						? EventToCount.LOGIN_COUNT_NAASAX
+						: EventToCount.LOGIN_COUNT_MEROSHARE;
+
+			const targetAccount = accounts[accountIndex];
+
+			const newAccounts = accounts.map((acc: Account, i: number) => {
+				if (i === accountIndex) {
+					// This is the account we're logging into
+					return {
+						...acc,
+						lastLoggedIn: new Date().toISOString(),
+						isCurrentlyLoggingIn: true,
+					};
+				}
+
+				// Set isCurrentlyLoggingIn to false for other accounts based on scope
+				if (type === AccountType.TMS) {
+					// TMS: only affect accounts with the same broker
+					if (
+						acc.type === AccountType.TMS &&
+						acc.broker === targetAccount.broker
+					) {
+						return { ...acc, isCurrentlyLoggingIn: false };
+					}
+				} else {
+					// NAASAX or MEROSHARE: affect all accounts of the same type
+					if (acc.type === type) {
+						return { ...acc, isCurrentlyLoggingIn: false };
+					}
+				}
+
+				// Leave other accounts unchanged
+				return acc;
+			});
 
 			if (type === AccountType.TMS) {
 				const baseUrl = `${url.split("/tms/")[0]}/tms`;
 				await setState({ tmsUrl: baseUrl });
 			}
+
+			await setState({ accounts: newAccounts });
 
 			void Track({
 				context: Env.BACKGROUND,
@@ -1912,7 +1830,10 @@ export const appState = createConfig({
 				params: { alias },
 			});
 
-			await setState({ accounts: newAccounts });
+			Increment({
+				property: countType,
+				value: 1,
+			});
 
 			return {
 				success: true,
@@ -1922,44 +1843,6 @@ export const appState = createConfig({
 		validate: (alias: string) => {
 			if (!alias || typeof alias !== "string")
 				throw new Error("Valid alias is required");
-		},
-	},
-
-	setTempNaasaxData: {
-		handler: async (
-			state: any,
-			setState: (newState: Partial<any>) => Promise<void>,
-			_target: BrowserLocation,
-			data: NaasaxTempData | null,
-		) => {
-			if (data === null) {
-				await setState({
-					tempNaasaxData: { username: null, password: null, alias: null },
-				});
-				return {
-					success: true,
-					message: "Naasax temp data cleared successfully",
-				};
-			}
-
-			const currentData = state.tempNaasaxData || {
-				username: null,
-				password: null,
-				alias: null,
-				autoLoginAttempts: 0,
-			};
-			const newTempData = {
-				...currentData,
-				...(data.username !== undefined && { username: data.username }),
-				...(data.password !== undefined && { password: data.password }),
-				...(data.alias !== undefined && { alias: data.alias }),
-				...(data.autoLoginAttempts !== undefined && {
-					autoLoginAttempts: data.autoLoginAttempts,
-				}),
-			};
-
-			await setState({ tempNaasaxData: newTempData });
-			return { success: true, message: "Naasax temp data set successfully" };
 		},
 	},
 
@@ -2033,20 +1916,34 @@ export const appState = createConfig({
 				password,
 				type,
 				alias: username,
-				isPrimary: false, // this is wrong , if first of its type, it should be true
+				isPrimary: false,
 				error: null,
 				disabled: false,
 				updatedAt: new Date().toISOString(),
 				lastLoggedIn: new Date().toISOString(),
 				broker,
+				isCurrentlyLoggingIn: false,
+				temporaryPrimary: false,
 			};
 
-			// If this account is first of its type, make it primary
-			if (
-				state.accounts.length === 0 ||
-				state.accounts.every((acc: Account) => acc.type !== type)
-			) {
-				account.isPrimary = true;
+			// Determine if this should be primary based on account type
+			if (type === AccountType.TMS) {
+				// TMS: check if first account for this broker
+				const existingBrokerAccounts = state.accounts.filter(
+					(acc: Account) =>
+						acc.type === AccountType.TMS && acc.broker === broker,
+				);
+				if (existingBrokerAccounts.length === 0) {
+					account.isPrimary = true;
+				}
+			} else {
+				// NAASAX and MEROSHARE: check if first account of this type
+				if (
+					state.accounts.length === 0 ||
+					state.accounts.every((acc: Account) => acc.type !== type)
+				) {
+					account.isPrimary = true;
+				}
 			}
 
 			const newAccounts = [...state.accounts, account];

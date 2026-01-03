@@ -41,6 +41,10 @@ interface ExtensionMessengerSchema {
 	goToAccountPage: () => void;
 	goToRoute: (data: { route: string; routeData?: any }) => void;
 
+	handleTMSAccountLogout: () => void;
+	handleMeroshareAccountLogout: () => void;
+	handleNaasaxAccountLogout: () => void;
+
 	startExtraction: () => void;
 	stopExtraction: () => void;
 	sendExtractionData: (data: { extractedData: LiveDataFromTMS }) => void;

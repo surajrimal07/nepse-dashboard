@@ -174,6 +174,7 @@ export default defineBackground({
 							params: {
 								event: "high_latency",
 								latency,
+								location: location.city_name,
 							},
 						});
 					} else if (latency > SOCKET_MEDIUM_LATENCY_THRESHOLD) {
@@ -210,6 +211,7 @@ export default defineBackground({
 						params: {
 							event: "ping_failed",
 							error: String(error),
+							location: location.city_name,
 						},
 					});
 				}
@@ -243,6 +245,20 @@ export default defineBackground({
 					{},
 					async (change) => {
 						updateBadge(change);
+					},
+				);
+
+				const isOpen = await convex.query(api.marketStatus.isOpen, {});
+
+				if (isOpen !== undefined) {
+					appInstance.set({ marketOpen: isOpen });
+				}
+
+				const unsubscribeMarketStatus = convex.onUpdate(
+					api.marketStatus.isOpen,
+					{},
+					async (change) => {
+						appInstance.set({ marketOpen: change });
 					},
 				);
 
@@ -305,6 +321,7 @@ export default defineBackground({
 					unsubscribeCompanies();
 					unsubscribeSubscription();
 					// unsubscribeDataAvailable();
+					unsubscribeMarketStatus();
 				});
 			} catch (error) {
 				void Track({
@@ -350,16 +367,9 @@ export default defineBackground({
 				}
 			};
 
-			const activate = () => {
-				convex.mutation(api.count.setActivationCount, {
-					randomId: currentUser.randomId,
-				});
-			};
-
 			// Initial setup if authorized
 			if (authResult.success) {
 				await Promise.all([executeConvexSetup(), addRoom()]);
-				activate();
 			} else {
 				updateBadge("---");
 			}

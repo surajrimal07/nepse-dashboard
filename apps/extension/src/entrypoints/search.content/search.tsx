@@ -16,7 +16,6 @@ import {
 	selectAddAI,
 	selectAddUser,
 	selectChatId,
-	selectIsDark,
 	selectIsVisible,
 	selectMode,
 	selectQ,
@@ -40,6 +39,7 @@ import {
 } from "./utils";
 import "./searchOverlay.css";
 import { useAppState } from "@/hooks/use-app";
+import MarketClosed from "./components/market-closed";
 
 const ResultsList = React.lazy(
 	() => import("@/entrypoints/search.content/components/result-list"),
@@ -64,37 +64,43 @@ const MainContent = memo(
 		mode,
 		aiMode,
 		tmsUrl,
-		isDark,
 		showSettings,
 		onSubmit,
 		onCloseSettings,
 		handleVisitChart,
 		results,
+		marketOpen,
 	}: {
 		mode: string;
 		aiMode: boolean;
 		tmsUrl: string | null;
-		isDark: boolean;
 		showSettings: boolean;
 		onSubmit: (value?: string) => Promise<void>;
 		onCloseSettings: () => void;
 		handleVisitChart: (symbol: string) => Promise<void>;
 		results: Doc<"company">[];
+		marketOpen: boolean;
 	}) => {
 		if (showSettings) {
-			return <SettingsDropdown isDark={isDark} onClose={onCloseSettings} />;
+			return <SettingsDropdown onClose={onCloseSettings} />;
 		}
 
 		if (mode === "ai") {
 			return aiMode ? (
 				<Chat onSubmit={onSubmit} />
 			) : (
-				<AiModeDisabled isDark={isDark} />
+				<AiModeDisabled />
 			);
 		}
 
-		if (mode === "tms" && !tmsUrl) {
-			return <TmsDisabled isDark={isDark} />;
+		if (mode === "tms") {
+			if (!tmsUrl) {
+				return <TmsDisabled />;
+			}
+
+			if (!marketOpen) {
+				return <MarketClosed />;
+			}
 		}
 
 		return (
@@ -114,11 +120,11 @@ export default function SearchOverlay({
 }) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { useStateItem, callAction } = useAppState();
-	const [chartPrefs] = useStateItem("chartConfig");
 	const [aiSettings] = useStateItem("aiSettings");
 	const [companiesList] = useStateItem("companiesList");
 	const [tmsUrl] = useStateItem("tmsUrl");
 	const [aiMode] = useStateItem("aiMode");
+	const [marketOpen] = useStateItem("marketOpen");
 
 	const {
 		setAIMessages,
@@ -129,7 +135,6 @@ export default function SearchOverlay({
 		setChatId,
 		setIsGenerating,
 		isVisible,
-		isDark,
 		mode,
 		setError,
 		toggleNextMode,
@@ -147,7 +152,6 @@ export default function SearchOverlay({
 			setChatId: selectSetChatId(state),
 			setIsGenerating: selectSetIsGenerating(state),
 			isVisible: selectIsVisible(state),
-			isDark: selectIsDark(state),
 			mode: selectMode(state),
 			setError: selectSetError(state),
 			toggleNextMode: selectToggleNextMode(state),
@@ -163,7 +167,11 @@ export default function SearchOverlay({
 			try {
 				if (mode === "chart") {
 					await callAction("handleVisitChart", symbol);
-				} else {
+				} else if (mode === "tms") {
+					if (!marketOpen) {
+						setError("Market is currently closed.");
+						return;
+					}
 					await callAction("openTradePage", symbol, "Buy");
 				}
 
@@ -179,7 +187,7 @@ export default function SearchOverlay({
 				});
 			}
 		},
-		[chartPrefs.chartSite, chartPrefs.customUrl, onClose, setError],
+		[mode, marketOpen, callAction, onClose, setError],
 	);
 
 	useHotkeys(
@@ -318,24 +326,22 @@ export default function SearchOverlay({
 				<div
 					className={cn(
 						"rounded-2xl shadow-2xl border",
-						isDark
-							? "bg-slate-900 border-slate-700/60"
-							: "bg-white border-slate-200/60",
+						"bg-slate-900 border-slate-700/60",
 					)}
 				>
-					<div className="px-1 pt-1 h-80">
+					<div className="relative px-1 pt-1 h-80">
 						<Suspense fallback={<LoadingDots className="scale-110" />}>
 							<ErrorMessage />
 							<MainContent
 								mode={mode}
 								aiMode={aiMode}
 								tmsUrl={tmsUrl}
-								isDark={isDark}
 								showSettings={settings}
 								onSubmit={handleSubmit}
 								onCloseSettings={handleToggleSettings}
 								handleVisitChart={handleVisitChart}
 								results={results}
+								marketOpen={marketOpen}
 							/>
 						</Suspense>
 					</div>
@@ -345,7 +351,7 @@ export default function SearchOverlay({
 							value={q ?? ""}
 							onChange={handleInputChange}
 							placeholder={getPlaceholderText(mode)}
-							className={getInputClass(isDark)}
+							className={getInputClass()}
 							onKeyDown={handleKeyDown}
 						/>
 						<button
@@ -353,13 +359,8 @@ export default function SearchOverlay({
 							onClick={handleToggleSettings}
 							className={cn(
 								"p-1 rounded-lg transition-all",
-								isDark
-									? "hover:bg-slate-800 text-slate-400 hover:text-slate-300"
-									: "hover:bg-slate-100 text-slate-500 hover:text-slate-700",
-								settings &&
-									(isDark
-										? "bg-slate-800 text-slate-300"
-										: "bg-slate-100 text-slate-700"),
+								"hover:bg-slate-800 text-slate-400 hover:text-slate-300",
+								settings && "bg-slate-800 text-slate-300",
 							)}
 							aria-label="Settings"
 						>

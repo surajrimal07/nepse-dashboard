@@ -8,10 +8,12 @@ import {
 	chrome_naasax_url,
 	naasa_dashboard_url,
 } from "@/constants/content-url";
+import { track } from "@/lib/analytics";
 import { onMessage } from "@/lib/messaging/window-messaging";
 import { appState } from "@/lib/service/app-service";
 import type { Account } from "@/types/account-types";
 import { AccountType } from "@/types/account-types";
+import { Env, EventName } from "@/types/analytics-types";
 import { logger } from "@/utils/logger";
 
 // Patterns
@@ -104,7 +106,6 @@ class NaasaXAutomation {
 
 		// Dashboard Logic
 		if (naasaDashboard.includes(url)) {
-			logger.log("NaasaX: on Dashboard.");
 			if (this.isRunning) this.stop();
 			await this.handleDashboard();
 			return;
@@ -124,7 +125,6 @@ class NaasaXAutomation {
 	}
 
 	public async start() {
-		logger.log("NaasaX Automation: Starting...");
 		this.isRunning = true;
 		this.abortController = new AbortController();
 
@@ -135,7 +135,7 @@ class NaasaXAutomation {
 		await this.updateCurrentAccount();
 
 		if (!this.currentAccount) {
-			logger.log("NaasaX Automation: No NaasaX account found yet.");
+			logger.info("NaasaX Automation: No NaasaX account found yet.");
 			// We DO NOT return here excessively. We stay "Running" so that when
 			// the subscription fires with data, updateCurrentAccount() will trigger logic.
 			// however, we can't proceed to steps 2/3 safely without an account.
@@ -208,7 +208,7 @@ class NaasaXAutomation {
 			const item = localStorage.getItem(LOCAL_STORAGE_KEY);
 			return item ? JSON.parse(item) : {};
 		} catch (e) {
-			console.error(
+			logger.error(
 				"NaasaX: Error parsing local storage, clearing corrupted data",
 				e,
 			);
@@ -225,7 +225,7 @@ class NaasaXAutomation {
 			const merged = { ...existing, ...data };
 			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
 		} catch (e) {
-			console.error("NaasaX: Error setting local storage", e);
+			logger.error("NaasaX: Error setting local storage", e);
 		}
 	}
 
@@ -248,7 +248,7 @@ class NaasaXAutomation {
 		try {
 			localStorage.setItem(LOCAL_STORAGE_ATTEMPTS_KEY, attempts.toString());
 		} catch (e) {
-			console.error("NaasaX: Error setting attempts", e);
+			logger.error("NaasaX: Error setting attempts", e);
 		}
 	}
 
@@ -324,6 +324,15 @@ class NaasaXAutomation {
 				this.currentAccount.alias,
 				"passwordError",
 			);
+
+			void track({
+				context: Env.CONTENT,
+				eventName: EventName.AUTO_LOGIN_FAILED_NAASAX,
+				params: {
+					error: "Max login attempts reached",
+				},
+			});
+
 			// DO NOT CLEAR TEMP DATA HERE - We might be midway through a redirect
 			// and we need to preserve 'alias' for the dashboard success notification.
 			// The data will be cleared in handleDashboard() or manually via new login.
@@ -587,14 +596,10 @@ class NaasaXAutomation {
 		// 1. Check Temp Data from LOCAL STORAGE
 		const tempData = this.getLocalStorageData();
 
-		logger.log("NaasaX: Temp Data (LS)", tempData);
-
 		// If nothing in LS, return
 		if (!tempData || (!tempData.alias && !tempData.username)) return;
 
 		const { alias, username, password } = tempData;
-
-		logger.log("NaasaX: Alias", alias);
 
 		// Case A: Auto-Login Success - Show "Logged in as" and send lastlogin to backend
 		if (alias) {
@@ -659,7 +664,6 @@ export default defineContentScript({
 
 			await automation.start();
 		} else if (naasaDashboard.includes(new URL(url))) {
-			logger.log("NaasaX: Dashboard detected.");
 			await automation.handleDashboard();
 		}
 
@@ -672,7 +676,6 @@ export default defineContentScript({
 			if (naasaAuth.includes(new URL(url))) {
 				await automation.start();
 			} else if (naasaDashboard.includes(new URL(url))) {
-				logger.log("NaasaX: Dashboard detected.");
 				await automation.handleDashboard();
 			}
 		});
