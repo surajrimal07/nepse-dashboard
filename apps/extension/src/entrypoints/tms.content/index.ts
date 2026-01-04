@@ -10,6 +10,9 @@ import { ResultTypes, TMS_DASHBOARD_PATTERN } from "@/types/content-types";
 import { logger } from "@/utils/logger";
 import { solve_captcha } from "./capcha";
 import { CredentialCapture } from "./credential-capture";
+import { removeLogoutListener, setupLogoutListener } from "./logout-listner";
+import { track } from "@/lib/analytics";
+import { Env, EventName } from "@/types/analytics-types";
 
 /**
  * Constants & Selectors
@@ -74,6 +77,7 @@ class TMSAutomation {
 
 	private autoLoginAttempts = 0;
 	private reloadCounter = 0;
+	private isSolving = false; // Prevent concurrent captcha solves
 	private lastProcessedToastId = ""; // Prevent duplicate toast handling
 
 	// Connection
@@ -88,6 +92,20 @@ class TMSAutomation {
 	 * Entry Point
 	 */
 	public async init() {
+		// Allow re-init if we were stopped (e.g., after logout and return to login page)
+		if (this.state === "stopped") {
+			logger.log("TMS Automation: Re-initializing after stop...");
+			this.state = "idle";
+			// Reset all state for fresh start
+			this.autoLoginAttempts = 0;
+			this.reloadCounter = 0;
+			this.isSolving = false;
+			this.currentAccount = null;
+			this.cachedBrokerNumber = null;
+			// Refresh accounts from store
+			this.accounts = this.appConnection.get().accounts ?? [];
+		}
+
 		if (this.state !== "idle") return;
 		// Mark as initializing (prevents double init) - start() will set to 'running'
 		this.state = "initializing";
@@ -168,6 +186,7 @@ class TMSAutomation {
 		// Reset counters on successful login
 		this.autoLoginAttempts = 0;
 		this.reloadCounter = 0;
+		this.isSolving = false;
 
 		// Process any captured credentials (auto-save)
 		await CredentialCapture.processPendingCredentials(this.appConnection);
@@ -199,6 +218,7 @@ class TMSAutomation {
 	}
 
 	private async updateCurrentAccount() {
+		// Normal account discovery flow
 		if (!this.cachedBrokerNumber) {
 			this.cachedBrokerNumber = this.extractBrokerNumber(window.location.href);
 		}
@@ -220,24 +240,34 @@ class TMSAutomation {
 		);
 
 		const newAccount =
+			matchingAccounts.find((acc) => acc.pendingLogin) ||
 			matchingAccounts.find((acc) => acc.isPrimary) ||
 			matchingAccounts[0] ||
 			null;
 
 		// Detect change
 		const isSameAccount = newAccount?.alias === this.currentAccount?.alias;
+		const isFirstAssignment = this.currentAccount === null && newAccount !== null;
 
 		if (!isSameAccount) {
-			// Account Switched - reset and try with new account if it has no error
+			// Account changed
+			const wasSwitch = !isFirstAssignment; // True if switching between accounts, not first load
 			this.currentAccount = newAccount;
+
 			if (this.state !== "stopped" && this.state !== "idle" && this.currentAccount) {
 				// Check if new account has no error before attempting login
 				if (!this.currentAccount.error) {
-					logger.log("TMS: Switched to new account, attempting login...");
 					this.autoLoginAttempts = 0;
 					this.state = "running"; // Unpause when switching to valid account
 					this.fillCredentials();
-					this.reloadCaptcha(); // Trigger fresh captcha solve for new account
+
+					// Only reload captcha if actually switching mid-session, not on first load
+					if (wasSwitch) {
+						logger.log("TMS: Switched to new account, reloading captcha...");
+						this.reloadCaptcha();
+					} else {
+						logger.log("TMS: Account set, waiting for captcha to load...");
+					}
 				} else {
 					// New account also has error, stay paused
 					logger.log("TMS: Switched account also has error, staying paused.");
@@ -333,6 +363,13 @@ class TMSAutomation {
 
 			this.currentCaptchaEl = el;
 
+			// Disconnect body observer - no longer needed once we have the element
+			// The srcMutationObserver will handle all future changes
+			if (this.mainMutationObserver) {
+				this.mainMutationObserver.disconnect();
+				this.mainMutationObserver = null;
+			}
+
 			// 1. Trigger Solve Immediately
 			this.solveForElement(this.currentCaptchaEl);
 
@@ -361,6 +398,13 @@ class TMSAutomation {
 	}
 
 	private async solveForElement(el: HTMLImageElement) {
+
+		// Skip if another solve is already in progress (prevent parallel solves)
+		if (this.isSolving) {
+			logger.log("TMS: Skipping captcha solve - another solve in progress.");
+			return;
+		}
+
 		// Safety check: element might have been removed between detection and solve
 		if (!el || !el.isConnected) {
 			logger.log("TMS: Captcha element no longer connected to DOM.");
@@ -373,9 +417,15 @@ class TMSAutomation {
 		// Filter out placeholder/loading states if applicable
 		if (src.includes("captcha-image.jpg")) return;
 
-		logger.log("TMS: Solving captcha...");
-		const result = await solve_captcha(src);
-		await this.handleCaptchaResult(result);
+		// Mark as solving to prevent concurrent attempts
+		this.isSolving = true;
+		try {
+			logger.log("TMS: Solving captcha...");
+			const result = await solve_captcha(src);
+			await this.handleCaptchaResult(result);
+		} finally {
+			this.isSolving = false;
+		}
 	}
 
 	/**
@@ -422,7 +472,8 @@ class TMSAutomation {
 		}
 		this.lastProcessedToastId = toastId.slice(0, -1);
 
-		logger.log("TMS: Error toast detected:", errorMessage);
+		// Login attempt finished (with error), allow solving again
+		this.isSolving = false;
 
 		// Check if this is a credential error (stop immediately)
 		const isCredentialError = CREDENTIAL_ERROR_PATTERNS.some((pattern) =>
@@ -441,13 +492,22 @@ class TMSAutomation {
 			// When user switches accounts, state will be reset to 'running'
 			this.state = "paused";
 		} else {
-			// Other error - RETRY if attempts remaining
+			// Other error (e.g., captcha error) - server will auto-reload captcha
+			// srcMutationObserver will pick up the new src and trigger solve
 			if (this.autoLoginAttempts < MAX_LOGIN_ATTEMPTS) {
 				logger.log(
-					`TMS: Retrying login (attempt ${this.autoLoginAttempts + 1}/${MAX_LOGIN_ATTEMPTS})`,
+					`TMS: Error detected, retrying (attempt ${this.autoLoginAttempts + 1}/${MAX_LOGIN_ATTEMPTS})`,
 				);
-				this.reloadCaptcha();
+				// Don't call reloadCaptcha() - server already reloads it
+				// srcMutationObserver will handle the new captcha
 			} else {
+
+					void track({
+								context: Env.CONTENT,
+								eventName: EventName.AUTO_LOGIN_FAILED_TMS,
+								params: { error: errorMessage },
+							});
+
 				// Max attempts reached
 				logger.log("TMS: Max login attempts reached, stopping.");
 				await this.appConnection.callAction(
@@ -455,11 +515,8 @@ class TMSAutomation {
 					"Auto-login failed after maximum attempts. Please try manually.",
 					"error",
 				);
-				await this.appConnection.callAction(
-					"setError",
-					this.currentAccount?.alias,
-					"maxAttemptsError",
-				);
+
+				// not setting this account error because technically its not account fault that login did not work
 				this.state = "stopped";
 				this.stop();
 			}
@@ -478,7 +535,7 @@ class TMSAutomation {
 				);
 				return;
 			}
-			await this.performManualLogin(data as Account);
+			this.performManualLogin(data as Account);
 		});
 	}
 
@@ -496,7 +553,7 @@ class TMSAutomation {
 		}
 
 		// BACKOFF DELAY
-		const backoffTime = this.autoLoginAttempts * 1000 + 500;
+		const backoffTime = this.autoLoginAttempts * 2000 + 500;
 		if (this.autoLoginAttempts > 0) {
 			logger.log(
 				`TMS Backoff: Waiting ${backoffTime}ms before attempt ${this.autoLoginAttempts + 1}`,
@@ -518,7 +575,7 @@ class TMSAutomation {
 			loginBtn.dispatchEvent(new Event("click", { bubbles: true }));
 		}
 		// Success is handled by wxt:locationchange → handleChangeToDashboardPage()
-		// Errors should be detected via toast/error element observation (TODO)
+		// Errors are detected via toast observer
 	}
 
 	private performManualLogin(account: Account) {
@@ -619,6 +676,8 @@ export default defineContentScript({
 		} else if (TMS_LOGIN_URL.test(url)) {
 			// Start capturing credentials on login page
 			CredentialCapture.startCapturing();
+			// Setup persistent logout listener for the dashboard
+			setupLogoutListener();
 			await automation.init();
 		}
 
@@ -626,17 +685,23 @@ export default defineContentScript({
 		ctx.addEventListener(window, "wxt:locationchange", async ({ newUrl }) => {
 			const urlStr = newUrl.toString();
 
+			console.log("new url", urlStr);
+			console.log("old url", url);
+
 			if (TMS_DASHBOARD_PATTERN.test(urlStr)) {
+				// Setup persistent logout listener for the dashboard
+				setupLogoutListener();
 				CredentialCapture.stopCapturing();
 				await automation.handleChangeToDashboardPage();
 			} else if (TMS_LOGIN_URL.test(urlStr)) {
-				CredentialCapture.startCapturing();
 				await automation.init();
+				CredentialCapture.startCapturing();
 			}
 		});
 
 		ctx.addEventListener(window, "beforeunload", () => {
 			CredentialCapture.stopCapturing();
+			removeLogoutListener();
 			automation.stop();
 		});
 	},

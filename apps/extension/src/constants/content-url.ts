@@ -11,7 +11,7 @@ export const chrome_naasa_dashboard_url =
 
 export const chrome_tms_dashboard_url = "https://*.nepsetms.com.np/tms/*";
 
-export const tms_watch_url = "https://*.nepsetms.com.np/login";
+export const tms_watch_url = "https://*.nepsetms.com.np/*";
 export const mero_watch_url = "*://meroshare.cdsc.com.np/*";
 export const naasa_watch_url = "https://auth.naasasecurities.com.np/*";
 export const naasa_dashboard_url =

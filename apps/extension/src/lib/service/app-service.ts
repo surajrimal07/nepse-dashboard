@@ -35,7 +35,6 @@ import { MODES } from "@/types/search-type";
 import type { timeType } from "@/types/sidepanel-type";
 import type { Config } from "@/types/user-types";
 import { buildChartUrl } from "@/utils/built-chart-url";
-import { logger } from "@/utils/logger";
 import { generateChat } from "../actions/generate-chat";
 import { generateSuggestions } from "../actions/generate-suggestions";
 import { takeScreenshot } from "../actions/take-screenshot";
@@ -43,14 +42,8 @@ import { checkConfig } from "../actions/test-key";
 import { Increment, Track, TrackPage } from "../analytics/analytics";
 import { sendMessage } from "../messaging/extension-messaging";
 import { handleNotification } from "../notification/handle-notification";
-import { activateTab } from "./activate-tab";
-import { findTMSTab } from "./find-tab";
 import { addAccount, deleteAccount, makePrimary } from "./helpers";
-import {
-	findConflictingAccount,
-	LOGIN_CONFIG,
-	tryLogout,
-} from "./login-this-account";
+import { LOGIN_CONFIG } from "./login-this-account";
 
 export const appState = createConfig({
 	stockScrollingPopup: {
@@ -1662,41 +1655,68 @@ export const appState = createConfig({
 	handleThisAccountLogin: {
 		handler: async (
 			state: any,
-			_setState: (newState: Partial<any>) => Promise<void>,
+			setState: (newState: Partial<any>) => Promise<void>,
 			_target: BrowserLocation,
 			alias: string,
 		) => {
-			const account = state.accounts?.find(
-				(acc: Account) => acc.alias === alias,
-			);
+			const accounts = state.accounts ?? [];
+
+			const account = accounts?.find((acc: Account) => acc.alias === alias);
 
 			if (!account) {
 				return { success: false, message: "Account not found" };
 			}
 
+			// Set pendingLogin to true for this account
+			const newAccounts = accounts.map((acc: Account) =>
+				acc.alias === alias ? { ...acc, pendingLogin: true } : acc,
+			);
+
+			await setState({ accounts: newAccounts });
+
 			const config = LOGIN_CONFIG[account.type as accountType];
+			const urlPattern = config.tabUrlPattern(account.broker);
+			const loginUrl = config.loginUrl(account.broker);
 
-			// 1️⃣ Best-effort logout of conflicting account
-			const conflicting = findConflictingAccount(state.accounts, account);
+			// Query all tabs to find matching active tab
+			const tabs = await browser.tabs.query({ url: urlPattern });
 
-			if (conflicting) {
-				await tryLogout(
-					config.tabUrlPattern(account.broker),
-					config.logoutMessage,
-				);
+			if (tabs.length > 0 && tabs[0]?.id) {
+				// Tab exists - activate it and call logout (auto-login will be handled)
+				const tab = tabs[0];
+
+				await Promise.all([
+					browser.tabs.update(tab.id, { active: true }),
+					sendMessage(config.logoutMessage, undefined, tab.id),
+					handleNotification(
+						"Nepse Dashboard",
+						`Logging out current session and logging in as ${alias}`,
+						"info",
+					),
+				]);
+
+				void Track({
+					context: Env.BACKGROUND,
+					eventName: EventName.MANUAL_ACCOUNT_LOGIN_INITIATED,
+					params: { alias, accountType: account.type, hasExistingTab: true },
+				});
+
+				return {
+					success: true,
+					message: `Logging out current session and logging in as ${alias}`,
+				};
 			}
 
-			// 2️⃣ Always continue to login
+			// No matching tab - create new tab with login URL
 			await browser.tabs.create({
-				url: config.loginUrl(account.broker),
+				url: loginUrl,
 				active: true,
 			});
 
-			// 3️⃣ Track
 			void Track({
 				context: Env.BACKGROUND,
 				eventName: EventName.MANUAL_ACCOUNT_LOGIN_INITIATED,
-				params: { alias, accountType: account.type },
+				params: { alias, accountType: account.type, hasExistingTab: false },
 			});
 
 			return {
@@ -1794,6 +1814,7 @@ export const appState = createConfig({
 						...acc,
 						lastLoggedIn: new Date().toISOString(),
 						isCurrentlyLoggingIn: true,
+						pendingLogin: false,
 					};
 				}
 
@@ -1823,6 +1844,8 @@ export const appState = createConfig({
 			}
 
 			await setState({ accounts: newAccounts });
+
+			//handle pendingLogin,
 
 			void Track({
 				context: Env.BACKGROUND,
@@ -1923,7 +1946,7 @@ export const appState = createConfig({
 				lastLoggedIn: new Date().toISOString(),
 				broker,
 				isCurrentlyLoggingIn: false,
-				temporaryPrimary: false,
+				pendingLogin: false,
 			};
 
 			// Determine if this should be primary based on account type

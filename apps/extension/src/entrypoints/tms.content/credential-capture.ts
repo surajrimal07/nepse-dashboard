@@ -183,12 +183,14 @@ export class CredentialCapture {
 		}
 
 		// Check if auto-save is enabled
-		const { autoSaveNewAccount } = appConnection.get();
-		if (!autoSaveNewAccount) {
-			logger.log("CredentialCapture: Auto-save disabled, discarding");
-			this.clear();
-			return false;
-		}
+		// const { autoSaveNewAccount } = appConnection.get(); // we don't do this, let background decide how to handle this, just send it
+
+
+		// if (!autoSaveNewAccount) {
+		// 	logger.log("CredentialCapture: Auto-save disabled, discarding");
+		// 	this.clear();
+		// 	return false;
+		// }
 
 		try {
 			logger.log("CredentialCapture: Processing pending credentials...");

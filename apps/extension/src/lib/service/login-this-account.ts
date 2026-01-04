@@ -1,11 +1,4 @@
-import {
-	type Account,
-	AccountType,
-	type accountType,
-} from "@/types/account-types";
-import { sendMessage } from "../messaging/extension-messaging";
-import { activateTab } from "./activate-tab";
-import { findTMSTab } from "./find-tab";
+import { AccountType, type accountType } from "@/types/account-types";
 
 type LoginConfig = {
 	tabUrlPattern: (broker?: number) => string;
@@ -16,8 +9,10 @@ type LoginConfig = {
 
 export const LOGIN_CONFIG: Record<accountType, LoginConfig> = {
 	[AccountType.TMS]: {
-		tabUrlPattern: (broker) => `https://tms${broker}.nepsetms.com.np/*`,
-		loginUrl: (broker) => `https://tms${broker}.nepsetms.com.np/login`,
+		tabUrlPattern: (broker) =>
+			`https://tms${String(broker).padStart(2, "0")}.nepsetms.com.np/*`,
+		loginUrl: (broker) =>
+			`https://tms${String(broker).padStart(2, "0")}.nepsetms.com.np/login`,
 		logoutMessage: "handleTMSAccountLogout",
 		requiresBroker: true,
 	},
@@ -36,23 +31,3 @@ export const LOGIN_CONFIG: Record<accountType, LoginConfig> = {
 		requiresBroker: false,
 	},
 };
-
-export function findConflictingAccount(accounts: Account[], target: Account) {
-	return accounts.find(
-		(acc) =>
-			acc.type === target.type &&
-			(acc.type !== AccountType.TMS || acc.broker === target.broker) &&
-			acc.isCurrentlyLoggingIn &&
-			acc.alias !== target.alias,
-	);
-}
-
-export async function tryLogout(tabPattern: string, logoutMessage: string) {
-	const tab = await findTMSTab(tabPattern);
-
-	if (!tab?.id) return;
-
-	await activateTab(tab);
-
-	await sendMessage(logoutMessage, undefined, tab?.id);
-}

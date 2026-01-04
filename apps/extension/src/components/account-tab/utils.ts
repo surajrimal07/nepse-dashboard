@@ -21,7 +21,7 @@ export const initialFormData: Account = {
 	updatedAt: new Date().toISOString(),
 	lastLoggedIn: null,
 	isCurrentlyLoggingIn: false,
-	temporaryPrimary: false,
+	pendingLogin: false,
 };
 
 export function validateFormData(data: Account): FormErrors {

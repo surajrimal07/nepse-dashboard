@@ -58,6 +58,13 @@ export default function Account() {
 		setActiveTab(value as accountType);
 	}, []);
 
+	const handleLoginThisAccount = useCallback(
+		(alias: string) => async () => {
+			callAction("handleThisAccountLogin", alias).then(handleActionResult);
+		},
+		[callAction],
+	);
+
 	const handleMakePrimary = useCallback(
 		(alias: string) => async () => {
 			callAction("makePrimary", alias).then(handleActionResult);
@@ -135,7 +142,7 @@ export default function Account() {
 												variant="ghost"
 												size="sm"
 												className="h-8 px-2 text-zinc-400 hover:text-white"
-												onClick={() => {}}
+												onClick={handleLoginThisAccount(account.alias)}
 												disabled={account.isCurrentlyLoggingIn === true}
 											>
 												<span className="text-xs mr-1">
